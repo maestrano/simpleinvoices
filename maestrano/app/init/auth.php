@@ -12,6 +12,7 @@ require MAESTRANO_ROOT . '/app/init/base.php';
 //-----------------------------------------------
 define('APP_DIR', realpath(MAESTRANO_ROOT . '/../'));
 chdir(APP_DIR);
+define('NOAUTH',1);
 require APP_DIR . "/include/init.php";
 
 //-----------------------------------------------

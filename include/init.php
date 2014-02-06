@@ -208,16 +208,55 @@ include_once('./include/functions.php');
 
 checkConnection();
 
-include('./include/include_auth.php');
-include_once('./include/manageCustomFields.php');
-include_once("./include/validation.php");
+// Hook: Maestrano
+// Check auth
+if (!defined('NOAUTH')){
+  // Hook:Maestrano
+  // Load Maestrano and start_session
+  require './maestrano/app/init/base.php';
+  $maestrano = MaestranoService::getInstance();
+  
+  // Require authentication straight away if intranet
+  // mode enabled
+  if ($maestrano->isSsoIntranetEnabled()) {
+    if (!$maestrano->getSsoSession()->isValid()) {
+      header("Location: " . $maestrano->getSsoInitUrl());
+    }
+  }
+  
+  // Hook:Maestrano
+  // SAML Auth if not logged in
+  // Check session validity otherwise
+  if (!isset($auth_session->id)){
+	
+    if ($maestrano->isSsoEnabled()) {
+      header("Location: " . $maestrano->getSsoInitUrl());
+    }
+     else {
+      include('./include/include_auth.php');
+    }
+  
+  } else {
+    // Hook:Maestrano
+    // Check Maestrano session is still valid
+    if ($maestrano->isSsoEnabled()) {
+      if (!$maestrano->getSsoSession()->isValid()) {
+        header("Location: " . $maestrano->getSsoInitUrl());
+      }
+    }
+  }
+  
+  include_once('./include/manageCustomFields.php');
+  include_once("./include/validation.php");
 
-//if authentication enabled then do acl check etc..
-if ($config->authentication->enabled == 1 )
-{
-	include_once("./include/acl.php");
-	include_once("./include/check_permission.php");
+  //if authentication enabled then do acl check etc..
+  if ($config->authentication->enabled == 1 )
+  {
+  	include_once("./include/acl.php");
+  	include_once("./include/check_permission.php");
+  }
 }
+
 
 /*
 Array: Early_exit

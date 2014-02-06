@@ -39,26 +39,27 @@ class MnoSsoUser extends MnoSsoBaseUser
    */
   protected function setInSession()
   {
-    // // First set $conn variable (need global variable?)
-    // $conn = $this->connection;
-    // 
-    // $sel1 = $conn->query("SELECT ID,name,lastlogin FROM user WHERE ID = $this->local_id");
-    // $chk = $sel1->fetch();
-    // if ($chk["ID"] != "") {
-    //     $now = time();
-    //     
-    //     // Set session
-    //     $this->session['userid'] = $chk['ID'];
-    //     $this->session['username'] = stripslashes($chk['name']);
-    //     $this->session['lastlogin'] = $now;
-    //     
-    //     // Update last login timestamp
-    //     $upd1 = $conn->query("UPDATE user SET lastlogin = '$now' WHERE ID = $this->local_id");
-    //     
-    //     return true;
-    // } else {
-    //     return false;
-    // }
+		$result = $this->connection->query("
+			SELECT 
+				u.id, u.email, r.name as role_name, u.domain_id
+			FROM 
+				si_user u,  si_user_role r 
+			WHERE 
+				u.mno_uid = :uid AND u.role_id = r.id AND u.enabled = 1", ':uid', $this->uid
+		);
+		$result = $result->fetch();
+    
+    /*
+		* chuck the user details sans password into the Zend_auth session
+		*/
+    //Zend_Session::start();
+		$authNamespace = new Zend_Session_Namespace('Zend_Auth');
+		foreach ($result as $key => $value)
+		{
+			$authNamespace->$key = $value;
+		}
+    
+    return true;
   }
   
   
@@ -91,6 +92,8 @@ class MnoSsoUser extends MnoSsoBaseUser
         ':role',$this->getRoleValueToAssign(),
         ':domain_id',1,
         ':enabled',1);
+       
+      $lid = intval($this->connection->lastInsertId());
     }
     
     return $lid;
