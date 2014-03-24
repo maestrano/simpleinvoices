@@ -7,6 +7,11 @@
  */
 class MnoSettings
 {
+    /**
+     * The id of the application.
+     * @var string
+     */
+    public $app_id = '';    
     
     /**
      * The name of the application.
@@ -77,6 +82,24 @@ class MnoSettings
      * @var string
      */
     public $sso_session_check_url = '';
+    
+    /**
+     * Maestrano integration enabled for this application
+     * @var boolean
+     */
+    public $soa_enabled = false;
+    
+    /**
+     * Maestrano integration url
+     * @var string
+     */
+    public $soa_url = '';
+    
+    /**
+     * A secret AES256 (32 bytes) symmetric key
+     * @var string 
+     */
+    public $secret_key = 'uDXSDZFUnKU13T226pUc9olI95RJ2wzh';
     
     /**
      * Return a settings object for php-saml

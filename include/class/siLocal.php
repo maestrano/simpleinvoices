@@ -6,11 +6,11 @@ class siLocal
 	public static function number($number,$precision="",$locale="")
 	{
 		global $config;
-		
 		$locale == "" ? $locale = new Zend_Locale($config->local->locale) : $locale = $locale;
 		$load_precision = $config->local->precision; 
-		
+                
 		$precision == "" ? $precision = $load_precision : $precision = $precision;
+                
 		$formatted_number = Zend_Locale_Format::toNumber($number, array('precision' => $precision, 'locale' => $locale));
 		
 		//trim zeros from decimal point if enabled

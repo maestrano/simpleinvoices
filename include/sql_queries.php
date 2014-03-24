@@ -1341,15 +1341,19 @@ function updateBiller() {
 }
 
 function updateCustomer() {
+    return updateCustomerByObject($_GET['id'], $_POST);
+}
+    
+function updateCustomerByObject($id, &$obj, $push_to_maestrano=true) {
 	global $db;
 	global $config;
 
 	//ugly hack with conditional sql - but couldn't get it working without this :(
 	//TODO - make this just 1 query - refer svn history for info on past versions
 	
-    if($_POST['credit_card_number_new'] !='')
+    if($obj['credit_card_number_new'] !='')
     {
-        $credit_card_number = $_POST['credit_card_number_new'];
+        $credit_card_number = $obj['credit_card_number_new'];
         
         //cc
         $enc = new encryption();
@@ -1389,29 +1393,29 @@ function updateCustomer() {
                                 id = :id";
 
         return $db->query($sql,
-                ':name', $_POST[name],
-                ':attention', $_POST[attention],
-                ':street_address', $_POST[street_address],
-                ':street_address2', $_POST[street_address2],
-                ':city', $_POST[city],
-                ':state', $_POST[state],
-                ':zip_code', $_POST[zip_code],
-                ':country', $_POST[country],
-                ':phone', $_POST[phone],
-                ':mobile_phone', $_POST[mobile_phone],
-                ':fax', $_POST[fax],
-                ':email', $_POST[email],
-                ':notes', $_POST[notes],
-        $cc_pdo_name, $cc_pdo ,
-                ':credit_card_holder_name', $_POST[credit_card_holder_name],
-                ':credit_card_expiry_month', $_POST[credit_card_expiry_month],
-                ':credit_card_expiry_year', $_POST[credit_card_expiry_year],
-                ':custom_field1', $_POST[custom_field1],
-                ':custom_field2', $_POST[custom_field2],
-                ':custom_field3', $_POST[custom_field3],
-                ':custom_field4', $_POST[custom_field4],
-                ':enabled', $_POST['enabled'],
-                ':id', $_GET['id']
+                ':name', $obj[name],
+                ':attention', $obj[attention],
+                ':street_address', $obj[street_address],
+                ':street_address2', $obj[street_address2],
+                ':city', $obj[city],
+                ':state', $obj[state],
+                ':zip_code', $obj[zip_code],
+                ':country', $obj[country],
+                ':phone', $obj[phone],
+                ':mobile_phone', $obj[mobile_phone],
+                ':fax', $obj[fax],
+                ':email', $obj[email],
+                ':notes', $obj[notes],
+        		$cc_pdo_name, $cc_pdo ,
+                ':credit_card_holder_name', $obj[credit_card_holder_name],
+                ':credit_card_expiry_month', $obj[credit_card_expiry_month],
+                ':credit_card_expiry_year', $obj[credit_card_expiry_year],
+                ':custom_field1', $obj[custom_field1],
+                ':custom_field2', $obj[custom_field2],
+                ':custom_field3', $obj[custom_field3],
+                ':custom_field4', $obj[custom_field4],
+                ':enabled', $obj['enabled'],
+                ':id', $id
                 );
 
     } else {
@@ -1446,37 +1450,42 @@ function updateCustomer() {
 
 
 	return $db->query($sql,
-		':name', $_POST[name],
-		':attention', $_POST[attention],
-		':street_address', $_POST[street_address],
-		':street_address2', $_POST[street_address2],
-		':city', $_POST[city],
-		':state', $_POST[state],
-		':zip_code', $_POST[zip_code],
-		':country', $_POST[country],
-		':phone', $_POST[phone],
-		':mobile_phone', $_POST[mobile_phone],
-		':fax', $_POST[fax],
-		':email', $_POST[email],
-		':notes', $_POST[notes],
-		':credit_card_holder_name', $_POST[credit_card_holder_name],
-		':credit_card_expiry_month', $_POST[credit_card_expiry_month],
-		':credit_card_expiry_year', $_POST[credit_card_expiry_year],
-		':custom_field1', $_POST[custom_field1],
-		':custom_field2', $_POST[custom_field2],
-		':custom_field3', $_POST[custom_field3],
-		':custom_field4', $_POST[custom_field4],
-		':enabled', $_POST['enabled'],
-		':id', $_GET['id']
+		':name', $obj[name],
+		':attention', $obj[attention],
+		':street_address', $obj[street_address],
+		':street_address2', $obj[street_address2],
+		':city', $obj[city],
+		':state', $obj[state],
+		':zip_code', $obj[zip_code],
+		':country', $obj[country],
+		':phone', $obj[phone],
+		':mobile_phone', $obj[mobile_phone],
+		':fax', $obj[fax],
+		':email', $obj[email],
+		':notes', $obj[notes],
+		':credit_card_holder_name', $obj[credit_card_holder_name],
+		':credit_card_expiry_month', $obj[credit_card_expiry_month],
+		':credit_card_expiry_year', $obj[credit_card_expiry_year],
+		':custom_field1', $obj[custom_field1],
+		':custom_field2', $obj[custom_field2],
+		':custom_field3', $obj[custom_field3],
+		':custom_field4', $obj[custom_field4],
+		':enabled', $obj['enabled'],
+		':id', $id
 		);
 	}
 }
 
 function insertCustomer() {
+    return insertCustomerByObject($_POST);
+}
+
+function insertCustomerByObject(&$obj, $push_to_maestrano=true) {
+	global $db;
 	global $db_server;
 	global $auth_session;
-    global $config;
-	extract( $_POST );
+	global $config;
+	extract( $obj );
 	$sql = "INSERT INTO 
 			".TB_PREFIX."customers
 			(
@@ -1500,10 +1509,10 @@ function insertCustomer() {
 			)";
 	//cc
 	$enc = new encryption();
-    $key = $config->encryption->default->key;	
+	$key = $config->encryption->default->key;	
 	$encrypted_credit_card_number = $enc->encrypt($key, $credit_card_number);
 
-	return dbQuery($sql,
+	$result = dbQuery($sql,
 		':attention', $attention,
 		':name', $name,
 		':street_address', $street_address,
@@ -1528,7 +1537,25 @@ function insertCustomer() {
 		':enabled', $enabled,
 		':domain_id',$auth_session->domain_id
 		);
+        $last_insert_id = lastInsertId();
+        error_log("lastinsertid=" . $last_insert_id);
+        
+        $obj['id'] = $last_insert_id;
+        
+        if ($result && $push_to_maestrano) {
+            // Get Maestrano Service
+            $maestrano = MaestranoService::getInstance();
+
+            if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {	  
+              $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
+              error_log("copy=" . json_encode($obj));
+              error_log("result=" . json_encode($result));
+              $mno_person->send($obj, false);
+              error_log("after mno_person send");
+            }
+        }
 	
+        return $result;
 }
 
 function searchCustomers($search) {
