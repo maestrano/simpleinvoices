@@ -78,16 +78,11 @@ class MnoSoaPerson extends MnoSoaBasePerson
     protected function pushAddresses() {
         $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " start " . $this->_local_entity["street_address"]);
         // ADDRESS -> POSTAL ADDRESS
-        error_log("1");
         $address = $this->_local_entity["street_address"] . " " . $this->_local_entity["street_address2"];
         $this->_address->work->postalAddress->streetAddress = $this->push_set_or_delete_value($address);
-        error_log("2");
         $this->_address->work->postalAddress->locality = $this->push_set_or_delete_value($this->_local_entity["city"]);
-        error_log("3");
         $this->_address->work->postalAddress->region = $this->push_set_or_delete_value($this->_local_entity["state"]);
-        error_log("4");
         $this->_address->work->postalAddress->postalCode = $this->push_set_or_delete_value($this->_local_entity["zip_code"]);
-        error_log("5");
         $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " end ");
     }
     
@@ -147,13 +142,11 @@ class MnoSoaPerson extends MnoSoaBasePerson
     }
     
     protected function pushEntity() {
-	$this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " start ");
-        $this->_entity->customer = true;
-        $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " end ");
+        // DO NOTHING
     }
     
     protected function pullEntity() {
-	// DO NOTHING
+        // DO NOTHING
     }
     
     protected function pushCreditCard() {
@@ -219,7 +212,7 @@ class MnoSoaPerson extends MnoSoaBasePerson
         }
     }
     
-    protected function getLocalEntityIdentifier() {
+    public function getLocalEntityIdentifier() {
         return $this->_local_entity["id"];
     }
 }

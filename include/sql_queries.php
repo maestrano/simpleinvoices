@@ -1392,7 +1392,7 @@ function updateCustomerByObject($id, &$obj, $push_to_maestrano=true) {
                         WHERE
                                 id = :id";
 
-        return $db->query($sql,
+        $result =  $db->query($sql,
                 ':name', $obj[name],
                 ':attention', $obj[attention],
                 ':street_address', $obj[street_address],
@@ -1417,6 +1417,30 @@ function updateCustomerByObject($id, &$obj, $push_to_maestrano=true) {
                 ':enabled', $obj['enabled'],
                 ':id', $id
                 );
+        
+        $obj['id'] = $id;
+        
+        if ($result && $obj['enabled'] && $push_to_maestrano) {
+            // Get Maestrano Service
+            $maestrano = MaestranoService::getInstance();
+
+            if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {	  
+                $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
+                $mno_person->undeleteIdMapEntry($id);
+                $mno_person->send($obj, $push_to_maestrano);
+            }
+        } else if ($result && !$obj['enabled']) {
+            // Get Maestrano Service
+            $maestrano = MaestranoService::getInstance();
+
+            // DISABLED DELETE NOTIFICATIONS
+            if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+                $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
+                $mno_person->sendDeleteNotification($id);
+            }
+        }
+        
+        return $result;
 
     } else {
 
@@ -1449,7 +1473,7 @@ function updateCustomerByObject($id, &$obj, $push_to_maestrano=true) {
 				id = :id";
 
 
-	return $db->query($sql,
+	$result =  $db->query($sql,
 		':name', $obj[name],
 		':attention', $obj[attention],
 		':street_address', $obj[street_address],
@@ -1473,6 +1497,30 @@ function updateCustomerByObject($id, &$obj, $push_to_maestrano=true) {
 		':enabled', $obj['enabled'],
 		':id', $id
 		);
+        
+        $obj['id'] = $id;
+        
+        if ($result && $obj['enabled'] && $push_to_maestrano) {
+            // Get Maestrano Service
+            $maestrano = MaestranoService::getInstance();
+
+            if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {	  
+                $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
+                $mno_person->undeleteIdMapEntry($id);
+                $mno_person->send($obj, $push_to_maestrano);
+            }
+        } else if ($result && !$obj['enabled']) {
+            // Get Maestrano Service
+            $maestrano = MaestranoService::getInstance();
+
+            // DISABLED DELETE NOTIFICATIONS
+            if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+                $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
+                $mno_person->sendDeleteNotification($id);
+            }
+        }
+        
+        return $result;
 	}
 }
 
@@ -1538,20 +1586,16 @@ function insertCustomerByObject(&$obj, $push_to_maestrano=true) {
 		':domain_id',$auth_session->domain_id
 		);
         $last_insert_id = lastInsertId();
-        error_log("lastinsertid=" . $last_insert_id);
         
         $obj['id'] = $last_insert_id;
         
-        if ($result && $push_to_maestrano) {
+        if ($result && $enabled && $push_to_maestrano) {
             // Get Maestrano Service
             $maestrano = MaestranoService::getInstance();
 
             if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {	  
               $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
-              error_log("copy=" . json_encode($obj));
-              error_log("result=" . json_encode($result));
               $mno_person->send($obj, false);
-              error_log("after mno_person send");
             }
         }
 	

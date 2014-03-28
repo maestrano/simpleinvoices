@@ -30,6 +30,7 @@ require_once MNO_PHP_DIR . 'soa/MnoSoaBasePerson.php';
 // Require Maestrano app files
 //-----------------------------------------------
 define('MNO_APP_DIR', MAESTRANO_ROOT . '/app/');
-require_once MNO_APP_DIR . '/sso/MnoSsoUser.php';
+require_once MNO_APP_DIR . 'sso/MnoSsoUser.php';
+require_once MNO_APP_DIR . 'soa/MnoSoaEntity.php';
 require_once MNO_APP_DIR . 'soa/MnoSoaDB.php';
 require_once MNO_APP_DIR . 'soa/MnoSoaPerson.php';

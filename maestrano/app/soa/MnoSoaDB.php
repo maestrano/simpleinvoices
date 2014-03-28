@@ -116,8 +116,22 @@ class MnoSoaDB extends MnoSoaBaseDB {
 			':app_entity_name', strtoupper($local_entity_name)
 			);
         
-        $this->_log->debug("deleteIdMapEntry query = ".$query);
+        $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " query = ".$query);
         
+        return $result;
+    }
+    
+    public function undeleteIdMapEntry($local_id, $local_entity_name)
+    {
+        $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " start");
+        
+        $query = "UPDATE mno_id_map SET deleted_flag=0 WHERE app_entity_id=:app_entity_id and app_entity_name=:app_entity_name";
+        $result = $this->_db->query($query,
+			':app_entity_id', $local_id,
+			':app_entity_name', strtoupper($local_entity_name)
+			);
+        
+        $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " query = ".$query);
         return $result;
     }
 }
