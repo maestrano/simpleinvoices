@@ -1583,7 +1583,8 @@ function insertCustomerByObject(&$obj, $push_to_maestrano=true) {
 		':custom_field3', $custom_field3,
 		':custom_field4', $custom_field4,
 		':enabled', $enabled,
-		':domain_id',$auth_session->domain_id
+    ':domain_id', 1
+		//':domain_id',$auth_session->domain_id || MnoFix - crashes
 		);
         $last_insert_id = lastInsertId();
         
