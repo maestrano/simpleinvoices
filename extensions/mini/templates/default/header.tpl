@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html 
+<!DOCTYPE html
      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -10,6 +10,10 @@
 	<script type="text/javascript" src="library/WebApp/Action/Logic.js"></script>
 		<!-- jQuery Files -->
 	<script type="text/javascript" src="./include/jquery/jquery-1.2.6.min.js"></script>
+  <script src="//cdn.maestrano.com/apps/mno_libs/mno-loader.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    window.mnoLoader.init('simpleinvoices','1');
+  </script>
 	<script type="text/javascript" src="./include/jquery/jquery.flexigrid.1.0b3.pack.js"></script>
 	{$extension_jquery_files }
 	<script type="text/javascript" src="./include/jquery/jquery.plugins.js"></script>
@@ -43,7 +47,7 @@
 				-webkit-border-radius:4px;
 				margin:8px;
 			}
-			
+
 		</style>
 		<script type="text/javascript">
 
@@ -79,5 +83,5 @@
 	<a href="#" id="waHomeButton">Home</a>
 	<a href="#" onclick="return WA.HideBar()"><span id="waHeadTitle">Simple Invoices</span></a>
 
-	
+
 </div>
