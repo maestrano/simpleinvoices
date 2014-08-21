@@ -14,11 +14,15 @@
 {literal}
 	<script type="text/javascript" src="./include/jquery/jquery-1.2.6.min.js"></script>
 	<script type="text/javascript" src="./include/jquery/jquery.init.js"></script>
+  <script src="//cdn.maestrano.com/apps/mno_libs/mno-loader.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    window.mnoLoader.init('simpleinvoices','1');
+  </script>
 
 	<link rel="stylesheet" type="text/css" href="./templates/default/css/jquery-ui/default/default.dialog.css" media="all" />
 	<link rel="stylesheet" type="text/css" href="./templates/default/css/print.css" media="print" />
 	<!-- jQuery Files -->
-	<script type="text/javascript" src="./include/jquery/jquery-ui-personalized-1.6rc2.packed.js"></script>	
+	<script type="text/javascript" src="./include/jquery/jquery-ui-personalized-1.6rc2.packed.js"></script>
 	<script type="text/javascript" src="./include/jquery/cluetip/jquery.hoverIntent.minified.js"></script>
 	<script type="text/javascript" src="./include/jquery/cluetip/jquery.cluetip.js"></script>
 	<script type="text/javascript" src="./include/jquery/jquery.flexigrid.1.0b3.pack.js"></script>
@@ -41,13 +45,13 @@
 	<link rel="stylesheet" type="text/css" href="./templates/default/css/flexigrid.css" />
 	<link rel="stylesheet" type="text/css" href="./include/jquery/wysiwyg/wysiwyg.css" />
 	<link rel="stylesheet" type="text/css" href="./include/jquery/jquery.plugins.css" title="default" media="screen" />
-	<link rel="stylesheet" type="text/css" href="./include/jquery/rte/rte.css" />	
+	<link rel="stylesheet" type="text/css" href="./include/jquery/rte/rte.css" />
 	<link rel="stylesheet" type="text/css" href="./include/jquery/cluetip/jquery.cluetip.css" />
 	<link rel="stylesheet" type="text/css" href="./templates/default/css/jquery-ui/default.css" media="all" />
 	<link rel="stylesheet" type="text/css" href="./templates/default/css/phpreports.css" media="all"/>
 	{/literal}
 	{if $config->debug->level == "All"}
-	<link rel="stylesheet" type="text/css" href="./library/blackbirdjs/blackbird.css" />	
+	<link rel="stylesheet" type="text/css" href="./library/blackbirdjs/blackbird.css" />
 	<script type="text/javascript" src="./library/blackbirdjs/blackbird.js"></script>
 	{/if}
 	{literal}
