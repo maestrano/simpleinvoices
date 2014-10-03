@@ -12,7 +12,6 @@ class MnoSoaPerson extends MnoSoaBasePerson
 	$id = $this->getLocalEntityIdentifier();
 	
 	if (!empty($id)) {
-	    error_log("id is not empty, id = " . $id);
 	    $mno_id = $this->getMnoIdByLocalId($id);
 
 	    if ($this->isValidIdentifier($mno_id)) {
@@ -45,9 +44,16 @@ class MnoSoaPerson extends MnoSoaBasePerson
         return constant('MnoSoaBaseEntity::STATUS_ERROR');
     }
     
+    # Do not push name on subsequent updates
     protected function pushName() {
         $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " start ");
-        $this->_name->familyName = $this->push_set_or_delete_value($this->_local_entity["name"]);
+        
+        if (empty($this->_id)) {
+          $names = explode(' ', $this->_local_entity["name"]);
+          $this->_name->familyName = array_pop($names);
+          $this->_name->givenNames = implode(" ",$names);
+        }
+        
         $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " end ");
     }
     
@@ -55,7 +61,13 @@ class MnoSoaPerson extends MnoSoaBasePerson
     
     protected function pullName() {
         $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " start ");
-        $this->_local_entity["name"] = $this->pull_set_or_delete_value($this->_name->familyName);
+        $fullName = $this->_name->familyName;
+        
+        if (!empty($this->_name->givenNames)) {
+          $fullName = $this->_name->givenNames . " " . $fullName;
+        }
+        
+        $this->_local_entity["name"] = $this->pull_set_or_delete_value($fullName);
         $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " end ");
     }
     
