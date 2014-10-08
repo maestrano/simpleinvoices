@@ -619,6 +619,7 @@ function insertProductComplete($enabled=1,$visible=1,$description,
 		$unit_price, $custom_field1 = NULL, $custom_field2, $custom_field3, $custom_field4, $notes) {
 
 	global $auth_session;
+  global $db;
 	/*if(isset($enabled)) {
 		$enabled=$enabled;
 	}*/
@@ -655,7 +656,7 @@ function insertProductComplete($enabled=1,$visible=1,$description,
 				:visible
 			)";
 	}
-	return dbQuery($sql,
+	$result = dbQuery($sql,
 		':domain_id',$auth_session->domain_id,	
 		':description', $description,
 		':unit_price', $unit_price,
@@ -667,13 +668,34 @@ function insertProductComplete($enabled=1,$visible=1,$description,
 		':enabled', $enabled,
 		':visible', $visible
 		);
+
+  // Send Item to Maestrano
+  $last_insert_id = lastInsertId();
+  $obj['id'] = $last_insert_id;
+  $obj['description'] = $description;
+  $obj['unit_price'] = $unit_price;
+  $obj['enabled'] = $enabled;
+
+  if ($result && $enabled && $push_to_maestrano) {
+      $maestrano = MaestranoService::getInstance();
+      if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
+        $mno_item = new MnoSoaItem($db, new MnoSoaBaseLogger());
+        $mno_item->send($obj, $push_to_maestrano);
+      }
+  }
+
+  return $result;
 }
 
+function insertProduct($enabled=1,$visible=1,$push_to_maestrano=true) {
+    return insertProductByObject($_POST,$enabled,$visible,$push_to_maestrano);
+}
 
-function insertProduct($enabled=1,$visible=1) {
+function insertProductByObject(&$obj,$enabled=1,$visible=1,$push_to_maestrano=true) {
 	global $auth_session;
+  global $db;
 	
-	(isset($_POST['enabled'])) ? $enabled = $_POST['enabled']  : $enabled = $enabled ;
+	(isset($obj['enabled'])) ? $enabled = $obj['enabled']  : $enabled = $enabled ;
 
 	$sql = "INSERT into
 		".TB_PREFIX."products
@@ -709,27 +731,47 @@ function insertProduct($enabled=1,$visible=1) {
 			:visible
 		)";
 
-	return dbQuery($sql,
-		':domain_id',$auth_session->domain_id,	
-		':description', $_POST['description'],
-		':unit_price', $_POST['unit_price'],
-		':cost', $_POST['cost'],
-		':reorder_level', $_POST['reorder_level'],
-		':custom_field1', $_POST['custom_field1'],
-		':custom_field2', $_POST['custom_field2'],
-		':custom_field3', $_POST['custom_field3'],
-		':custom_field4', $_POST['custom_field4'],
-		':notes', "".$_POST['notes'],
-		':default_tax_id', $_POST['default_tax_id'],
+  $domain_id = (isset($auth_session)) ? $auth_session->domain_id : 1;
+
+	$result = dbQuery($sql,
+		':domain_id',$domain_id,
+		':description', $obj['description'],
+		':unit_price', $obj['unit_price'],
+		':cost', $obj['cost'],
+		':reorder_level', $obj['reorder_level'],
+		':custom_field1', $obj['custom_field1'],
+		':custom_field2', $obj['custom_field2'],
+		':custom_field3', $obj['custom_field3'],
+		':custom_field4', $obj['custom_field4'],
+		':notes', "".$obj['notes'],
+		':default_tax_id', $obj['default_tax_id'],
 		':enabled', $enabled,
 		':visible', $visible
 		);
+
+  // Send Item to Maestrano
+  $last_insert_id = lastInsertId();
+  $obj['id'] = $last_insert_id;
+  if ($result && $enabled && $push_to_maestrano) {
+      $maestrano = MaestranoService::getInstance();
+      if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
+        $mno_item = new MnoSoaItem($db, new MnoSoaBaseLogger());
+        $mno_item->send($obj, $push_to_maestrano);
+      }
+  }
+
+  return $result;
 }
 
+function updateProduct($push_to_maestrano=true) {
+    $_POST['id'] = $_GET['id'];
+    return updateProductByObject($_POST, $push_to_maestrano);
+}
 
-function updateProduct() {
-	
-	$sql = "UPDATE ".TB_PREFIX."products
+function updateProductByObject(&$obj,$push_to_maestrano=true) {
+  global $db;
+
+  $sql = "UPDATE ".TB_PREFIX."products
 			SET
 				description = :description,
 				enabled = :enabled,
@@ -745,20 +787,31 @@ function updateProduct() {
 			WHERE
 				id = :id";
 
-	return dbQuery($sql,
-		':description', $_POST[description],
-		':enabled', $_POST['enabled'],
-		':notes', $_POST[notes],
-		':default_tax_id', $_POST['default_tax_id'],
-		':custom_field1', $_POST[custom_field1],
-		':custom_field2', $_POST[custom_field2],
-		':custom_field3', $_POST[custom_field3],
-		':custom_field4', $_POST[custom_field4],
-		':unit_price', $_POST[unit_price],
-		':cost', $_POST[cost],
-		':reorder_level', $_POST[reorder_level],
-		':id', $_GET[id]
+	$result = dbQuery($sql,
+		':description', $obj['description'],
+		':enabled', $obj['enabled'],
+		':notes', $obj['notes'],
+		':default_tax_id', $obj['default_tax_id'],
+		':custom_field1', $obj['custom_field1'],
+		':custom_field2', $obj['custom_field2'],
+		':custom_field3', $obj['custom_field3'],
+		':custom_field4', $obj['custom_field4'],
+		':unit_price', $obj['unit_price'],
+		':cost', $obj['cost'],
+		':reorder_level', $obj['reorder_level'],
+		':id', $obj['id']
 		);
+
+  // Send Item to Maestrano
+  if ($result && $push_to_maestrano) {
+      $maestrano = MaestranoService::getInstance();
+      if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
+        $mno_item = new MnoSoaItem($db, new MnoSoaBaseLogger());
+        $mno_item->send($_POST, $push_to_maestrano);
+      }
+  }
+
+  return $result;
 }
 
 function getProducts() {
