@@ -173,19 +173,21 @@ function dbLogger($sqlQuery) {
  *
  */
 function lastInsertId() {
-	global $config;
-	global $dbh;
-	$pdoAdapter = substr($config->database->adapter, 4);
-	
-	if ($pdoAdapter == 'pgsql') {
-		$sql = 'SELECT lastval()';
-	} elseif ($pdoAdapter == 'mysql') {
-		$sql = 'SELECT last_insert_id()';
-	}
-	//echo $sql;
-	$sth = $dbh->prepare($sql);
-	$sth->execute();
-	return $sth->fetchColumn();
+  global $config;
+  global $dbh;
+  
+  $pdoAdapter = substr($config->database->adapter, 4);
+  if ($pdoAdapter == 'pgsql') {
+    $sql = 'SELECT lastval()';
+  } elseif ($pdoAdapter == 'mysql') {
+    $sql = 'SELECT last_insert_id()';
+  }
+
+  //echo $sql;
+  $sth = $dbh->prepare($sql);
+  $sth->execute();
+  
+  return $sth->fetchColumn();
 }
 
 /*
@@ -1954,21 +1956,27 @@ function updateTaxRate() {
 	return $display_block;
 }
 
+
 function insertInvoice($type) {
+  return insertInvoiceByObject($_POST, $type);
+}
+
+function insertInvoiceByObject(&$obj, $type) {
 	global $dbh;
 	global $db_server;
+  global $db;
 	global $auth_session;
+  global $logger;
 	
 	if ($db_server == 'mysql' && !_invoice_check_fk(
-		$_POST['biller_id'], $_POST['customer_id'],
-		$type, $_POST['preference_id'])) {
+		$obj['biller_id'], $obj['customer_id'],
+		$type, $obj['preference_id'])) {
 		return null;
 	}
-	$sql = "INSERT 
-			INTO
-		".TB_PREFIX."invoices (
+
+	$sql = "INSERT INTO ".TB_PREFIX."invoices (
 			id, 
-            		index_id,
+      index_id,
 			domain_id,
 			biller_id, 
 			customer_id, 
@@ -1999,9 +2007,7 @@ function insertInvoice($type) {
 			)";
 
 	if ($db_server == 'pgsql') {
-		$sql = "INSERT 
-				INTO
-			".TB_PREFIX."invoices (
+		$sql = "INSERT INTO ".TB_PREFIX."invoices (
 				index_id,
 				domain_id,
 				biller_id, 
@@ -2032,43 +2038,44 @@ function insertInvoice($type) {
 				)";
 	}
 	//echo $sql;
-    $pref_group=getPreference($_POST[preference_id]);
+    $pref_group=getPreference($obj['preference_id']);
 
-	$sth= dbQuery($sql,
-		#':index_id', index::next('invoice',$pref_group[index_group],$_POST[biller_id]),
-		':index_id', index::next('invoice',$pref_group[index_group]),
+	$sth = dbQuery($sql,
+		#':index_id', index::next('invoice',$pref_group[index_group],$obj[biller_id]),
+		':index_id', index::next('invoice',$pref_group['index_group']),
 		':domain_id', $auth_session->domain_id,
-		':biller_id', $_POST[biller_id],
-		':customer_id', $_POST[customer_id],
+		':biller_id', $obj['biller_id'],
+		':customer_id', $obj['customer_id'],
 		':type', $type,
-		':preference_id', $_POST[preference_id],
-		':date', $_POST[date],
-		':note', $_POST[note],
-		':customField1', $_POST[customField1],
-		':customField2', $_POST[customField2],
-		':customField3', $_POST[customField3],
-		':customField4', $_POST[customField4]
+		':preference_id', $obj['preference_id'],
+		':date', $obj['date'],
+		':note', $obj['note'],
+		':customField1', $obj['customField1'],
+		':customField2', $obj['customField2'],
+		':customField3', $obj['customField3'],
+		':customField4', $obj['customField4']
 		);
 
-    #index::increment('invoice',$pref_group[index_group],$_POST[biller_id]);
-    index::increment('invoice',$pref_group[index_group]);
+  index::increment('invoice',$pref_group['index_group']);
 
-    return $sth;
+  return true;
 }
 
 function updateInvoice($invoice_id) {
+  return updateInvoiceByObject($_POST, $invoice_id);
+}
+
+function updateInvoiceByObject(&$obj, $invoice_id) {
 	
     global $logger;
+    global $db;
 
-    $current_invoice = invoice::select($_POST['id']);
+    $current_invoice = invoice::select($obj['id']);
     $current_pref_group = getPreference($current_invoice[preference_id]);
 
-    $new_pref_group=getPreference($_POST[preference_id]);
+    $new_pref_group=getPreference($obj['preference_id']);
 
     $index_id = $current_invoice['index_id'];
-
-//	$logger->log('Curent Index Group: '.$description, Zend_Log::INFO);
-//	$logger->log('Description: '.$description, Zend_Log::INFO);
 
     if ($current_pref_group['index_group'] != $new_pref_group['index_group'])
     {
@@ -2076,8 +2083,8 @@ function updateInvoice($invoice_id) {
     }
 
 	if ($db_server == 'mysql' && !_invoice_check_fk(
-		$_POST['biller_id'], $_POST['customer_id'],
-		$type, $_POST['preference_id'])) {
+		$obj['biller_id'], $obj['customer_id'],
+		$type, $obj['preference_id'])) {
 		return null;
 	}
 	$sql = "UPDATE
@@ -2096,27 +2103,29 @@ function updateInvoice($invoice_id) {
 		WHERE
 			id = :invoice_id";
 			
-	return dbQuery($sql,
+	$result = dbQuery($sql,
         ':index_id', $index_id,
-		':biller_id', $_POST['biller_id'],
-		':customer_id', $_POST['customer_id'],
-		':preference_id', $_POST['preference_id'],
-		':date', $_POST['date'],
-		':note', $_POST['note'],
-		':customField1', $_POST['customField1'],
-		':customField2', $_POST['customField2'],
-		':customField3', $_POST['customField3'],
-		':customField4', $_POST['customField4'],
+		':biller_id', $obj['biller_id'],
+		':customer_id', $obj['customer_id'],
+		':preference_id', $obj['preference_id'],
+		':date', $obj['date'],
+		':note', $obj['note'],
+		':customField1', $obj['customField1'],
+		':customField2', $obj['customField2'],
+		':customField3', $obj['customField3'],
+		':customField4', $obj['customField4'],
 		':invoice_id', $invoice_id
 		);
+
+  return $result;
 }
 
 function insertInvoiceItem($invoice_id,$quantity,$product_id,$line_number,$line_item_tax_id,$description="", $unit_price="") {
 
 	global $logger;
 	global $LANG;
+  global $db;
 	//do taxes
-
 	
 	$tax_total = getTaxesPerLineItem($line_item_tax_id,$quantity, $unit_price);
 
@@ -2167,7 +2176,7 @@ function insertInvoiceItem($invoice_id,$quantity,$product_id,$line_number,$line_
 			)";
 
 	//echo $sql;
-	dbQuery($sql,
+	$result = dbQuery($sql,
 		':invoice_id', $invoice_id,
 		':quantity', $quantity,
 		':product_id', $product_id,
@@ -2179,10 +2188,11 @@ function insertInvoiceItem($invoice_id,$quantity,$product_id,$line_number,$line_
 		':description', $description,
 		':total', $total
 		);
-	
-	invoice_item_tax(lastInsertId(),$line_item_tax_id,$unit_price,$quantity,"insert");
 
-	//TODO fix this
+  $invoice_item_id = lastInsertId();
+	
+	invoice_item_tax($invoice_item_id,$line_item_tax_id,$unit_price,$quantity,"insert");
+
 	return true;
 }
 /*
@@ -2298,13 +2308,13 @@ function invoice_item_tax($invoice_item_id,$line_item_tax_id,$unit_price,$quanti
 	//TODO fix this
 	return true;
 }
-function updateInvoiceItem($id,$quantity,$product_id,$line_number,$line_item_tax_id,$description,$unit_price) {
+function updateInvoiceItem($id,$quantity,$product_id,$line_number,$line_item_tax_id,$description,$unit_price,$push_to_maestrano=true) {
 
 	global $logger;
 	global $LANG;
+  global $db;
 	//$product = getProduct($product_id);
 	//$tax = getTaxRate($tax_id);
-	
 	$tax_total = getTaxesPerLineItem($line_item_tax_id,$quantity, $unit_price);
 
 	$logger->log('Invoice: '.$invoice_id.' Tax '.$line_item_tax_id.' for line item '.$line_number.': '.$tax_total, Zend_Log::INFO);
@@ -2341,7 +2351,7 @@ function updateInvoiceItem($id,$quantity,$product_id,$line_number,$line_item_tax
 	
 	//echo $sql;
 		
-	dbQuery($sql,
+	$result = dbQuery($sql,
 		':quantity', $quantity,
 		':product_id', $product_id,
 		':unit_price', $unit_price,
