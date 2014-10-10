@@ -19,18 +19,16 @@ $this->_log->debug("SAVE INVOICE LINES: " . $invoice_local_id);
         // Map item
         if(!empty($line->item)) {
           $local_item_id = $this->getLocalIdByMnoIdName($line->item->id, "ITEMS");
-          $invoice_line->fk_product = $local_item_id->_id;
         }
 
+        $line_item_tax_id = array("0" => "1");
         if(!$this->isValidIdentifier($local_line_id)) {
-$this->_log->debug("INSERT INVOICE LINE: " . json_encode($invoice_line));
-          $local_id = insertInvoiceItem($invoice_local_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, "", $invoice_line->subprice, $push_to_maestrano);
+          $local_id = insertInvoiceItem($invoice_local_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, "", $line->unitPrice->price, $push_to_maestrano);
           if ($local_id > 0) {
             $this->addIdMapEntry($local_id, $line_id);
           }
         } else {
-$this->_log->debug("UPDATE INVOICE LINE: " . json_encode($invoice_line));
-          updateInvoiceItem($local_line_id->_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, "", $invoice_line->subprice, $push_to_maestrano);
+          updateInvoiceItem($local_line_id->_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, "", $line->unitPrice->price, $push_to_maestrano);
         }
       }
     }

@@ -9,10 +9,8 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice
 
     public $_is_new;
     
-    protected function pushInvoice()
-    {
+    protected function pushInvoice() {
         $id = $this->getLocalEntityIdentifier();
-$this->_log->debug("PUSH INVOICE: " . $id);
 
         if (empty($id)) { return; }
         $mno_id = $this->getMnoIdByLocalIdName($id, $this->_local_entity_name);
@@ -20,16 +18,15 @@ $this->_log->debug("PUSH INVOICE: " . $id);
         $this->_is_new = (empty($this->_id)) ? true : false;
 
         $this->_transaction_date = strtotime($this->_local_entity['date']);
-        $this->_amount = getInvoiceTotal($id);
+        $this->_amount->price = getInvoiceTotal($id);
+        $this->_amount->taxAmount = $this->_local_entity['total_tax'];
 
         // Pull Person ID
         $mno_id = $this->getMnoIdByLocalIdName($this->_local_entity['customer_id'], "CUSTOMER");
-$this->_log->debug("FETCH PERSON: " . json_encode($mno_id));
         $this->_person_id = $mno_id->_id;
 
         // Pull Invoice lines
         $invoiceItems = invoice::getInvoiceItems($id);
-$this->_log->debug("FETCH INVOICES: " . json_encode($invoiceItems));
         if(!empty($invoiceItems)) {
           foreach($invoiceItems as $invoiceItem) {
             $invoice_line = array();
@@ -54,10 +51,16 @@ $this->_log->debug("FETCH INVOICES: " . json_encode($invoiceItems));
 
             // Pull attributes
             $invoice_line['id'] = $invoice_line_mno_id;
-            $invoice_line['amount'] = $invoiceItem['total'];
             $invoice_line['quantity'] = $invoiceItem['quantity'];
-            $invoice_line['unitPrice'] = $invoiceItem['unit_price'];
             $invoice_line['status'] = 'ACTIVE';
+
+            $invoice_line['unitPrice'] = array();
+            $invoice_line['unitPrice']['price'] = $invoiceItem['unit_price'];
+
+            $invoice_line['totalPrice'] = array();
+            $invoice_line['totalPrice']['price'] = $invoiceItem['total'];
+            $invoice_line['totalPrice']['netAmount'] = $invoiceItem['gross_total'];
+            $invoice_line['totalPrice']['taxAmount'] = $invoiceItem['tax_total'];
 
             $this->_invoice_lines[$invoice_line_mno_id] = $invoice_line;
           }
@@ -66,38 +69,30 @@ $this->_log->debug("FETCH INVOICES: " . json_encode($invoiceItems));
     
     protected function pullInvoice()
     {
-$this->_log->debug("PULL INVOICE " . $this->_id);
         $return_status = null;
         if (empty($this->_id)) { return constant('MnoSoaBaseEntity::STATUS_ERROR'); }
         
         $local_id = $this->getLocalIdByMnoIdName($this->_id, $this->_mno_entity_name);
-$this->_log->debug("LOCAL INVOICE ID " . json_encode($local_id));
         $active = ($this->_status == 'INACTIVE') ? 0 : 1;
 
         // Skip deleted Items
         if ($active == 0 || $this->isDeletedIdentifier($local_id)) { return constant('MnoSoaBaseEntity::STATUS_DELETED_ID'); }
 
         if ($this->isValidIdentifier(($local_id))) {
-$this->_log->debug("UPDATE INVOICE ");
           // Update Invoice
           $return_status = constant('MnoSoaBaseEntity::STATUS_EXISTING_ID'); 
           $this->_local_entity['id'] = $local_id->_id;
         } else {
-$this->_log->debug("CREATE INVOICE ");
           // Create new Invoice
           $return_status = constant('MnoSoaBaseEntity::STATUS_NEW_ID');
         }
-$this->_log->debug("PROCESSING INVOICE " . $this->_id);
         $this->_local_entity['date'] = date('Y-m-d', $this->_transaction_date);
         $this->_local_entity['preference_id'] = 1;
         $this->_local_entity['biller_id'] = 1;
 
-
         // Map local customer
-$this->_log->debug("FETCHING PERSON " . $this->_person_id);
         if($this->_person_id) {
           $local_person_id = $this->getLocalIdByMnoIdName($this->_person_id, "PERSONS");
-$this->_log->debug("FOUND PERSON " . $local_person_id);
           if ($this->isValidIdentifier($local_person_id)) {
             $this->_local_entity['customer_id'] = $local_person_id->_id;
           } else if ($this->isDeletedIdentifier($local_person_id)) {
@@ -122,11 +117,8 @@ $this->_log->debug("FOUND PERSON " . $local_person_id);
     protected function saveLocalEntity($push_to_maestrano, $status) {
       $this->_log->debug("saving _local_entity=" . json_encode($this->_local_entity));
       if ($status == constant('MnoSoaBaseEntity::STATUS_NEW_ID')) {
-$this->_log->debug("INSERT NEW INVOICE");
         $invoice_local_id = insertInvoiceByObject($this->_local_entity, 2, false);
-$this->_log->debug("CREATED NEW INVOICE " . $invoice_local_id);
       } else if ($status == constant('MnoSoaBaseEntity::STATUS_EXISTING_ID')) {
-$this->_log->debug("UPDATE INVOICE " . $this->getLocalEntityIdentifier());
         updateInvoiceByObject($this->_local_entity, $this->getLocalEntityIdentifier(), false);
         $invoice_local_id = $this->getLocalEntityIdentifier();
       }

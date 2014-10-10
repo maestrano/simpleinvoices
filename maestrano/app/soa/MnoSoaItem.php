@@ -33,7 +33,6 @@ class MnoSoaItem extends MnoSoaBaseItem
         
         $local_id = $this->getLocalIdByMnoIdName($this->_id, $this->_mno_entity_name);
         $active = ($this->_status == 'INACTIVE') ? 0 : 1;
-
         // Skip deleted Items
         if ($active == 0 || $this->isDeletedIdentifier($local_id)) { return constant('MnoSoaBaseEntity::STATUS_DELETED_ID'); }
 
@@ -47,8 +46,8 @@ class MnoSoaItem extends MnoSoaBaseItem
         }
         
         $this->_local_entity['description'] = $this->_name;
-        $this->_local_entity['unit_price'] = $this->_sale->price;
-        $this->_local_entity['cost'] = $this->_purchase->price;
+        $this->_local_entity['unit_price'] = floatval($this->_sale->price);
+        $this->_local_entity['cost'] = floatval($this->_purchase->price);
         $this->_local_entity['enabled'] = $active;
         // TODO: Map tax type
         $this->_local_entity['default_tax_id'] = 1;
@@ -75,7 +74,7 @@ class MnoSoaItem extends MnoSoaBaseItem
     }
     
     protected function saveLocalEntity($push_to_maestrano, $status) {
-      $this->_log->debug("_local_entity=" . json_encode($this->_local_entity));
+      $this->_log->debug("saveLocalEntity _local_entity=" . json_encode($this->_local_entity));
       if ($status == constant('MnoSoaBaseEntity::STATUS_NEW_ID')) {
         insertProductByObject($this->_local_entity, 1, 1, false);
       } else if ($status == constant('MnoSoaBaseEntity::STATUS_EXISTING_ID')) {
