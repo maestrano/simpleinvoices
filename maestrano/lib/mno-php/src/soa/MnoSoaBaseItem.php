@@ -22,11 +22,10 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
     protected $_type;
     protected $_unit;
     protected $_status;
-    
     protected $_parent;
-    
     protected $_sale;
     protected $_purchase;
+    protected $_taxes;
 
     protected function pushItem() {
       throw new Exception('Function '. __FUNCTION__ . ' must be overriden in MnoItem class!');
@@ -93,6 +92,7 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
         if ($this->_parent != null) { $msg['item']->parent = $this->_parent; }
         if ($this->_sale != null) { $msg['item']->sale = $this->_sale; }
         if ($this->_purchase != null) { $msg['item']->purchase = $this->_purchase; }
+        if ($this->_taxes != null) { $msg['item']->taxes = $this->_taxes; }
 	
         $this->_log->debug("after creating message array");
         $result = json_encode($msg['item']);
@@ -124,6 +124,9 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
             }
             if (!empty($mno_entity->purchase)) {
                 $this->set_if_array_key_has_value($this->_purchase, 'purchase', $mno_entity);
+            }
+            if (!empty($mno_entity->taxes)) {
+                $this->set_if_array_key_has_value($this->_taxes, 'taxes', $mno_entity);
             }
 
             $this->_log->debug("id = " . $this->_id);

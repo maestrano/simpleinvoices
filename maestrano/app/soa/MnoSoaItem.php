@@ -24,6 +24,8 @@ class MnoSoaItem extends MnoSoaBaseItem
 
         $this->_sale->price = $this->push_set_or_delete_value($this->_local_entity['unit_price']);
         $this->_purchase->price = $this->push_set_or_delete_value($this->_local_entity['cost']);
+
+        $this->pushTaxes();
     }
     
     protected function pullItem()
@@ -49,8 +51,9 @@ class MnoSoaItem extends MnoSoaBaseItem
         $this->_local_entity['unit_price'] = floatval($this->_sale->price);
         $this->_local_entity['cost'] = floatval($this->_purchase->price);
         $this->_local_entity['enabled'] = $active;
-        // TODO: Map tax type
-        $this->_local_entity['default_tax_id'] = 1;
+        
+        // Map tax type
+        $this->pullTaxes();
         
         return $return_status;
     }
@@ -84,6 +87,53 @@ class MnoSoaItem extends MnoSoaBaseItem
     
     public function getLocalEntityIdentifier() {
         return $this->_local_entity['id'];
+    }
+
+    protected function pullTaxes() {
+      if(isset($this->_taxes)) {
+        $tax_number = 1;
+        foreach ($this->_taxes as $tax_label => $mno_tax) {
+          if(!isset($mno_tax->rate)) { continue; }
+          $local_tax = $this->findTaxByLabel($tax_label);
+          // Add tax type if missing
+          if(!isset($local_tax)) {
+            $_POST['tax_description'] = $tax_label;
+            $_POST['tax_percentage'] = $mno_tax->rate;
+            $_POST['type'] = '%';
+            $_POST['tax_enabled'] = 1;
+            insertTaxRate($tax_label, $mno_tax->rate);
+            $local_tax = $this->findTaxByLabel($tax_label);
+          }
+
+          if($tax_number == 1) {
+            $this->_local_entity['default_tax_id'] = $local_tax['tax_id'];
+            $tax_number++;
+          } else {
+            $this->_local_entity['default_tax_id_2'] = $local_tax['tax_id'];
+          }
+        }
+      }
+    }
+
+    protected function pushTaxes() {
+      $tax_details = getTaxes();
+      $taxes = array();
+      foreach ($tax_details as $tax_detail) {
+        if($tax_detail['tax_id'] == $this->_local_entity['default_tax_id'] || $tax_detail['tax_id'] == $this->_local_entity['default_tax_id_2']) {
+          $taxes[$tax_detail['tax_description']] = array('name' => $tax_detail['tax_description'], 'rate' => $tax_detail['tax_percentage']);
+        }
+      }
+      $this->_taxes = $taxes;
+    }
+
+    private function findTaxByLabel($tax_label) {
+      $tax_details = getTaxes();
+      foreach ($tax_details as $tax_detail) {
+        if($tax_detail['tax_description'] == $tax_label) {
+          return $tax_detail;
+        }
+      }
+      return null;
     }
 }
 

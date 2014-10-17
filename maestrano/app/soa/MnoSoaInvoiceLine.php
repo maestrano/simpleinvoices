@@ -8,7 +8,6 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
   protected $_local_entity_name = "INVOICE_LINE";
 
   public function saveLocalEntity($invoice_local_id, $invoice_lines, $push_to_maestrano) {
-$this->_log->debug("SAVE INVOICE LINES: " . $invoice_local_id);
     if(!empty($invoice_lines)) {
       foreach($invoice_lines as $line_id => $line) {
         $local_line_id = $this->getLocalIdByMnoIdName($line_id, "INVOICE_LINE");
