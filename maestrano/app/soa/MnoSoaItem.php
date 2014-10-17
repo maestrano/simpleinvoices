@@ -9,8 +9,7 @@ class MnoSoaItem extends MnoSoaBaseItem
 
     public $_is_new;
     
-    protected function pushItem()
-    {
+    protected function pushItem() {
         $id = $this->getLocalEntityIdentifier();
 
         if (empty($id)) { return; }
@@ -28,8 +27,7 @@ class MnoSoaItem extends MnoSoaBaseItem
         $this->pushTaxes();
     }
     
-    protected function pullItem()
-    {
+    protected function pullItem() {
         $return_status = null;
         if (empty($this->_id)) { return constant('MnoSoaBaseEntity::STATUS_ERROR'); }
         

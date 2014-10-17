@@ -24,5 +24,10 @@ require_once APP_DIR . "/include/init.php";
 $opts = array();
 $opts['db_connection'] = $db; # $db was setup in init.php
 
+// Default  user domain
+global $auth_session;
+if(!isset($auth_session) || !isset($auth_session->domain_id)) {
+	$auth_session->domain_id = 1;
+}
 
 ?>
