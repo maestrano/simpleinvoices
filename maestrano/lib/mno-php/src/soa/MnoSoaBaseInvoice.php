@@ -105,7 +105,6 @@ class MnoSoaBaseInvoice extends MnoSoaBaseEntity
 
         $local_entity_id = $this->getLocalEntityIdentifier();
         $mno_entity_id = $this->_id;
-$this->_log->debug("BEFORE MAP ENTRY status: " . $status . " local_entity_id: " . $local_entity_id ." - mno_entity_id: " . $mno_entity_id);
         if ($status == constant('MnoSoaBaseEntity::STATUS_NEW_ID') && !empty($local_entity_id) && !empty($mno_entity_id)) {
           $this->addIdMapEntry($local_entity_id, $mno_entity_id);
         }
