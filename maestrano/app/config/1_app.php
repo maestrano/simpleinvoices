@@ -4,10 +4,10 @@ $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? 'https://
 $full_host = $protocol . $_SERVER['HTTP_HOST'];
 
 // Id of the application
-$mno_settings->app_id = '';
+$mno_settings->app_id = 'simpleinvoices.app.dev.maestrano.io';
 
 // Name of your application
-$mno_settings->app_name = 'simpleinvoices';
+$mno_settings->app_name = 'SimpleInvoices';
 
 // Enable Maestrano SSO for this app
 $mno_settings->sso_enabled = true;

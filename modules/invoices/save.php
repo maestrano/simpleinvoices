@@ -19,7 +19,6 @@ $smarty -> assign('active_tab', '#money');
 
 # Deal with op and add some basic sanity checking
 
-
 if(!isset( $_POST['type']) && !isset($_POST['action'])) {
 	exit("no save action");
 }
@@ -27,12 +26,12 @@ if(!isset( $_POST['type']) && !isset($_POST['action'])) {
 $saved = false;
 $type = $_POST['type'];
 
-
+$mno_invoice = new MnoSoaInvoice($db, new MnoSoaBaseLogger());
 
 if ($_POST['action'] == "insert" ) {
-	
 	if(insertInvoice($type)) {
 		$id = lastInsertId();
+    $_POST['id'] = $id;
 		//saveCustomFieldValues($_POST['categorie'],$invoice_id);
 		$saved = true;
 	}
@@ -42,7 +41,6 @@ if ($_POST['action'] == "insert" ) {
     */
 
 	if($type==total_invoice && $saved) {
-
 		$logger->log('Total style invoice created, ID: '.$id, Zend_Log::INFO);
 
 		insertProduct(0,0);
@@ -56,7 +54,6 @@ if ($_POST['action'] == "insert" ) {
 		}
 	}
 	elseif ($saved) {
-		
 		$logger->log('Max items:'.$_POST['max_items'], Zend_Log::INFO);
 		$i = 0;
 		while ($i <= $_POST['max_items']) {
@@ -65,7 +62,7 @@ if ($_POST['action'] == "insert" ) {
 			if($_POST["quantity$i"] != null)
 			{
 				if (
-						insertInvoiceItem($id,$_POST["quantity$i"],$_POST["products$i"],$i,$_POST["tax_id"][$i],$_POST["description$i"], $_POST["unit_price$i"] )
+						insertInvoiceItem($id,$_POST["quantity$i"],$_POST["products$i"],$i,$_POST["tax_id"][$i],$_POST["description$i"], $_POST["unit_price$i"])
 					) 
 				{
 		//			insert_invoice_item_tax(lastInsertId(), )
@@ -78,7 +75,6 @@ if ($_POST['action'] == "insert" ) {
 		}
 	}
 } elseif ( $_POST['action'] == "edit") {
-
 	//Get type id - so do add into redirector header
 
 	$id = $_POST['id'];
@@ -111,6 +107,9 @@ if ($_POST['action'] == "insert" ) {
 		if($_POST["delete$i"] == "yes")
 		{
 			delete('invoice_items','id',$_POST["line_item$i"]);
+
+      // Maestrano hook - delete invoice line
+      $mno_invoice->markInvoiceLineForDeletion($_POST["line_item$i"]);
 		}
 		if($_POST["delete$i"] !== "yes")
 		{
@@ -148,5 +147,11 @@ if ($_POST['action'] == "insert" ) {
 //Get type id - so do add into redirector header
 $smarty->assign('saved', $saved);
 $smarty->assign('id', $id);
+
+// Maestrano hook - push invocie
+$maestrano = MaestranoService::getInstance();
+if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
+  $mno_invoice->send($_POST, true);
+}
 
 ?>

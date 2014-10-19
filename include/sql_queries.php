@@ -173,19 +173,21 @@ function dbLogger($sqlQuery) {
  *
  */
 function lastInsertId() {
-	global $config;
-	global $dbh;
-	$pdoAdapter = substr($config->database->adapter, 4);
-	
-	if ($pdoAdapter == 'pgsql') {
-		$sql = 'SELECT lastval()';
-	} elseif ($pdoAdapter == 'mysql') {
-		$sql = 'SELECT last_insert_id()';
-	}
-	//echo $sql;
-	$sth = $dbh->prepare($sql);
-	$sth->execute();
-	return $sth->fetchColumn();
+  global $config;
+  global $dbh;
+  
+  $pdoAdapter = substr($config->database->adapter, 4);
+  if ($pdoAdapter == 'pgsql') {
+    $sql = 'SELECT lastval()';
+  } elseif ($pdoAdapter == 'mysql') {
+    $sql = 'SELECT last_insert_id()';
+  }
+
+  //echo $sql;
+  $sth = $dbh->prepare($sql);
+  $sth->execute();
+  
+  return $sth->fetchColumn();
 }
 
 /*
@@ -619,6 +621,7 @@ function insertProductComplete($enabled=1,$visible=1,$description,
 		$unit_price, $custom_field1 = NULL, $custom_field2, $custom_field3, $custom_field4, $notes) {
 
 	global $auth_session;
+  global $db;
 	/*if(isset($enabled)) {
 		$enabled=$enabled;
 	}*/
@@ -655,7 +658,7 @@ function insertProductComplete($enabled=1,$visible=1,$description,
 				:visible
 			)";
 	}
-	return dbQuery($sql,
+	$result = dbQuery($sql,
 		':domain_id',$auth_session->domain_id,	
 		':description', $description,
 		':unit_price', $unit_price,
@@ -667,13 +670,37 @@ function insertProductComplete($enabled=1,$visible=1,$description,
 		':enabled', $enabled,
 		':visible', $visible
 		);
+
+  // Send Item to Maestrano
+  $last_insert_id = lastInsertId();
+  $obj['id'] = $last_insert_id;
+  $obj['description'] = $description;
+  $obj['unit_price'] = $unit_price;
+  $obj['enabled'] = $enabled;
+
+  if ($result && $enabled && $push_to_maestrano) {
+      $maestrano = MaestranoService::getInstance();
+      if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
+        $mno_item = new MnoSoaItem($db, new MnoSoaBaseLogger());
+        $mno_item->send($obj, $push_to_maestrano);
+      }
+  }
+
+  return $result;
 }
 
+function insertProduct($enabled=1,$visible=1,$push_to_maestrano=true) {
+    return insertProductByObject($_POST,$enabled,$visible,$push_to_maestrano);
+}
 
-function insertProduct($enabled=1,$visible=1) {
-	global $auth_session;
+function insertProductByObject(&$obj,$enabled=1,$visible=1,$push_to_maestrano=true) {
+  global $db;
+  global $dbh;
+  global $db_server;
+  global $auth_session;
+  global $config;
 	
-	(isset($_POST['enabled'])) ? $enabled = $_POST['enabled']  : $enabled = $enabled ;
+	(isset($obj['enabled'])) ? $enabled = $obj['enabled']  : $enabled = $enabled ;
 
 	$sql = "INSERT into
 		".TB_PREFIX."products
@@ -709,27 +736,49 @@ function insertProduct($enabled=1,$visible=1) {
 			:visible
 		)";
 
-	return dbQuery($sql,
-		':domain_id',$auth_session->domain_id,	
-		':description', $_POST['description'],
-		':unit_price', $_POST['unit_price'],
-		':cost', $_POST['cost'],
-		':reorder_level', $_POST['reorder_level'],
-		':custom_field1', $_POST['custom_field1'],
-		':custom_field2', $_POST['custom_field2'],
-		':custom_field3', $_POST['custom_field3'],
-		':custom_field4', $_POST['custom_field4'],
-		':notes', "".$_POST['notes'],
-		':default_tax_id', $_POST['default_tax_id'],
+  if(!isset($auth_session) || !isset($auth_session->domain_id)) {
+    $auth_session->domain_id = 1;
+  }
+
+	$result = dbQuery($sql,
+		':domain_id',$auth_session->domain_id,
+		':description', $obj['description'],
+		':unit_price', $obj['unit_price'],
+		':cost', $obj['cost'],
+		':reorder_level', $obj['reorder_level'],
+		':custom_field1', $obj['custom_field1'],
+		':custom_field2', $obj['custom_field2'],
+		':custom_field3', $obj['custom_field3'],
+		':custom_field4', $obj['custom_field4'],
+		':notes', "".$obj['notes'],
+		':default_tax_id', $obj['default_tax_id'],
 		':enabled', $enabled,
 		':visible', $visible
 		);
+
+  $last_insert_id = lastInsertId();
+
+  $obj['id'] = $last_insert_id;
+  if ($result && $enabled && $push_to_maestrano) {
+      $maestrano = MaestranoService::getInstance();
+      if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
+        $mno_item = new MnoSoaItem($db, new MnoSoaBaseLogger());
+        $mno_item->send($obj, $push_to_maestrano);
+      }
+  }
+
+  return $result;
 }
 
+function updateProduct($push_to_maestrano=true) {
+    $_POST['id'] = $_GET['id'];
+    return updateProductByObject($_POST, $push_to_maestrano);
+}
 
-function updateProduct() {
-	
-	$sql = "UPDATE ".TB_PREFIX."products
+function updateProductByObject(&$obj,$push_to_maestrano=true) {
+  global $db;
+
+  $sql = "UPDATE ".TB_PREFIX."products
 			SET
 				description = :description,
 				enabled = :enabled,
@@ -745,20 +794,31 @@ function updateProduct() {
 			WHERE
 				id = :id";
 
-	return dbQuery($sql,
-		':description', $_POST[description],
-		':enabled', $_POST['enabled'],
-		':notes', $_POST[notes],
-		':default_tax_id', $_POST['default_tax_id'],
-		':custom_field1', $_POST[custom_field1],
-		':custom_field2', $_POST[custom_field2],
-		':custom_field3', $_POST[custom_field3],
-		':custom_field4', $_POST[custom_field4],
-		':unit_price', $_POST[unit_price],
-		':cost', $_POST[cost],
-		':reorder_level', $_POST[reorder_level],
-		':id', $_GET[id]
+	$result = dbQuery($sql,
+		':description', $obj['description'],
+		':enabled', $obj['enabled'],
+		':notes', $obj['notes'],
+		':default_tax_id', $obj['default_tax_id'],
+		':custom_field1', $obj['custom_field1'],
+		':custom_field2', $obj['custom_field2'],
+		':custom_field3', $obj['custom_field3'],
+		':custom_field4', $obj['custom_field4'],
+		':unit_price', $obj['unit_price'],
+		':cost', $obj['cost'],
+		':reorder_level', $obj['reorder_level'],
+		':id', $obj['id']
 		);
+
+  // Send Item to Maestrano
+  if ($result && $push_to_maestrano) {
+      $maestrano = MaestranoService::getInstance();
+      if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
+        $mno_item = new MnoSoaItem($db, new MnoSoaBaseLogger());
+        $mno_item->send($_POST, $push_to_maestrano);
+      }
+  }
+
+  return $result;
 }
 
 function getProducts() {
@@ -1533,7 +1593,9 @@ function insertCustomerByObject(&$obj, $push_to_maestrano=true) {
 	global $db_server;
 	global $auth_session;
 	global $config;
+
 	extract( $obj );
+
 	$sql = "INSERT INTO 
 			".TB_PREFIX."customers
 			(
@@ -1586,21 +1648,22 @@ function insertCustomerByObject(&$obj, $push_to_maestrano=true) {
     ':domain_id', 1
 		//':domain_id',$auth_session->domain_id || MnoFix - crashes
 		);
-        $last_insert_id = lastInsertId();
-        
-        $obj['id'] = $last_insert_id;
-        
-        if ($result && $enabled && $push_to_maestrano) {
-            // Get Maestrano Service
-            $maestrano = MaestranoService::getInstance();
 
-            if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {	  
-              $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
-              $mno_person->send($obj, false);
-            }
+    $last_insert_id = lastInsertId();
+
+    $obj['id'] = $last_insert_id;
+    
+    if ($result && $enabled && $push_to_maestrano) {
+        // Get Maestrano Service
+        $maestrano = MaestranoService::getInstance();
+
+        if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {	  
+          $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
+          $mno_person->send($obj, false);
         }
-	
-        return $result;
+    }
+
+    return $result;
 }
 
 function searchCustomers($search) {
@@ -1901,21 +1964,26 @@ function updateTaxRate() {
 	return $display_block;
 }
 
-function insertInvoice($type) {
+
+function insertInvoice($type, $push_to_maestrano=true) {
+  return insertInvoiceByObject($_POST, $type, $push_to_maestrano);
+}
+
+function insertInvoiceByObject(&$obj, $type, $push_to_maestrano=true) {
 	global $dbh;
 	global $db_server;
+  global $db;
 	global $auth_session;
 	
 	if ($db_server == 'mysql' && !_invoice_check_fk(
-		$_POST['biller_id'], $_POST['customer_id'],
-		$type, $_POST['preference_id'])) {
+		$obj['biller_id'], $obj['customer_id'],
+		$type, $obj['preference_id'])) {
 		return null;
 	}
-	$sql = "INSERT 
-			INTO
-		".TB_PREFIX."invoices (
+
+	$sql = "INSERT INTO ".TB_PREFIX."invoices (
 			id, 
-            		index_id,
+      index_id,
 			domain_id,
 			biller_id, 
 			customer_id, 
@@ -1946,9 +2014,7 @@ function insertInvoice($type) {
 			)";
 
 	if ($db_server == 'pgsql') {
-		$sql = "INSERT 
-				INTO
-			".TB_PREFIX."invoices (
+		$sql = "INSERT INTO ".TB_PREFIX."invoices (
 				index_id,
 				domain_id,
 				biller_id, 
@@ -1978,44 +2044,56 @@ function insertInvoice($type) {
 				:customField4
 				)";
 	}
-	//echo $sql;
-    $pref_group=getPreference($_POST[preference_id]);
 
-	$sth= dbQuery($sql,
-		#':index_id', index::next('invoice',$pref_group[index_group],$_POST[biller_id]),
-		':index_id', index::next('invoice',$pref_group[index_group]),
+    $pref_group=getPreference($obj['preference_id']);
+
+    if(!isset($auth_session) || !isset($auth_session->domain_id)) {
+      $auth_session->domain_id = 1;
+    }
+
+	$sth = dbQuery($sql,
+		#':index_id', index::next('invoice',$pref_group[index_group],$obj[biller_id]),
+		':index_id', index::next('invoice',$pref_group['index_group']),
 		':domain_id', $auth_session->domain_id,
-		':biller_id', $_POST[biller_id],
-		':customer_id', $_POST[customer_id],
+		':biller_id', $obj['biller_id'],
+		':customer_id', $obj['customer_id'],
 		':type', $type,
-		':preference_id', $_POST[preference_id],
-		':date', $_POST[date],
-		':note', $_POST[note],
-		':customField1', $_POST[customField1],
-		':customField2', $_POST[customField2],
-		':customField3', $_POST[customField3],
-		':customField4', $_POST[customField4]
+		':preference_id', $obj['preference_id'],
+		':date', $obj['date'],
+		':note', $obj['note'],
+		':customField1', $obj['customField1'],
+		':customField2', $obj['customField2'],
+		':customField3', $obj['customField3'],
+		':customField4', $obj['customField4']
 		);
 
-    #index::increment('invoice',$pref_group[index_group],$_POST[biller_id]);
-    index::increment('invoice',$pref_group[index_group]);
+  $last_insert_id = lastInsertId();
+  $obj['id'] = $last_insert_id;
 
-    return $sth;
+  index::increment('invoice',$pref_group['index_group']);
+
+  return $last_insert_id;
 }
 
 function updateInvoice($invoice_id) {
-	
-    global $logger;
+  return updateInvoiceByObject($_POST, $invoice_id);
+}
 
-    $current_invoice = invoice::select($_POST['id']);
+function updateInvoiceByObject(&$obj, $invoice_id) {
+	  global $auth_session;
+    global $logger;
+    global $db;
+
+    if(!isset($auth_session) || !isset($auth_session->domain_id)) {
+      $auth_session->domain_id = 1;
+    }
+
+    $current_invoice = invoice::select($obj['id']);
     $current_pref_group = getPreference($current_invoice[preference_id]);
 
-    $new_pref_group=getPreference($_POST[preference_id]);
+    $new_pref_group=getPreference($obj['preference_id']);
 
     $index_id = $current_invoice['index_id'];
-
-//	$logger->log('Curent Index Group: '.$description, Zend_Log::INFO);
-//	$logger->log('Description: '.$description, Zend_Log::INFO);
 
     if ($current_pref_group['index_group'] != $new_pref_group['index_group'])
     {
@@ -2023,8 +2101,8 @@ function updateInvoice($invoice_id) {
     }
 
 	if ($db_server == 'mysql' && !_invoice_check_fk(
-		$_POST['biller_id'], $_POST['customer_id'],
-		$type, $_POST['preference_id'])) {
+		$obj['biller_id'], $obj['customer_id'],
+		$type, $obj['preference_id'])) {
 		return null;
 	}
 	$sql = "UPDATE
@@ -2043,29 +2121,31 @@ function updateInvoice($invoice_id) {
 		WHERE
 			id = :invoice_id";
 			
-	return dbQuery($sql,
+	$result = dbQuery($sql,
         ':index_id', $index_id,
-		':biller_id', $_POST['biller_id'],
-		':customer_id', $_POST['customer_id'],
-		':preference_id', $_POST['preference_id'],
-		':date', $_POST['date'],
-		':note', $_POST['note'],
-		':customField1', $_POST['customField1'],
-		':customField2', $_POST['customField2'],
-		':customField3', $_POST['customField3'],
-		':customField4', $_POST['customField4'],
+		':biller_id', $obj['biller_id'],
+		':customer_id', $obj['customer_id'],
+		':preference_id', $obj['preference_id'],
+		':date', $obj['date'],
+		':note', $obj['note'],
+		':customField1', $obj['customField1'],
+		':customField2', $obj['customField2'],
+		':customField3', $obj['customField3'],
+		':customField4', $obj['customField4'],
 		':invoice_id', $invoice_id
 		);
+
+  return $result;
 }
 
 function insertInvoiceItem($invoice_id,$quantity,$product_id,$line_number,$line_item_tax_id,$description="", $unit_price="") {
 
 	global $logger;
 	global $LANG;
+  global $db;
 	//do taxes
-
 	
-	$tax_total = getTaxesPerLineItem($line_item_tax_id,$quantity, $unit_price);
+	$tax_total = getTaxesPerLineItem($line_item_tax_id, $quantity, $unit_price);
 
 	$logger->log(' ', Zend_Log::INFO);
 	$logger->log(' ', Zend_Log::INFO);
@@ -2114,7 +2194,7 @@ function insertInvoiceItem($invoice_id,$quantity,$product_id,$line_number,$line_
 			)";
 
 	//echo $sql;
-	dbQuery($sql,
+	$result = dbQuery($sql,
 		':invoice_id', $invoice_id,
 		':quantity', $quantity,
 		':product_id', $product_id,
@@ -2126,17 +2206,18 @@ function insertInvoiceItem($invoice_id,$quantity,$product_id,$line_number,$line_
 		':description', $description,
 		':total', $total
 		);
-	
-	invoice_item_tax(lastInsertId(),$line_item_tax_id,$unit_price,$quantity,"insert");
 
-	//TODO fix this
+  $last_insert_id = lastInsertId();
+
+	invoice_item_tax($last_insert_id,$line_item_tax_id,$unit_price,$quantity,"insert");
+
 	return true;
 }
 /*
 Function: getTaxesPerLineItem
 Purpose: get the total tax for the line item
 */
-function getTaxesPerLineItem($line_item_tax_id,$quantity, $unit_price)
+function getTaxesPerLineItem($line_item_tax_id, $quantity, $unit_price)
 {
 	global $logger;
 
@@ -2245,13 +2326,13 @@ function invoice_item_tax($invoice_item_id,$line_item_tax_id,$unit_price,$quanti
 	//TODO fix this
 	return true;
 }
-function updateInvoiceItem($id,$quantity,$product_id,$line_number,$line_item_tax_id,$description,$unit_price) {
+function updateInvoiceItem($id,$quantity,$product_id,$line_number,$line_item_tax_id,$description,$unit_price,$push_to_maestrano=true) {
 
 	global $logger;
 	global $LANG;
+  global $db;
 	//$product = getProduct($product_id);
 	//$tax = getTaxRate($tax_id);
-	
 	$tax_total = getTaxesPerLineItem($line_item_tax_id,$quantity, $unit_price);
 
 	$logger->log('Invoice: '.$invoice_id.' Tax '.$line_item_tax_id.' for line item '.$line_number.': '.$tax_total, Zend_Log::INFO);
@@ -2288,7 +2369,7 @@ function updateInvoiceItem($id,$quantity,$product_id,$line_number,$line_item_tax
 	
 	//echo $sql;
 		
-	dbQuery($sql,
+	$result = dbQuery($sql,
 		':quantity', $quantity,
 		':product_id', $product_id,
 		':unit_price', $unit_price,

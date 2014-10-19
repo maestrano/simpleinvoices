@@ -38,7 +38,7 @@ class MnoSoaBaseEntity
     */
     public function __construct($db, $log)
     {
-	$this->_db = $db;
+        $this->_db = $db;
         $this->_log = $log;
         $this->_mno_soa_db_interface = new MnoSoaDB($db, $log);
     }
