@@ -12,6 +12,18 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
     $msg = $this->callMaestrano("GET", "updates" . '/' . $timestamp);
     if (empty($msg)) { return false; }
     $this->_log->debug(__FUNCTION__ .  " after maestrano call");
+    
+    if (!empty($msg->companys) && class_exists('MnoSoaCompany')) {
+      $this->_log->debug(__FUNCTION__ . " has companys");
+      foreach ($msg->companys as $company) {
+        $this->_log->debug(__FUNCTION__ .  " company id = " . $company->id);
+        try {
+           $mno_company = new MnoSoaCompany($this->_db, $this->_log);
+           $mno_company->receive($company);
+        } catch (Exception $e) {}
+      }
+    }
+
     if (!empty($msg->organizations) && class_exists('MnoSoaOrganization')) {
       $this->_log->debug(__FUNCTION__ .  " has organizations");
       foreach ($msg->organizations as $organization) {
