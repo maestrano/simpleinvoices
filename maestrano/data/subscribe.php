@@ -20,12 +20,24 @@
       $log->debug("Notification = ". json_encode($notification));
       
       switch ($notification_entity) {
-  	    case "ORGANIZATIONS":
+  	    case "COMPANY":
+          if (class_exists('MnoSoaCompany')) {
+            $mno_company = new MnoSoaCompany($opts['db_connection']);
+            $mno_company->receiveNotification($notification);
+          }
+          break;
+        case "ORGANIZATIONS":
           if (class_exists('MnoSoaOrganization')) {
-              $mno_org = new MnoSoaOrganization($opts['db_connection'], $log);		
+              $mno_org = new MnoSoaOrganization($opts['db_connection'], $log);    
               $mno_org->receiveNotification($notification);
           }
-				  break;
+          break;
+        case "ORGANIZATIONS":
+          if (class_exists('MnoSoaOrganization')) {
+              $mno_org = new MnoSoaOrganization($opts['db_connection'], $log);    
+              $mno_org->receiveNotification($notification);
+          }
+          break;
         case "PERSONS":
           if (class_exists('MnoSoaPerson')) {
               $mno_person = new MnoSoaPerson($opts['db_connection'], $log);       
