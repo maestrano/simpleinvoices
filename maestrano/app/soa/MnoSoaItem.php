@@ -21,7 +21,7 @@ class MnoSoaItem extends MnoSoaBaseItem
         $this->_status = $this->_local_entity['enabled'] == "1" ? "ACTIVE" : "INACTIVE";
         $this->_type = 'PRODUCT';
 
-        $this->_sale->price = $this->push_set_or_delete_value($this->_local_entity['unit_price']);
+        $this->_sale->netAmount = $this->push_set_or_delete_value($this->_local_entity['unit_price']);
         $this->_purchase->price = $this->push_set_or_delete_value($this->_local_entity['cost']);
 
         $this->pushTaxes();
@@ -46,7 +46,7 @@ class MnoSoaItem extends MnoSoaBaseItem
         }
         
         $this->_local_entity['description'] = $this->_name;
-        $this->_local_entity['unit_price'] = floatval($this->_sale->price);
+        $this->_local_entity['unit_price'] = floatval($this->_sale->netAmount);
         $this->_local_entity['cost'] = floatval($this->_purchase->price);
         $this->_local_entity['enabled'] = $active;
         
