@@ -11,6 +11,7 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
     if(!empty($invoice_lines)) {
       foreach($invoice_lines as $line_id => $line) {
         $local_line_id = $this->getLocalIdByMnoIdName($line_id, "INVOICE_LINE");
+        $this->_log->debug(__FUNCTION__ . " saving invoice line " . json_encode($line) . " with local id " . json_encode($local_line_id));
         if($this->isDeletedIdentifier($local_line_id)) {
           continue;
         }
@@ -20,13 +21,15 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
           $local_item_id = $this->getLocalIdByMnoIdName($line->item->id, "ITEMS");
         }
         $line_item_tax_id = $this->applicableTaxes($line);
+        $this->_log->debug(__FUNCTION__ . " invoice line applicable taxes: " . json_encode($line_item_tax_id));
         if(!$this->isValidIdentifier($local_line_id)) {
-          $local_id = insertInvoiceItem($invoice_local_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, "", $line->unitPrice->netAmount, $push_to_maestrano);
+          $local_id = insertInvoiceItem($invoice_local_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, $line->description, $line->unitPrice->netAmount, $push_to_maestrano);
           if ($local_id > 0) {
             $this->addIdMapEntry($local_id, $line_id);
           }
         } else {
-          updateInvoiceItem($local_line_id->_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, "", $line->unitPrice->netAmount, $push_to_maestrano);
+
+          updateInvoiceItem($local_line_id->_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, $line->description, $line->unitPrice->netAmount, $push_to_maestrano);
         }
       }
     }
@@ -34,12 +37,10 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
 
   protected function applicableTaxes($line) {
     $taxes = array();
-    if(isset($line->taxes)) {
-      foreach ($line->taxes as $tax_label => $mno_tax) {
-        if(!isset($mno_tax->rate)) { continue; }
-        $local_tax = $this->findTaxByLabel($tax_label);
-        $taxes[$local_tax['tax_id']] = $local_tax['tax_id'];
-      }
+    if(isset($line->taxCode)) {
+      $local_tax_id = $this->getLocalIdByMnoIdName($line->taxCode->id, "tax_codes");
+      $this->_log->debug(__FUNCTION__ . " item tax local_id = " . json_encode($local_tax_id));
+      $taxes[$local_tax_id->_id] = $local_tax_id->_id;
     }
     return $taxes;
   }
@@ -48,6 +49,16 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
     $tax_details = getTaxes();
     foreach ($tax_details as $tax_detail) {
       if($tax_detail['tax_description'] == $tax_label) {
+        return $tax_detail;
+      }
+    }
+    return null;
+  }
+
+  private function findTaxById($tax_id) {
+    $tax_details = getTaxes();
+    foreach ($tax_details as $tax_detail) {
+      if($tax_detail['tax_id'] == $tax_id) {
         return $tax_detail;
       }
     }

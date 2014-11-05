@@ -24,6 +24,7 @@ class MnoSoaItem extends MnoSoaBaseItem
         $this->_sale->netAmount = $this->push_set_or_delete_value($this->_local_entity['unit_price']);
         $this->_purchase->price = $this->push_set_or_delete_value($this->_local_entity['cost']);
 
+        // Map tax type
         $this->pushTaxes();
     }
     
@@ -88,26 +89,21 @@ class MnoSoaItem extends MnoSoaBaseItem
     }
 
     protected function pullTaxes() {
-      if(isset($this->_taxes)) {
+      if(isset($this->_sale_tax_code)) {
         $tax_number = 1;
-        foreach ($this->_taxes as $tax_label => $mno_tax) {
-          if(!isset($mno_tax->rate)) { continue; }
-          $local_tax = $this->findTaxByLabel($tax_label);
+        $this->_log->debug(__FUNCTION__ . " assign item tax_code: " . $this->_sale_tax_code->id);
+        $local_id = $this->getLocalIdByMnoIdName($this->_sale_tax_code->id, "tax_codes");
+        if ($this->isValidIdentifier($local_id)) {
+          $this->_log->debug(__FUNCTION__ . " item tax local_id = " . json_encode($local_id));
+          $local_tax = $this->findTaxById($local_id->_id);
           // Add tax type if missing
-          if(!isset($local_tax)) {
-            $_POST['tax_description'] = $tax_label;
-            $_POST['tax_percentage'] = $mno_tax->rate;
-            $_POST['type'] = '%';
-            $_POST['tax_enabled'] = 1;
-            insertTaxRate($tax_label, $mno_tax->rate);
-            $local_tax = $this->findTaxByLabel($tax_label);
-          }
-
-          if($tax_number == 1) {
-            $this->_local_entity['default_tax_id'] = $local_tax['tax_id'];
-            $tax_number++;
-          } else {
-            $this->_local_entity['default_tax_id_2'] = $local_tax['tax_id'];
+          if(isset($local_tax)) {
+            if($tax_number == 1) {
+              $this->_local_entity['default_tax_id'] = $local_tax['tax_id'];
+              $tax_number++;
+            } else {
+              $this->_local_entity['default_tax_id_2'] = $local_tax['tax_id'];
+            }
           }
         }
       }
@@ -118,7 +114,10 @@ class MnoSoaItem extends MnoSoaBaseItem
       $taxes = array();
       foreach ($tax_details as $tax_detail) {
         if($tax_detail['tax_id'] == $this->_local_entity['default_tax_id'] || $tax_detail['tax_id'] == $this->_local_entity['default_tax_id_2']) {
-          $taxes[$tax_detail['tax_description']] = array('name' => $tax_detail['tax_description'], 'rate' => $tax_detail['tax_percentage']);
+          $mno_id = $this->getMnoIdByLocalIdName($tax_detail['tax_id'], 'TAX');
+          if(isset($mno_id)) {
+            $this->_sale_tax_code = $mno_id->_id;
+          }
         }
       }
       $this->_taxes = $taxes;
@@ -128,6 +127,16 @@ class MnoSoaItem extends MnoSoaBaseItem
       $tax_details = getTaxes();
       foreach ($tax_details as $tax_detail) {
         if($tax_detail['tax_description'] == $tax_label) {
+          return $tax_detail;
+        }
+      }
+      return null;
+    }
+
+    private function findTaxById($tax_id) {
+      $tax_details = getTaxes();
+      foreach ($tax_details as $tax_detail) {
+        if($tax_detail['tax_id'] == $tax_id) {
           return $tax_detail;
         }
       }
