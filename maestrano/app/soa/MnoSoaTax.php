@@ -86,9 +86,9 @@ class MnoSoaTax extends MnoSoaBaseTax {
       if(isset($local_tax)) {
         $tax_id = $local_tax['tax_id'];
         $_GET['id'] = $tax_id;
-        updateTaxRate();
+        updateTaxRate(false);
       } else {
-        insertTaxRate();
+        insertTaxRate(false);
         $local_tax = $this->findTaxByLabel($tax_name);
         $tax_id = $local_tax['tax_id'];
       }
@@ -105,7 +105,7 @@ class MnoSoaTax extends MnoSoaBaseTax {
         $_POST['type'] = '%';
         $_POST['tax_enabled'] = 1;
         $_GET['id'] = $local_id->_id;
-        updateTaxRate();
+        updateTaxRate(false);
       }
     }
   }

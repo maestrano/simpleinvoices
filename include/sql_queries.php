@@ -619,7 +619,7 @@ function getProduct($id) {
 }*/
 
 function insertProductComplete($enabled=1,$visible=1,$description, 
-		$unit_price, $custom_field1 = NULL, $custom_field2, $custom_field3, $custom_field4, $notes) {
+		$unit_price, $custom_field1 = NULL, $custom_field2, $custom_field3, $custom_field4, $notes, $push_to_maestrano=true) {
 
 	global $auth_session;
   global $db;
@@ -1912,7 +1912,7 @@ function getTopBiller() {
   return $biller;
 }
 
-function insertTaxRate() {
+function insertTaxRate($push_to_maestrano=true) {
   global $auth_session;
   global $LANG;
   global $db;
@@ -1934,7 +1934,7 @@ function insertTaxRate() {
 
   // Send Tax to Maestrano
   $maestrano = MaestranoService::getInstance();
-  if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+  if ($push_to_maestrano and $maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
     $last_insert_id = lastInsertId();
     $obj['taxid'] = $last_insert_id;
     $obj['tax_description'] = $_POST['tax_description'];
@@ -1947,7 +1947,7 @@ function insertTaxRate() {
 	return $display_block;
 }
 
-function updateTaxRate() {
+function updateTaxRate($push_to_maestrano=true) {
 	global $LANG;
 	global $auth_session;
 	
@@ -1979,7 +1979,7 @@ function updateTaxRate() {
 
   // Send Tax to Maestrano
   $maestrano = MaestranoService::getInstance();
-  if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+  if ($push_to_maestrano and $maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
     $obj['taxid'] = $_GET['id'];
     $obj['tax_description'] = $_POST['tax_description'];
     $obj['tax_percentage'] = $_POST['tax_percentage'];
