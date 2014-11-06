@@ -25,6 +25,7 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
     protected $_parent;
     protected $_sale;
     protected $_purchase;
+    protected $_sale_tax_code;
     protected $_taxes;
 
     protected function pushItem() {
@@ -93,6 +94,7 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
         if ($this->_sale != null) { $msg['item']->sale = $this->_sale; }
         if ($this->_purchase != null) { $msg['item']->purchase = $this->_purchase; }
         if ($this->_taxes != null) { $msg['item']->taxes = $this->_taxes; }
+        if ($this->_sale_tax_code != null) { $msg['item']->saleTaxCode->id = $this->_sale_tax_code; }
 	
         $this->_log->debug("after creating message array");
         $result = json_encode($msg['item']);
@@ -127,6 +129,9 @@ class MnoSoaBaseItem extends MnoSoaBaseEntity
             }
             if (!empty($mno_entity->taxes)) {
                 $this->set_if_array_key_has_value($this->_taxes, 'taxes', $mno_entity);
+            }
+            if (!empty($mno_entity->saleTaxCode)) {
+                $this->set_if_array_key_has_value($this->_sale_tax_code, 'saleTaxCode', $mno_entity);
             }
 
             $this->_log->debug("id = " . $this->_id);

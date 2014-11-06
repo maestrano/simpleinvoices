@@ -24,6 +24,17 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
       }
     }
 
+    if (!empty($msg->taxCodes) && class_exists('MnoSoaTax')) {
+      $this->_log->debug(__FUNCTION__ . " has taxcodes");
+      foreach ($msg->taxCodes as $taxcode) {
+        $this->_log->debug(__FUNCTION__ .  " taxcode id = " . $taxcode->id);
+        try {
+           $mno_tax_code = new MnoSoaTax($this->_db, $this->_log);
+           $mno_tax_code->receive($taxcode);
+        } catch (Exception $e) {}
+      }
+    }
+
     if (!empty($msg->organizations) && class_exists('MnoSoaOrganization')) {
       $this->_log->debug(__FUNCTION__ .  " has organizations");
       foreach ($msg->organizations as $organization) {

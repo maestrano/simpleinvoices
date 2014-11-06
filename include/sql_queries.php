@@ -108,6 +108,7 @@ function dbQuery($sqlQuery) {
 			$sth->bindValue($binds[$i], $binds[++$i]);
 		}
 	}
+
 	/*
 	// PDO Execution
 	if($sth && $sth->execute()) {
@@ -618,7 +619,7 @@ function getProduct($id) {
 }*/
 
 function insertProductComplete($enabled=1,$visible=1,$description, 
-		$unit_price, $custom_field1 = NULL, $custom_field2, $custom_field3, $custom_field4, $notes) {
+		$unit_price, $custom_field1 = NULL, $custom_field2, $custom_field3, $custom_field4, $notes, $push_to_maestrano=true) {
 
 	global $auth_session;
   global $db;
@@ -1911,9 +1912,10 @@ function getTopBiller() {
   return $biller;
 }
 
-function insertTaxRate() {
-  	global $auth_session;
-	global $LANG;
+function insertTaxRate($push_to_maestrano=true) {
+  global $auth_session;
+  global $LANG;
+  global $db;
 
 	$sql = "INSERT into ".TB_PREFIX."tax
 				(domain_id, tax_description, tax_percentage, type,  tax_enabled)
@@ -1929,10 +1931,23 @@ function insertTaxRate() {
 		':enabled', $_POST['tax_enabled']))) {
 		$display_block = $LANG['save_tax_rate_failure'];
 	}
+
+  // Send Tax to Maestrano
+  $maestrano = MaestranoService::getInstance();
+  if ($push_to_maestrano and $maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+    $last_insert_id = lastInsertId();
+    $obj['taxid'] = $last_insert_id;
+    $obj['tax_description'] = $_POST['tax_description'];
+    $obj['tax_percentage'] = $_POST['tax_percentage'];
+
+    $mno_tax = new MnoSoaTax($db, new MnoSoaBaseLogger());
+    $mno_tax->send($obj, $push_to_maestrano);
+  }
+
 	return $display_block;
 }
 
-function updateTaxRate() {
+function updateTaxRate($push_to_maestrano=true) {
 	global $LANG;
 	global $auth_session;
 	
@@ -1961,6 +1976,18 @@ function updateTaxRate() {
 		))) {
 		$display_block = $LANG['save_tax_rate_failure'];
 	}
+
+  // Send Tax to Maestrano
+  $maestrano = MaestranoService::getInstance();
+  if ($push_to_maestrano and $maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+    $obj['taxid'] = $_GET['id'];
+    $obj['tax_description'] = $_POST['tax_description'];
+    $obj['tax_percentage'] = $_POST['tax_percentage'];
+
+    $mno_tax = new MnoSoaTax($db, new MnoSoaBaseLogger());
+    $mno_tax->send($obj, $push_to_maestrano);
+  }
+
 	return $display_block;
 }
 
@@ -2211,7 +2238,7 @@ function insertInvoiceItem($invoice_id,$quantity,$product_id,$line_number,$line_
 
 	invoice_item_tax($last_insert_id,$line_item_tax_id,$unit_price,$quantity,"insert");
 
-	return true;
+	return $last_insert_id;
 }
 /*
 Function: getTaxesPerLineItem
@@ -2331,6 +2358,8 @@ function updateInvoiceItem($id,$quantity,$product_id,$line_number,$line_item_tax
 	global $logger;
 	global $LANG;
   global $db;
+  global $dbh;
+
 	//$product = getProduct($product_id);
 	//$tax = getTaxRate($tax_id);
 	$tax_total = getTaxesPerLineItem($line_item_tax_id,$quantity, $unit_price);
@@ -2358,7 +2387,7 @@ function updateInvoiceItem($id,$quantity,$product_id,$line_number,$line_item_tax
 	}
 
 	$sql = "UPDATE ".TB_PREFIX."invoice_items 
-	SET quantity =  :quantity,
+	SET quantity = :quantity,
 	product_id = :product_id,
 	unit_price = :unit_price,
 	tax_amount = :tax_amount,
@@ -2368,7 +2397,6 @@ function updateInvoiceItem($id,$quantity,$product_id,$line_number,$line_item_tax
 	WHERE id = :id";
 	
 	//echo $sql;
-		
 	$result = dbQuery($sql,
 		':quantity', $quantity,
 		':product_id', $product_id,

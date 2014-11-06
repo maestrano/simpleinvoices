@@ -26,6 +26,12 @@
             $mno_company->receiveNotification($notification);
           }
           break;
+        case "TAXCODES":
+              if (class_exists('MnoSoaTax')) {
+                $mno_tax = new MnoSoaTax($opts['db_connection'], $log);
+                $mno_tax->receiveNotification($notification);
+              }
+          break;
         case "ORGANIZATIONS":
           if (class_exists('MnoSoaOrganization')) {
               $mno_org = new MnoSoaOrganization($opts['db_connection'], $log);    
