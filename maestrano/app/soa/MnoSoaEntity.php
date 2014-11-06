@@ -29,8 +29,8 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
       foreach ($msg->taxCodes as $taxcode) {
         $this->_log->debug(__FUNCTION__ .  " taxcode id = " . $taxcode->id);
         try {
-           $mno_invoice = new MnoSoaTax($this->_db, $this->_log);
-           $mno_invoice->receive($taxcode);
+           $mno_tax_code = new MnoSoaTax($this->_db, $this->_log);
+           $mno_tax_code->receive($taxcode);
         } catch (Exception $e) {}
       }
     }

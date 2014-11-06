@@ -23,14 +23,20 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
         }
         $line_item_tax_id = $this->applicableTaxes($line);
         $this->_log->debug(__FUNCTION__ . " invoice line applicable taxes: " . json_encode($line_item_tax_id));
+        
+        // Compute unit price including discounts
+        $unit_price = $line->unitPrice->netAmount;
+        if(isset($line->reductionPercent)) {
+          $unit_price *= (1 - ($line->reductionPercent / 100));
+        }
+
         if(!$this->isValidIdentifier($local_line_id)) {
-          $local_id = insertInvoiceItem($invoice_local_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, $line->description, $line->unitPrice->netAmount, $push_to_maestrano);
+          $local_id = insertInvoiceItem($invoice_local_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, $line->description, $unit_price, $push_to_maestrano);
           if ($local_id > 0) {
             $this->addIdMapEntry($local_id, $invoice_line_mno_id);
           }
         } else {
-
-          updateInvoiceItem($local_line_id->_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, $line->description, $line->unitPrice->netAmount, $push_to_maestrano);
+          updateInvoiceItem($local_line_id->_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, $line->description, $unit_price, $push_to_maestrano);
         }
       }
     }
