@@ -15,8 +15,8 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice
       $id = $this->getLocalEntityIdentifier();
       if (empty($id)) { return; }
 
-      $mno_id = $this->getMnoIdByLocalIdName($id, $this->_local_entity_name);
-      $this->_id = ($this->isValidIdentifier($mno_id)) ? $mno_id->_id : null;
+      $mno_invoice_id = $this->getMnoIdByLocalIdName($id, $this->_local_entity_name);
+      $this->_id = ($this->isValidIdentifier($mno_invoice_id)) ? $mno_invoice_id->_id : null;
       $this->_is_new = (empty($this->_id)) ? true : false;
 
       $this->_transaction_date = strtotime($this->_local_entity['date']);
@@ -24,8 +24,8 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice
       $this->_amount->taxAmount = $this->_local_entity['total_tax'];
 
       // Pull Person ID
-      $mno_id = $this->getMnoIdByLocalIdName($this->_local_entity['customer_id'], "CUSTOMER");
-      $this->_person_id = $mno_id->_id;
+      $mno_customer_id = $this->getMnoIdByLocalIdName($this->_local_entity['customer_id'], "CUSTOMER");
+      $this->_person_id = $mno_customer_id->_id;
 
       // Pull Invoice lines
       $invoiceItems = invoice::getInvoiceItems($id);
@@ -34,22 +34,26 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice
           $invoice_line = array();
           
           // Find mno id if already exists
-          $mno_entity = $this->getMnoIdByLocalIdName($invoiceItem['id'], "INVOICE_LINE");
-          if($this->isDeletedIdentifier($mno_entity)) {
-            $this->markInvoiceLineForDeletion($mno_entity->_id);
+          $mno_invoice_line_id = $this->getMnoIdByLocalIdName($invoiceItem['id'], "INVOICE_LINE");
+          if($this->isDeletedIdentifier($mno_invoice_line_id)) {
+            $this->markInvoiceLineForDeletion($mno_invoice_line_id->_id);
             continue;
-          } else if (!$this->isValidIdentifier($mno_entity)) {
+          } else if (!$this->isValidIdentifier($mno_invoice_line_id)) {
             // Generate and save ID
             $invoice_line_mno_id = uniqid();
-            $this->_mno_soa_db_interface->addIdMapEntry($invoiceItem['id'], "INVOICE_LINE", $invoice_line_mno_id, "INVOICE_LINE");
+            $mno_invoice_line_id = $this->_id . "#" . $invoice_line_mno_id;
+            $this->_mno_soa_db_interface->addIdMapEntry($invoiceItem['id'], "INVOICE_LINE", $mno_invoice_line_id, "INVOICE_LINE");
           } else {
-            $invoice_line_mno_id = $mno_entity->_id;
+            $invoice_line_id_parts = explode("#", $mno_invoice_line_id->_id);
+            $invoice_line_mno_id = $invoice_line_id_parts[1];
           }
+
+          
 
           // Pull Product
           $local_product_id = $this->push_set_or_delete_value($invoiceItem['product_id']);
-          $mno_id = $this->getMnoIdByLocalIdName($local_product_id, "ITEMS");
-          $invoice_line['item']->id = $mno_id->_id;
+          $mno_item_id = $this->getMnoIdByLocalIdName($local_product_id, "ITEMS");
+          $invoice_line['item']->id = $mno_item_id->_id;
 
           // Pull attributes
           $invoice_line['id'] = $invoice_line_mno_id;
@@ -146,7 +150,7 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice
       }
 
       $mno_invoice_line = new MnoSoaInvoiceLine($this->_db, $this->_log);
-      $mno_invoice_line->saveLocalEntity($invoice_local_id, $this->_invoice_lines, $push_to_maestrano);
+      $mno_invoice_line->saveLocalEntity($invoice_local_id, $this->_id, $this->_invoice_lines, $push_to_maestrano);
     }
     
     public function getLocalEntityIdentifier() {

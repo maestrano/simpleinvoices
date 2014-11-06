@@ -4,3 +4,4 @@ tmp/
 config/config.ini
 maestrano/app/config/1_app.php
 maestrano/app/config/2_maestrano.php
+test/vtlib/HTML/
