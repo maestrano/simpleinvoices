@@ -18,9 +18,6 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
           continue;
         }
 
-        // Keep track of received line IDs to remove missing ones
-        array_push($processed_lines_local_ids, $local_line_id->_id);
-
         // Map item
         if(!empty($line->item)) {
           $local_item_id = $this->getLocalIdByMnoIdName($line->item->id, "ITEMS");
@@ -40,8 +37,12 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
             $this->addIdMapEntry($local_id, $invoice_line_mno_id);
           }
         } else {
-          updateInvoiceItem($local_line_id->_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, $line->description, $unit_price, $push_to_maestrano);
+          $local_id = $local_line_id->_id;
+          updateInvoiceItem($local_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, $line->description, $unit_price, $push_to_maestrano);
         }
+
+        // Keep track of received line IDs to remove missing ones
+        array_push($processed_lines_local_ids, $local_id);
       }
 
       // Delete local invoice lines that have been removed
