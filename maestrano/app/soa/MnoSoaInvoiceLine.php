@@ -9,6 +9,7 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
 
   public function saveLocalEntity($invoice_local_id, $invoice_mno_id, $invoice_lines, $push_to_maestrano) {
     if(!empty($invoice_lines)) {
+      $processed_lines_local_ids = array();
       foreach($invoice_lines as $line_id => $line) {
         $invoice_line_mno_id = $invoice_mno_id . "#" . $line_id;
         $local_line_id = $this->getLocalIdByMnoIdName($invoice_line_mno_id, "INVOICE_LINE");
@@ -16,6 +17,9 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
         if($this->isDeletedIdentifier($local_line_id)) {
           continue;
         }
+
+        // Keep track of received line IDs to remove missing ones
+        array_push($processed_lines_local_ids, $local_line_id->_id);
 
         // Map item
         if(!empty($line->item)) {
@@ -37,6 +41,16 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
           }
         } else {
           updateInvoiceItem($local_line_id->_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, $line->description, $unit_price, $push_to_maestrano);
+        }
+      }
+
+      // Delete local invoice lines that have been removed
+      $local_invoice_lines = invoice::getInvoiceItems($invoice_local_id);
+      foreach ($local_invoice_lines as $local_invoice_line) {
+        if(!in_array($local_invoice_line['id'], $processed_lines_local_ids)) {
+          $this->_log->debug(__FUNCTION__ . " invoice line " . $local_invoice_line['id'] . " marked for deletion");
+          delete('invoice_items','id',$local_invoice_line['id']);
+          $this->_mno_soa_db_interface->hardDeleteIdMapEntry($local_invoice_line['id'], "INVOICE_LINE");
         }
       }
     }

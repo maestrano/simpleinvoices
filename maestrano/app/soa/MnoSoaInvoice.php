@@ -48,8 +48,6 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice
             $invoice_line_mno_id = $invoice_line_id_parts[1];
           }
 
-          
-
           // Pull Product
           $local_product_id = $this->push_set_or_delete_value($invoiceItem['product_id']);
           $mno_item_id = $this->getMnoIdByLocalIdName($local_product_id, "ITEMS");
