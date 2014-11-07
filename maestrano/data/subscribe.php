@@ -22,7 +22,7 @@
       switch ($notification_entity) {
   	    case "COMPANY":
           if (class_exists('MnoSoaCompany')) {
-            $mno_company = new MnoSoaCompany($opts['db_connection']);
+            $mno_company = new MnoSoaCompany($opts['db_connection'], $log);
             $mno_company->receiveNotification($notification);
           }
           break;
