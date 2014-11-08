@@ -23,8 +23,10 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice
       $this->_amount->price = getInvoiceTotal($id);
       $this->_amount->taxAmount = $this->_local_entity['total_tax'];
 
-      // Pull Person ID
+      // Pull Organization/Person ID
+      // TODO: Map to different entity type: Organization or Person
       $mno_customer_id = $this->getMnoIdByLocalIdName($this->_local_entity['customer_id'], "CUSTOMER");
+      $this->_organization_id = $mno_customer_id->_id;
       $this->_person_id = $mno_customer_id->_id;
 
       // Pull Invoice lines
