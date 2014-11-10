@@ -5,7 +5,7 @@
  */
 class MnoSoaOrganization extends MnoSoaBaseOrganization
 {
-  protected $_local_entity_name = "customer";
+  protected $_local_entity_name = "org_customer";
 
   protected function pushId() {
     $this->_log->debug(__CLASS__ . ' ' . __FUNCTION__ . " start");

@@ -23,11 +23,16 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice
       $this->_amount->price = getInvoiceTotal($id);
       $this->_amount->taxAmount = $this->_local_entity['total_tax'];
 
-      // Pull Organization/Person ID
-      // TODO: Map to different entity type: Organization or Person
+      // Pull Customer Organization or Person
+      $mno_org_customer_id = $this->getMnoIdByLocalIdName($this->_local_entity['customer_id'], "ORG_CUSTOMER");
+      if(isset($mno_org_customer_id)) {
+        $this->_organization_id = $mno_org_customer_id->_id;
+      }
+
       $mno_customer_id = $this->getMnoIdByLocalIdName($this->_local_entity['customer_id'], "CUSTOMER");
-      $this->_organization_id = $mno_customer_id->_id;
-      $this->_person_id = $mno_customer_id->_id;
+      if(isset($mno_customer_id)) {
+        $this->_person_id = $mno_customer_id->_id;
+      }
 
       // Pull Invoice lines
       $invoiceItems = invoice::getInvoiceItems($id);
@@ -54,6 +59,16 @@ class MnoSoaInvoice extends MnoSoaBaseInvoice
           $local_product_id = $this->push_set_or_delete_value($invoiceItem['product_id']);
           $mno_item_id = $this->getMnoIdByLocalIdName($local_product_id, "ITEMS");
           $invoice_line['item']->id = $mno_item_id->_id;
+
+          // Pull first Tax
+          $query = 'SELECT * FROM '.TB_PREFIX.'invoice_item_tax WHERE invoice_item_id = :id LIMIT 1';
+          $result = dbQuery($query, ':id', $invoiceItem['id']);
+          $row = $result->fetch();
+          if($row) {
+            $local_tax_id = $this->push_set_or_delete_value($row['tax_id']);
+            $mno_tax_id = $this->getMnoIdByLocalIdName($local_tax_id, "TAX");
+            $invoice_line['taxCode']->id = $mno_tax_id->_id;
+          }
 
           // Pull attributes
           $invoice_line['id'] = $invoice_line_mno_id;
