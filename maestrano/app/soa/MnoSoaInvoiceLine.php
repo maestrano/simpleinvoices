@@ -26,7 +26,8 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
         $this->_log->debug(__FUNCTION__ . " invoice line applicable taxes: " . json_encode($line_item_tax_id));
         
         // Compute unit price including discounts
-        $unit_price = $line->unitPrice->netAmount;
+        // Sometimes Unit Price is rounded, so use Total Price / Quantity to be more accurate
+        $unit_price = $line->totalPrice->netAmount / $line->quantity;
         if(isset($line->reductionPercent)) {
           $unit_price *= (1 - ($line->reductionPercent / 100));
         }

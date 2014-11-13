@@ -99,7 +99,7 @@ class MnoSoaTax extends MnoSoaBaseTax {
 
     if($status == constant('MnoSoaBaseEntity::STATUS_EXISTING_ID')) {
       // Update tax rate
-      if(isset($tax_id)) {
+      if(isset($local_id->_id)) {
         $_POST['tax_description'] = $tax_name;
         $_POST['tax_percentage'] = $tax_rate;
         $_POST['type'] = '%';
