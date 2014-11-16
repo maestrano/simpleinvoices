@@ -25,6 +25,7 @@ class MnoSoaBasePayment extends MnoSoaBaseEntity
   protected $_status;
   protected $_private_note;
   protected $_public_note;
+  protected $_payment_method_id;
   protected $_organization_id;
   protected $_person_id;
   protected $_deposit_account_id;
@@ -56,6 +57,7 @@ class MnoSoaBasePayment extends MnoSoaBaseEntity
     if ($this->_status != null) { $msg['payment']->status = $this->_status; }
     if ($this->_private_note != null) { $msg['payment']->privateNote = $this->_private_note; }
     if ($this->_public_note != null) { $msg['payment']->publicNote = $this->_public_note; }
+    if ($this->_payment_method_id != null) { $msg['payment']->paymentMethod->id = $this->_payment_method_id; }
     if ($this->_organization_id != null) { $msg['payment']->organization->id = $this->_organization_id; }
     if ($this->_person_id != null) { $msg['payment']->person->id = $this->_person_id; }
     if ($this->_deposit_account_id != null) { $msg['payment']->depositAccount->id = $this->_deposit_account_id; }
@@ -84,6 +86,10 @@ class MnoSoaBasePayment extends MnoSoaBaseEntity
       $this->set_if_array_key_has_value($this->_status, 'status', $mno_entity);
       $this->set_if_array_key_has_value($this->_private_note, 'privateNote', $mno_entity);
       $this->set_if_array_key_has_value($this->_public_note, 'publicNote', $mno_entity);
+      
+      if (!empty($mno_entity->paymentMethod)) {
+        $this->set_if_array_key_has_value($this->_payment_method_id, 'id', $mno_entity->paymentMethod);
+      }
       if (!empty($mno_entity->organization)) {
         $this->set_if_array_key_has_value($this->_organization_id, 'id', $mno_entity->organization);
       }

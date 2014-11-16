@@ -107,7 +107,7 @@ class payment
             :online_payment_id,
             :domain_id
         )";
-        $sth = $db->query($sql,
+        $sth = dbQuery($sql,
             ':ac_inv_id',$this->ac_inv_id,
             ':ac_amount',$this->ac_amount,
             ':ac_notes',$this->ac_notes,
