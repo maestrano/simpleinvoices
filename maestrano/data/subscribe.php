@@ -62,6 +62,12 @@
               $mno_invoice->receiveNotification($notification);
           }
           break;
+        case "PAYMENTS":
+          if (class_exists('MnoSoaPayment')) {
+              $mno_payment = new MnoSoaPayment($opts['db_connection'], $log);       
+              $mno_payment->receiveNotification($notification);
+          }
+          break;
       }
   }
 

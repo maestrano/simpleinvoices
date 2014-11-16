@@ -11,6 +11,8 @@ $op = !empty( $_POST['op'] ) ? addslashes( $_POST['op'] ) : NULL;
 
 #insert payment type
 
+$mno_payment_method = new MnoSoaPaymentMethod($db, new MnoSoaBaseLogger());
+
 if (  $op === 'insert_payment_type' ) {
 
 /*Raymond - what about the '', bit doesnt seem to do an insert in me environment when i exclude it
@@ -31,6 +33,7 @@ $sql = "INSERT INTO ".TB_PREFIX."tax VALUES ('$_POST[tax_description]','$_POST[t
 	
 	if (dbQuery($sql, ':domain_id', $auth_session->domain_id, ':description', $_POST['pt_description'], ':enabled', $_POST['pt_enabled'])) {
 		$saved = true;
+		$_POST['id'] = lastInsertId();
 		//$display_block = $LANG['save_payment_type_success'];
 	} else {
 		$saved = false;
@@ -51,6 +54,7 @@ else if (  $op === 'edit_payment_type' ) {
 	mysql_select_db("$db_name",$conn); */
 
 	if (isset($_POST['save_payment_type'])) {
+    $_POST['id'] = $_GET['id'];
 		$sql = "UPDATE
 				".TB_PREFIX."payment_types
 			SET
@@ -85,4 +89,11 @@ $smarty -> assign('saved',$saved);
 
 $smarty -> assign('pageActive', 'payment_type');
 $smarty -> assign('active_tab', '#setting');
+
+// Maestrano hook - push invocie
+$maestrano = MaestranoService::getInstance();
+if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
+  $mno_payment_method->send($_POST, true);
+}
+
 ?>

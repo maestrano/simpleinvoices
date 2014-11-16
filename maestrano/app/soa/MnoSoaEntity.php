@@ -79,6 +79,17 @@ class MnoSoaEntity extends MnoSoaBaseEntity {
       }
     }
 
+    if (!empty($msg->payments) && class_exists('MnoSoaPayment')) {
+      $this->_log->debug(__FUNCTION__ . " has payments");
+      foreach ($msg->payments as $payment) {
+        $this->_log->debug(__FUNCTION__ .  " payment id = " . $payment->id);
+        try {
+           $mno_invoice = new MnoSoaPayment($this->_db, $this->_log);
+           $mno_invoice->receive($payment);
+        } catch (Exception $e) {}
+      }
+    }
+
     $this->_log->info(__FUNCTION__ .  " getUpdates successful (timestamp=" . $timestamp . ")");
   }
 }
