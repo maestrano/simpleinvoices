@@ -8,10 +8,36 @@ class MnoSoaPayment extends MnoSoaBasePayment
     protected $_local_entity_name = "PAYMENTS";
     
     protected function pushPayment() {
-      $this->_log->debug(__FUNCTION__ . " start");
+      $this->_log->debug(__FUNCTION__ . " start with object " . json_encode($this->_local_entity));
 
       $id = $this->getLocalEntityIdentifier();
       if (empty($id)) { return; }
+
+      $mno_id = $this->getMnoIdByLocalIdName($id, $this->_local_entity_name);
+      $this->_id = ($this->isValidIdentifier($mno_id)) ? $mno_id->_id : null;
+      $this->_log->debug("mapped to mno payment " . json_encode($mno_id));
+
+      // Map payment attributes
+      $this->_transaction_date = strtotime($this->push_set_or_delete_value($this->_local_entity['ac_date']));
+      $this->_total_amount = floatval($this->push_set_or_delete_value($this->_local_entity['ac_amount']));
+      $this->_public_note = $this->push_set_or_delete_value($this->_local_entity['ac_notes']);
+
+      // Map Payment Method ID
+      $mno_payment_method_id = $this->getMnoIdByLocalIdName($this->_local_entity['ac_payment_type'], "PAYMENT_METHOD");
+      $this->_payment_method_id = $mno_payment_method_id->_id;
+
+      // Add a payment line with reference to the invoice
+      $payment_line_mno_id = uniqid();
+      $this->_mno_soa_db_interface->addIdMapEntry($this->_local_entity['id'], "PAYMENT_LINE", $payment_line_mno_id, "PAYMENT_LINE");
+      $payment_line = array();
+      $payment_line['id'] = $payment_line_mno_id;
+      $payment_line['amount'] = $this->_local_entity['ac_amount'];
+
+      // Map single Invoice to Payment line
+      $mno_invoice_id = $this->getMnoIdByLocalIdName($this->_local_entity['invoice_id'], "INVOICES");
+      $payment_line['linkedTransactions'] = array($mno_invoice_id->_id => array('id' => $mno_invoice_id->_id));
+      $this->_payment_lines[$payment_line_mno_id] = $payment_line;
+      $this->_log->debug("mapped payment lines " . json_encode($this->_payment_lines));
 
       $this->_log->debug(__FUNCTION__ . " end");
     }
@@ -57,8 +83,17 @@ class MnoSoaPayment extends MnoSoaBasePayment
           } else {
             $payment->ac_amount = $payment_line_amount;
           }
+
+          // Payment method
+          $payment->ac_payment_type =  2;
+          if(isset($this->_payment_method_id)) {
+            $local_payment_method_id = $this->getLocalIdByMnoIdName($this->_payment_method_id, "PAYMENT_METHODS");
+            if($this->isValidIdentifier($local_payment_method_id)) {
+              $payment->ac_payment_type = $local_payment_method_id->_id;
+            }
+          }
           
-          
+          // Note
           if(isset($this->_private_note)) {
             $payment->ac_notes = $this->_private_note;
           } else if(isset($this->_public_note)) {
@@ -69,13 +104,11 @@ class MnoSoaPayment extends MnoSoaBasePayment
             $payment->ac_notes = '';
           }
 
+          // Transaction date
           $payment->ac_date = date('Y-m-d', $this->_transaction_date);
-          
-          // TODO: Map payment types
-          $payment->ac_payment_type = 2;
 
+          // Save and add ID Map entry
           $payment->insert();
-
           $local_payment_id = $this->_db->lastInsertID();
           $this->addIdMapEntry($local_payment_id, $line_id);
         }
