@@ -28,9 +28,6 @@ class MnoSoaInvoiceLine extends MnoSoaBaseInvoiceLine
         // Compute unit price including discounts
         // Sometimes Unit Price is rounded, so use Total Price / Quantity to be more accurate
         $unit_price = $line->totalPrice->netAmount / $line->quantity;
-        if(isset($line->reductionPercent)) {
-          $unit_price *= (1 - ($line->reductionPercent / 100));
-        }
 
         if(!$this->isValidIdentifier($local_line_id)) {
           $local_id = insertInvoiceItem($invoice_local_id, $line->quantity, $local_item_id->_id, 0, $line_item_tax_id, $line->description, $unit_price, $push_to_maestrano);
