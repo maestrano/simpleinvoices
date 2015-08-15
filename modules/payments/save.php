@@ -29,11 +29,11 @@ if ( isset($_POST['process_payment']) ) {
     $_POST['id'] = $id;
 
     // Maestrano hook - push invocie
-    $maestrano = MaestranoService::getInstance();
-    if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
-      $mno_payment = new MnoSoaPayment($db, new MnoSoaBaseLogger());
-      $mno_payment->send($_POST, true);
-    }
+    // $maestrano = MaestranoService::getInstance();
+    // if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+    //   $mno_payment = new MnoSoaPayment($db, new MnoSoaBaseLogger());
+    //   $mno_payment->send($_POST, true);
+    // }
 
   } else {
     $display_block =  $LANG['save_payment_failure']."<br />".$sql;

@@ -6,7 +6,7 @@
 *
 * License:
 *	 GPL v3 or above
-*	 
+*
 * Website:
 * 	http://www.simpleinvoices.or
 */
@@ -63,7 +63,7 @@ if ($_POST['action'] == "insert" ) {
 			{
 				if (
 						insertInvoiceItem($id,$_POST["quantity$i"],$_POST["products$i"],$i,$_POST["tax_id"][$i],$_POST["description$i"], $_POST["unit_price$i"])
-					) 
+					)
 				{
 		//			insert_invoice_item_tax(lastInsertId(), )
 					//$saved = true;
@@ -78,7 +78,7 @@ if ($_POST['action'] == "insert" ) {
 	//Get type id - so do add into redirector header
 
 	$id = $_POST['id'];
-	
+
 	if (updateInvoice($_POST['id'])) {
 		//updateCustomFieldValues($_POST['categorie'],$_POST['invoice_id']);
 		$saved = true;
@@ -94,10 +94,10 @@ if ($_POST['action'] == "insert" ) {
 			);
 	}
 
-    
+
 	$logger->log('Max items:'.$_POST['max_items'], Zend_Log::INFO);
 	$i = 0;
-	while ($i <= $_POST['max_items']) 
+	while ($i <= $_POST['max_items'])
 	{
 //	for($i=0;(!empty($_POST["quantity$i"]) && $i < $_POST['max_items']);$i++) {
 		$logger->log('i='.$i, Zend_Log::INFO);
@@ -113,24 +113,24 @@ if ($_POST['action'] == "insert" ) {
 		}
 		if($_POST["delete$i"] !== "yes")
 		{
-		
-		
+
+
 			if($_POST["quantity$i"] != null)
             {
-	
+
 				//new line item added in edit page
 				if($_POST["line_item$i"] == "")
 				{
 					insertInvoiceItem($id,$_POST["quantity$i"],$_POST["products$i"],$i,$_POST["tax_id"][$i],$_POST["description$i"], $_POST["unit_price$i"]);
 				}
-				
+
 				if($_POST["line_item$i"] != "")
 				{
 					updateInvoiceItem($_POST["line_item$i"],$_POST["quantity$i"],$_POST["products$i"],$i,$_POST['tax_id'][$i],$_POST["description$i"],$_POST["unit_price$i"]);
 					$saved;
 					//$saved =  true;
 /*
-				}	
+				}
 				else {
 					die(end($dbh->errorInfo()));
 */
@@ -149,9 +149,9 @@ $smarty->assign('saved', $saved);
 $smarty->assign('id', $id);
 
 // Maestrano hook - push invocie
-$maestrano = MaestranoService::getInstance();
-if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
-  $mno_invoice->send($_POST, true);
-}
+// $maestrano = MaestranoService::getInstance();
+// if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+//   $mno_invoice->send($_POST, true);
+// }
 
 ?>
