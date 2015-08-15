@@ -204,9 +204,18 @@ include_once('./include/language.php');
 include_once('./include/functions.php');
 
 //add class files for extensions
-
-
 checkConnection();
+
+// Hook:Maestrano
+// Load Maestrano Library
+require_once './vendor/autoload.php';
+
+// Configure Maestrano API
+Maestrano::configure('./maestrano.json');
+
+// Load custom Maestrano configuration
+require_once './maestrano/init.php';
+require_once './maestrano/connec/init.php';
 
 // Hook: Maestrano
 // Check auth
