@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * Zend framework init - start
  */
 set_include_path(get_include_path() . PATH_SEPARATOR . "./include/class");
@@ -19,20 +19,20 @@ Zend_Session::start();
 $auth_session = new Zend_Session_Namespace('Zend_Auth');
 
 
-//start use of zend_cache   
+//start use of zend_cache
 $frontendOptions = array(
     'lifetime' => 7200, // cache lifetime of 2 hours
     'automatic_serialization' => true
 );
-                   
 
-/* 
+
+/*
  * Zend framework init - end
  */
 
 
 
-/* 
+/*
  * Smarty inint - start
  */
 
@@ -56,7 +56,7 @@ if (!is_file($logFile))
 	fclose($createLogFile);
 }
 if (!is_writable($logFile)) {
-	
+
    simpleInvoicesError('notWriteable','file',$logFile);
 }
 $writer = new Zend_Log_Writer_Stream($logFile);
@@ -66,7 +66,7 @@ $logger = new Zend_Log($writer);
  */
 
 if (!is_writable('./tmp/cache')) {
-    
+
    simpleInvoicesError('notWriteable','file','./tmp/cache');
 }
 /*
@@ -76,7 +76,7 @@ if (!is_writable('./tmp/cache')) {
 $backendOptions = array(
     'cache_dir' => './tmp/' // Directory where to put the cache files
 );
-                                   
+
 // getting a Zend_Cache_Core object
 $cache = Zend_Cache::factory('Core',
                              'File',
@@ -105,7 +105,7 @@ $smarty->plugins_dir = array("plugins","include/smarty_plugins");
 
 //add stripslash smarty function
 $smarty->register_modifier("unescape","stripslashes");
-/* 
+/*
  * Smarty inint - end
  */
 
@@ -129,10 +129,10 @@ if( is_file('./config/custom.config.ini') ){
 //set up app with relevant php setting
 date_default_timezone_set($config->phpSettings->date->timezone);
 error_reporting($config->debug->error_reporting);
-ini_set('display_startup_errors', $config->phpSettings->display_startup_errors);  
-ini_set('display_errors', $config->phpSettings->display_errors); 
-ini_set('log_errors', $config->phpSettings->log_errors); 
-ini_set('error_log', $config->phpSettings->error_log); 
+ini_set('display_startup_errors', $config->phpSettings->display_startup_errors);
+ini_set('display_errors', $config->phpSettings->display_errors);
+ini_set('log_errors', $config->phpSettings->log_errors);
+ini_set('error_log', $config->phpSettings->error_log);
 
 
 
@@ -162,7 +162,7 @@ $smarty->register_modifier('urlsafe', 'urlsafe');
 $smarty->register_modifier('urlencode', 'urlencode');
 $smarty->register_modifier('outhtml', 'outhtml');
 $smarty->register_modifier('htmlout', 'outhtml'); //common typo
-$smarty->register_modifier('urlescape', 'urlencode'); //common typo 
+$smarty->register_modifier('urlescape', 'urlencode'); //common typo
 $install_tables_exists = checkTableExists(TB_PREFIX."biller");
 if ($install_tables_exists == true)
 {
@@ -178,9 +178,9 @@ if ( $install_tables_exists != false )
 	    $sql="SELECT * from ".TB_PREFIX."extensions WHERE (domain_id = :id OR domain_id =  0 ) ORDER BY domain_id ASC";
 	    $sth = dbQuery($sql,':id', $auth_session->domain_id ) or die(htmlsafe(end($dbh->errorInfo())));
 
-	    while ( $this_extension = $sth->fetch() ) 
-	    { 
-	    	$DB_extensions[$this_extension['name']] = $this_extension; 
+	    while ( $this_extension = $sth->fetch() )
+	    {
+	    	$DB_extensions[$this_extension['name']] = $this_extension;
 	    }
 	    $config->extension = $DB_extensions;
 	}
@@ -212,40 +212,26 @@ checkConnection();
 // Check auth
 if (!defined('NOAUTH')){
   // Hook:Maestrano
-  // Load Maestrano and start_session
-  require './maestrano/app/init/base.php';
-  $maestrano = MaestranoService::getInstance();
-  
-  // Require authentication straight away if intranet
-  // mode enabled
-  if ($maestrano->isSsoIntranetEnabled()) {
-    if (!$maestrano->getSsoSession()->isValid()) {
-      header("Location: " . $maestrano->getSsoInitUrl());
-    }
-  }
-  
-  // Hook:Maestrano
   // SAML Auth if not logged in
   // Check session validity otherwise
   if (!isset($auth_session->id)){
-	
-    if ($maestrano->isSsoEnabled()) {
-      header("Location: " . $maestrano->getSsoInitUrl());
+    if (Maestrano::sso()->isSsoEnabled()) {
+      header("Location: " . Maestrano::sso()->getInitPath());
     }
      else {
       include('./include/include_auth.php');
     }
-  
   } else {
     // Hook:Maestrano
     // Check Maestrano session is still valid
-    if ($maestrano->isSsoEnabled()) {
-      if (!$maestrano->getSsoSession()->isValid()) {
-        header("Location: " . $maestrano->getSsoInitUrl());
+    if (Maestrano::sso()->isSsoEnabled()) {
+      $mnoSession = new Maestrano_Sso_Session($_SESSION);
+      if (!$mnoSession->isValid()) {
+        header("Location: " . Maestrano::sso()->getInitPath());
       }
     }
   }
-  
+
   include_once('./include/manageCustomFields.php');
   include_once("./include/validation.php");
 
@@ -279,7 +265,7 @@ $early_exit[] = "documentation_view";
 $module = isset($_GET['module'])?$_GET['module']:null;
 switch ($module)
 {
-	case "export" :	
+	case "export" :
 		$smarty_output = "fetch";
 		break;
 	default :

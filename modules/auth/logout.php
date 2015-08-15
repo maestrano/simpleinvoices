@@ -14,10 +14,10 @@ define("BROWSE","browse");
 
 	Zend_Session::start();
 	Zend_Session::destroy(true);
+
   // Hook:Maestrano
-  $maestrano = MaestranoService::getInstance();
-  if ($maestrano->isSsoEnabled()) {
-    header("Location: " . $maestrano->getSsoLogoutUrl());
+  if (Maestrano::sso()->isSsoEnabled()) {
+    header("Location: " . Maestrano::sso()->getLogoutUrl());
   } else {
     header('Location: .');
   }
