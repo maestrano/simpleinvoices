@@ -1,0 +1,11 @@
+---
+
+# This playbook installs and configures SimpleInvoices
+
+- hosts: localhost
+  connection: local
+  roles:
+    - apache
+    - mysql
+    - ssmtp
+    - simpleinvoices-install
