@@ -96,27 +96,25 @@ class MnoSsoUser extends Maestrano_Sso_User
   {
     $lid = null;
 
-    if ($this->accessScope() == 'private') {
-      $sql = "INSERT INTO si_user (email,password,role_id,domain_id,enabled) VALUES
-                  (
-                      :email,
-                      MD5(:password),
-                      :role,
-					            :domain_id,
-					            :enabled
-                  )
-              ";
+    $sql = "INSERT INTO si_user (email,password,role_id,domain_id,enabled) VALUES
+                (
+                    :email,
+                    MD5(:password),
+                    :role,
+				            :domain_id,
+				            :enabled
+                )
+            ";
 
-      // Create user
-      $q = $this->db->query($sql,
-        ':email',$this->email,
-        ':password',$this->generatePassword(),
-        ':role',$this->getRoleValueToAssign(),
-        ':domain_id',1,
-        ':enabled',1);
+    // Create user
+    $q = $this->db->query($sql,
+      ':email',$this->email,
+      ':password',$this->generatePassword(),
+      ':role',$this->getRoleValueToAssign(),
+      ':domain_id',1,
+      ':enabled',1);
 
-      $lid = intval($this->db->lastInsertId());
-    }
+    $lid = intval($this->db->lastInsertId());
 
     return $lid;
   }
@@ -209,5 +207,21 @@ class MnoSsoUser extends Maestrano_Sso_User
     }
 
     return false;
+  }
+
+  /**
+  * Generate a random password.
+  * Convenient to set dummy passwords on users
+  *
+  * @return string a random password
+  */
+  protected function generatePassword() {
+    $length = 20;
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+      $randomString .= $characters[rand(0, strlen($characters) - 1)];
+    }
+    return $randomString;
   }
 }

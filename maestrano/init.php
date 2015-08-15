@@ -13,4 +13,5 @@ require_once 'app/sso/MnoSsoUser.php';
 
 // Initialize SimpleInvoices app
 define('NOAUTH',1);
+chdir(ROOT_PATH); // avoid breaking relative requires
 require_once ROOT_PATH . "/include/init.php";
