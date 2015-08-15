@@ -1978,15 +1978,15 @@ function updateTaxRate($push_to_maestrano=true) {
 	}
 
   // Send Tax to Maestrano
-  $maestrano = MaestranoService::getInstance();
-  if ($push_to_maestrano and $maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-    $obj['taxid'] = $_GET['id'];
-    $obj['tax_description'] = $_POST['tax_description'];
-    $obj['tax_percentage'] = $_POST['tax_percentage'];
-
-    $mno_tax = new MnoSoaTax($db, new MnoSoaBaseLogger());
-    $mno_tax->send($obj, $push_to_maestrano);
-  }
+  // $maestrano = MaestranoService::getInstance();
+  // if ($push_to_maestrano and $maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
+  //   $obj['taxid'] = $_GET['id'];
+  //   $obj['tax_description'] = $_POST['tax_description'];
+  //   $obj['tax_percentage'] = $_POST['tax_percentage'];
+	//
+  //   $mno_tax = new MnoSoaTax($db, new MnoSoaBaseLogger());
+  //   $mno_tax->send($obj, $push_to_maestrano);
+  // }
 
 	return $display_block;
 }
