@@ -760,12 +760,15 @@ function insertProductByObject(&$obj,$enabled=1,$visible=1,$push_to_maestrano=tr
   $last_insert_id = lastInsertId();
 
   $obj['id'] = $last_insert_id;
-  if ($result && $enabled && $push_to_maestrano) {
-      // $maestrano = MaestranoService::getInstance();
-      // if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-      //   $mno_item = new MnoSoaItem($db, new MnoSoaBaseLogger());
-      //   $mno_item->send($obj, $push_to_maestrano);
-      // }
+
+	// Hook: Maestrano
+  if ($result && $push_to_maestrano) {
+      // Push item to Connec!
+			$mapper = 'ItemMapper';
+			if(class_exists($mapper)) {
+				$mapperInstance = new $mapper();
+				$mapperInstance->processLocalUpdate((object) $obj);
+			}
   }
 
   return $result;
@@ -810,13 +813,14 @@ function updateProductByObject(&$obj,$push_to_maestrano=true) {
 		':id', $obj['id']
 		);
 
-  // Send Item to Maestrano
+  // Hook: Maestrano
   if ($result && $push_to_maestrano) {
-      // $maestrano = MaestranoService::getInstance();
-      // if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-      //   $mno_item = new MnoSoaItem($db, new MnoSoaBaseLogger());
-      //   $mno_item->send($_POST, $push_to_maestrano);
-      // }
+      // Push item to Connec!
+			$mapper = 'ItemMapper';
+			if(class_exists($mapper)) {
+				$mapperInstance = new $mapper();
+				$mapperInstance->processLocalUpdate((object) $obj);
+			}
   }
 
   return $result;
@@ -1486,8 +1490,8 @@ function updateCustomerByObject($id, &$obj, $push_to_maestrano=true) {
 						// Choose between OrganizationMapper and PersonMapper based on type
 						$mapper = ucfirst($obj['type']) . 'Mapper';
 						if(class_exists($mapper)) {
-							$customerMapper = new $mapper();
-							$customerMapper->processLocalUpdate((object) $obj);
+							$mapperInstance = new $mapper();
+							$mapperInstance->processLocalUpdate((object) $obj);
 						}
         }
 
@@ -1558,8 +1562,8 @@ function updateCustomerByObject($id, &$obj, $push_to_maestrano=true) {
 						$obj = getCustomer($id);
 						$mapper = ucfirst($obj['type']) . 'Mapper';
 						if(class_exists($mapper)) {
-							$customerMapper = new $mapper();
-							$customerMapper->processLocalUpdate((object) $obj);
+							$mapperInstance = new $mapper();
+							$mapperInstance->processLocalUpdate((object) $obj);
 						}
         }
     }
@@ -1643,8 +1647,8 @@ function insertCustomerByObject(&$obj, $push_to_maestrano=true) {
 				// Choose between OrganizationMapper and PersonMapper based on type
         $mapper = ucfirst($obj['type']) . 'Mapper';
         if(class_exists($mapper)) {
-          $customerMapper = new $mapper();
-          $customerMapper->processLocalUpdate((object) $obj);
+          $mapperInstance = new $mapper();
+          $mapperInstance->processLocalUpdate((object) $obj);
         }
     }
 
@@ -1928,8 +1932,8 @@ function insertTaxRate($push_to_maestrano=true) {
 		// Choose between OrganizationMapper and PersonMapper based on type
 		$mapper = 'TaxCodeMapper';
 		if(class_exists($mapper)) {
-			$customerMapper = new $mapper();
-			$customerMapper->processLocalUpdate((object) $model);
+			$mapperInstance = new $mapper();
+			$mapperInstance->processLocalUpdate((object) $model);
 		}
   }
 
@@ -1978,8 +1982,8 @@ function updateTaxRate($push_to_maestrano=true) {
 		// Push tax to Connec!
 		$mapper = 'TaxCodeMapper';
 		if(class_exists($mapper)) {
-			$customerMapper = new $mapper();
-			$customerMapper->processLocalUpdate((object) $model);
+			$mapperInstance = new $mapper();
+			$mapperInstance->processLocalUpdate((object) $model);
 		}
   }
 

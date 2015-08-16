@@ -37,10 +37,10 @@ try {
       $mapper = new TaxCodeMapper();
       $mapper->fetchConnecResource($entity_id);
       break;
-    // case "ITEMS":
-    //   $mapper = new ItemMapper();
-    //   $mapper->fetchConnecResource($entity_id);
-    //   break;
+    case "ITEMS":
+      $mapper = new ItemMapper();
+      $mapper->fetchConnecResource($entity_id);
+      break;
     // case "INVOICES":
     //   $mapper = new InvoiceMapper();
     //   $mapper->fetchConnecResource($entity_id);

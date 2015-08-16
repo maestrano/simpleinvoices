@@ -180,6 +180,20 @@ abstract class BaseMapper {
     return $mno_id_map;
   }
 
+  // Find a Connec! ID or persist the model and return the id
+  public function findIdMapOrPersist($model) {
+    $local_id = $this->getId($model);
+
+    $mno_id_map = MnoIdMap::findMnoIdMapByLocalIdAndEntityName($local_id, $this->local_entity_name);
+    if(!$mno_id_map) {
+      $this->processLocalUpdate($model);
+      $mno_id_map = MnoIdMap::findMnoIdMapByLocalIdAndEntityName($local_id, $this->local_entity_name);
+    }
+
+    return $mno_id_map;
+  }
+
+
   // Process a Model update event
   // $pushToConnec: option to notify Connec! of the model update
   // $delete:       option to soft delete the local entity mapping amd ignore further Connec! updates
