@@ -112,8 +112,8 @@ class CompanyMapper extends BaseMapper {
     $_POST[custom_field4] = '';
     $_POST['enabled'] = 1;
 
-    if ($model->id) {
-      $_GET[id] = $model->id;
+    if ($this->getId($model)) {
+      $_GET[id] = $this->getId($model);
       updateBiller();
     } else {
       insertBiller();
