@@ -679,12 +679,14 @@ function insertProductComplete($enabled=1,$visible=1,$description,
   $obj['unit_price'] = $unit_price;
   $obj['enabled'] = $enabled;
 
-  if ($result && $enabled && $push_to_maestrano) {
-      // $maestrano = MaestranoService::getInstance();
-      // if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-      //   $mno_item = new MnoSoaItem($db, new MnoSoaBaseLogger());
-      //   $mno_item->send($obj, $push_to_maestrano);
-      // }
+	// Hook: Maestrano
+  if ($result && $push_to_maestrano) {
+      // Push item to Connec!
+			$mapper = 'ItemMapper';
+			if(class_exists($mapper)) {
+				$mapperInstance = new $mapper();
+				$mapperInstance->processLocalUpdate((object) $obj);
+			}
   }
 
   return $result;
