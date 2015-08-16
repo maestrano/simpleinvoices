@@ -1481,24 +1481,13 @@ function updateCustomerByObject($id, &$obj, $push_to_maestrano=true) {
 
         $obj['id'] = $id;
 
-        if ($result && $obj['enabled'] && $push_to_maestrano) {
-            // Get Maestrano Service
-            // $maestrano = MaestranoService::getInstance();
-						//
-            // if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-            //     $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
-            //     $mno_person->undeleteIdMapEntry($id);
-            //     $mno_person->send($obj, $push_to_maestrano);
-            // }
-        } else if ($result && !$obj['enabled']) {
-            // // Get Maestrano Service
-            // $maestrano = MaestranoService::getInstance();
-						//
-            // // DISABLED DELETE NOTIFICATIONS
-            // if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-            //     $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
-            //     $mno_person->sendDeleteNotification($id);
-            // }
+        if ($result && $push_to_maestrano) {
+            // Hook:Maestrano
+						$mapper = 'OrganizationMapper';
+						if(class_exists($mapper)) {
+							$customerMapper = new $mapper();
+							$customerMapper->processLocalUpdate((object) $obj);
+						}
         }
 
         return $result;
@@ -1559,29 +1548,20 @@ function updateCustomerByObject($id, &$obj, $push_to_maestrano=true) {
 		':id', $id
 		);
 
-        $obj['id'] = $id;
+    $obj['id'] = $id;
 
-        if ($result && $obj['enabled'] && $push_to_maestrano) {
-            // // Get Maestrano Service
-            // $maestrano = MaestranoService::getInstance();
-						//
-            // if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-            //     $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
-            //     $mno_person->undeleteIdMapEntry($id);
-            //     $mno_person->send($obj, $push_to_maestrano);
-            // }
-        } else if ($result && !$obj['enabled']) {
-            // // Get Maestrano Service
-            // $maestrano = MaestranoService::getInstance();
-						//
-            // // DISABLED DELETE NOTIFICATIONS
-            // if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-            //     $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
-            //     $mno_person->sendDeleteNotification($id);
-            // }
+    if ($result && $push_to_maestrano) {
+        if ($result && $push_to_maestrano) {
+            // Hook:Maestrano
+						$mapper = 'OrganizationMapper';
+						if(class_exists($mapper)) {
+							$customerMapper = new $mapper();
+							$customerMapper->processLocalUpdate((object) $obj);
+						}
         }
+    }
 
-        return $result;
+    return $result;
 	}
 }
 
@@ -1655,13 +1635,12 @@ function insertCustomerByObject(&$obj, $push_to_maestrano=true) {
     $obj['id'] = $last_insert_id;
 
     if ($result && $enabled && $push_to_maestrano) {
-        // // Get Maestrano Service
-        // $maestrano = MaestranoService::getInstance();
-				//
-        // if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-        //   $mno_person=new MnoSoaPerson($db, new MnoSoaBaseLogger());
-        //   $mno_person->send($obj, false);
-        // }
+        // Hook:Maestrano
+        $mapper = 'OrganizationMapper';
+        if(class_exists($mapper)) {
+          $customerMapper = new $mapper();
+          $customerMapper->processLocalUpdate((object) $obj);
+        }
     }
 
     return $result;

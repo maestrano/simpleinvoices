@@ -25,30 +25,30 @@ try {
       $mapper = new CompanyMapper();
       $mapper->fetchConnecResource($entity_id);
       break;
-    case "TAXCODES":
-      $mapper = new TaxCodeMapper();
-      $mapper->fetchConnecResource($entity_id);
-      break;
-    case "ORGANIZATIONS":
+		case "ORGANIZATIONS":
       $mapper = new OrganizationMapper();
       $mapper->fetchConnecResource($entity_id);
       break;
-    case "PEOPLE":
-      $mapper = new PersonMapper();
-      $mapper->fetchConnecResource($entity_id);
-      break;
-    case "ITEMS":
-      $mapper = new ItemMapper();
-      $mapper->fetchConnecResource($entity_id);
-      break;
-    case "INVOICES":
-      $mapper = new InvoiceMapper();
-      $mapper->fetchConnecResource($entity_id);
-      break;
-    case "PAYMENTS":
-      $mapper = new PaymentMapper();
-      $mapper->fetchConnecResource($entity_id);
-      break;
+    // case "TAXCODES":
+    //   $mapper = new TaxCodeMapper();
+    //   $mapper->fetchConnecResource($entity_id);
+    //   break;
+    // case "PEOPLE":
+    //   $mapper = new PersonMapper();
+    //   $mapper->fetchConnecResource($entity_id);
+    //   break;
+    // case "ITEMS":
+    //   $mapper = new ItemMapper();
+    //   $mapper->fetchConnecResource($entity_id);
+    //   break;
+    // case "INVOICES":
+    //   $mapper = new InvoiceMapper();
+    //   $mapper->fetchConnecResource($entity_id);
+    //   break;
+    // case "PAYMENTS":
+    //   $mapper = new PaymentMapper();
+    //   $mapper->fetchConnecResource($entity_id);
+    //   break;
   }
 } catch (Exception $e) {
   error_log("Caught exception in subscribe " . json_encode($e->getMessage()));
