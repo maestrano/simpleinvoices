@@ -15,8 +15,8 @@
 */
 
 /*
-// 1 means that the variable has been translated and 
-// 0 means it hasnt been translated 
+// 1 means that the variable has been translated and
+// 0 means it hasnt been translated
 //
 // This is used by a script to calculate how much of each file has been done
 // regex :%s/;/ /1/;// 1\/\/1/g - remove the spaces
@@ -98,6 +98,7 @@ $LANG['customer_edit'] = "Editar Cliente";//1
 $LANG['customer_id'] = "Número de Cliente";//1
 $LANG['customer_name'] = "Nome do Cliente";//1
 $LANG['customer_short'] = "Cli.";//1
+$LANG['customer_type'] = "Type";//1
 $LANG['customers'] = "Clientes";//1
 $LANG['dashboard'] = "Dashboard";//0$LANG['database_log'] = "Database Log";//0
 $LANG['database_upgrade_manager'] = "Actualizador de Base de Dados";//1

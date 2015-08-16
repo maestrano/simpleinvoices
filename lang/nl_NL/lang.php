@@ -91,6 +91,7 @@ $LANG['customer_edit'] = "Klant wijzigen";//1
 $LANG['customer_id'] = "Klant ID";//1
 $LANG['customer_name'] = "Klantnaam";//1
 $LANG['customer_short'] = "Klnt";//1
+$LANG['customer_type'] = "Type";//1
 $LANG['customers'] = "Klanten";//1
 $LANG['dashboard'] = "Dashboard";//1
 $LANG['database_log'] = "Database log";//1

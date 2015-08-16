@@ -94,6 +94,7 @@ $LANG['customer_edit'] = "Muokkaa asiakasta";//1
 $LANG['customer_id'] = "Asiakasnumero";//1
 $LANG['customer_name'] = "Asiakkaan nimi";//1
 $LANG['customer_short'] = "Cust";//0
+$LANG['customer_type'] = "Type";//1
 $LANG['customers'] = "Asiakkaita";//1
 $LANG['dashboard'] = "Dashboard";//0
 $LANG['database_log'] = "Tietokanta Logi";//1

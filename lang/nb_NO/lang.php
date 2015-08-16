@@ -101,6 +101,7 @@ $LANG['customer_edit'] = "Rediger kunde";//1
 $LANG['customer_id'] = "Kunde ID";//1
 $LANG['customer_name'] = "Kundenavn";//1
 $LANG['customer_short'] = "Kunde";//1
+$LANG['customer_type'] = "Type";//1
 $LANG['customers'] = "Kunder";//1
 $LANG['customise_settings'] = "Tilpass instillingene";//1
 $LANG['dashboard'] = "Dashbord";//1

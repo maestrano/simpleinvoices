@@ -1483,7 +1483,8 @@ function updateCustomerByObject($id, &$obj, $push_to_maestrano=true) {
 
         if ($result && $push_to_maestrano) {
             // Hook:Maestrano
-						$mapper = 'OrganizationMapper';
+						// Choose between OrganizationMapper and PersonMapper based on type
+						$mapper = ucfirst($obj['type']) . 'Mapper';
 						if(class_exists($mapper)) {
 							$customerMapper = new $mapper();
 							$customerMapper->processLocalUpdate((object) $obj);
@@ -1553,7 +1554,8 @@ function updateCustomerByObject($id, &$obj, $push_to_maestrano=true) {
     if ($result && $push_to_maestrano) {
         if ($result && $push_to_maestrano) {
             // Hook:Maestrano
-						$mapper = 'OrganizationMapper';
+						// Choose between OrganizationMapper and PersonMapper based on type
+						$mapper = ucfirst($obj['type']) . 'Mapper';
 						if(class_exists($mapper)) {
 							$customerMapper = new $mapper();
 							$customerMapper->processLocalUpdate((object) $obj);
@@ -1586,7 +1588,7 @@ function insertCustomerByObject(&$obj, $push_to_maestrano=true) {
 				credit_card_holder_name, credit_card_number,
 				credit_card_expiry_month, credit_card_expiry_year,
 				custom_field1, custom_field2,
-				custom_field3, custom_field4, enabled
+				custom_field3, custom_field4, enabled, type
 			)
 			VALUES
 			(
@@ -1596,7 +1598,7 @@ function insertCustomerByObject(&$obj, $push_to_maestrano=true) {
 				:credit_card_holder_name, :credit_card_number,
 				:credit_card_expiry_month, :credit_card_expiry_year,
 				:custom_field1, :custom_field2,
-				:custom_field3, :custom_field4, :enabled
+				:custom_field3, :custom_field4, :enabled, :type
 			)";
 	//cc
 	$enc = new encryption();
@@ -1626,7 +1628,8 @@ function insertCustomerByObject(&$obj, $push_to_maestrano=true) {
 		':custom_field3', $custom_field3,
 		':custom_field4', $custom_field4,
 		':enabled', $enabled,
-    ':domain_id', 1
+    ':domain_id', 1,
+		':type', $type
 		//':domain_id',$auth_session->domain_id || MnoFix - crashes
 		);
 
@@ -1636,7 +1639,8 @@ function insertCustomerByObject(&$obj, $push_to_maestrano=true) {
 
     if ($result && $enabled && $push_to_maestrano) {
         // Hook:Maestrano
-        $mapper = 'OrganizationMapper';
+				// Choose between OrganizationMapper and PersonMapper based on type
+        $mapper = ucfirst($obj['type']) . 'Mapper';
         if(class_exists($mapper)) {
           $customerMapper = new $mapper();
           $customerMapper->processLocalUpdate((object) $obj);

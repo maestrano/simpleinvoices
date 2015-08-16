@@ -94,6 +94,7 @@ $LANG['customer_edit'] = "Editar Cliente";//1
 $LANG['customer_id'] = "ID de Cliente";//1
 $LANG['customer_name'] = "Nombre del Cliente";//1
 $LANG['customer_short'] = "Cli";//1
+$LANG['customer_type'] = "Type";//1
 $LANG['customers'] = "Clientes";//1
 $LANG['dashboard'] = "Tablero";//1
 $LANG['database_log'] = "Log Base de Datos";//1
@@ -191,7 +192,7 @@ $LANG['help_reports_xsl'] = "<b>Report errors</b><br />If you received a 'OOOOPS
 $LANG['help_required_field'] = "This is a mandatory field.  You have to enter a value in this field before you can save the form<br /><br />";//0
 $LANG['help_simple_invoices'] = "Simple Invoices is a basic invoicing system designed with simplicity and functionality in mind. Catering for the neds of small organisations and home users.<br /><br />For more information please refer to the Simple Invoices website:<a href='http://www.simpleinvoices.org' target='_blank'> <b>http://www.simpleinvoices.org</b></a>";//0
 $LANG['help_street2'] = "The field 'Street Address 2' is used when the street address for the biller or customer is either to long to fit one one line or contains multiple parts.<br /><br />ie. the street address 'Level 234, 325 South Malvern Road' can be seperated into <br /><br />Street: Level 234<br />Street Address 2: 325 South Malvern Road";//0
-$LANG['help_tax_rate_sign'] = "A tax can be either a percentage based (ie. Sales Tax 10%) or a flat money values (ie. $10 or £20).<br /><br />The $ in the drop down only indicates that this will be a flat money rate and it doesnt indicate the currency symbol. The 'invoice preference' that you use dictates what the currency symbol will be in your invoices.";//0
+$LANG['help_tax_rate_sign'] = "A tax can be either a percentage based (ie. Sales Tax 10%) or a flat money values (ie. $10 or ï¿½20).<br /><br />The $ in the drop down only indicates that this will be a flat money rate and it doesnt indicate the currency symbol. The 'invoice preference' that you use dictates what the currency symbol will be in your invoices.";//0
 $LANG['help_text'] = "<b>Warning</b><br /><br />Please backup your Simple Invoices database before running the database update, just incase anything bad happens.<br /><br />To backup the database, select 'Backup Database' from the Options menu, or use phpMyAdmin(if you have this installed) to back up the database.";//0
 $LANG['help_user_role'] = "There are 3 roles available <br /><br />Administrator:<br />which has access to all of Simple Invoices<br /><br />User:<br />which has read/write acess to all of Simple Invoices but with no access to the Settings menu <br /><br />Viewer:<br />which has read-only version of User.";//0
 $LANG['help_what_are_custom_fields'] = "Custom Fields are special fields in billers, products, customers, and invoices that you can label as whatever you want.<br /><br />Whish there was a Tax ID field in biller, just go to the Custom Fields page and define one of the blank Biller Custom Fields as Tax ID.<br /><br />Now when you go to edit a Biller there'll be a new field there called Tax ID or whatever you specified it as.";//0

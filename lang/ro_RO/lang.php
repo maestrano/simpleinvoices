@@ -95,6 +95,7 @@ $LANG['customer_edit'] = "Modifica Client";//1
 $LANG['customer_id'] = "ID Client";//1
 $LANG['customer_name'] = "Nume Client";//1
 $LANG['customer_short'] = "Client";//1
+$LANG['customer_type'] = "Type";//1
 $LANG['customers'] = "Clienti";//1
 $LANG['dashboard'] = "Dashboard";//0
 $LANG['database_log'] = "Log Baza de Date";//1

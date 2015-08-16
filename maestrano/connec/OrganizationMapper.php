@@ -38,7 +38,6 @@ class OrganizationMapper extends BaseMapper {
   protected function mapConnecResourceToModel($cnc_hash, $model) {
     // Map hash attributes to Customer
     if(!is_null($cnc_hash['name'])) { $model->name = $cnc_hash['name']; }
-    if(!is_null($cnc_hash['note'])) { $model->notes = $cnc_hash['note']; }
 
     // Address
     if(!is_null($cnc_hash['address']) && !is_null($cnc_hash['address']['billing'])) {
@@ -74,7 +73,6 @@ class OrganizationMapper extends BaseMapper {
 
     // Map Customer to Connec hash
     if(!is_null($model->name)) { $cnc_hash['name'] = $model->name; }
-    if(!is_null($model->notes)) { $cnc_hash['note'] = $model->notes; }
 
     // Address
     if(!is_null($model->street_address)) { $cnc_hash['address']['billing']['line1'] = $model->street_address; }
@@ -108,6 +106,7 @@ class OrganizationMapper extends BaseMapper {
       updateCustomerByObject($model->id, $hash, false);
     } else {
       $hash["enabled"] = 1;
+      $hash["type"] = "organization";
       insertCustomerByObject($hash, false);
       $model->id = $hash['id'];
     }

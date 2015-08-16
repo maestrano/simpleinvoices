@@ -100,6 +100,7 @@ $LANG['customer_edit'] = "Redigera Kund";//1
 $LANG['customer_id'] = "Kund ID";//1
 $LANG['customer_name'] = "Kund Namn";//1
 $LANG['customer_short'] = "Kund";//1
+$LANG['customer_type'] = "Type";//1
 $LANG['customers'] = "Kunder";//1
 $LANG['customise_settings'] = "Skräddarsy inställningarna";//1
 $LANG['dashboard'] = "Panel";//1

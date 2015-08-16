@@ -4,7 +4,7 @@
 * License: GPL v2 or above
 **************************** */
 
-/*    // 1 means that the variable has been translated and //0 means it hasnt been translated 
+/*    // 1 means that the variable has been translated and //0 means it hasnt been translated
 - this is used by a script to calculate how much of each file has been done
 regex :%s/;/ /1/;// 1\/\/1/g - remove the spaces
  */
@@ -85,6 +85,7 @@ $LANG['customer_edit'] = "Modifica Cliente";//1
 $LANG['customer_id'] = "ID Cliente";//1
 $LANG['customer_name'] = "Nome Cliente";//1
 $LANG['customer_short'] = "Cust";//0
+$LANG['customer_type'] = "Type";//1
 $LANG['customers'] = "Clienti";//1
 $LANG['dashboard'] = "Dashboard";//0$LANG['database_log'] = "Database Log";//0
 $LANG['database_upgrade_manager'] = "Aggiornamento Database";//1
