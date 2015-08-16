@@ -43,45 +43,45 @@ class CompanyMapper extends BaseMapper {
   }
 
   // Map the Connec resource attributes onto the OrangeHRM Organization
-  protected function mapConnecResourceToModel($company_hash, $model) {
+  protected function mapConnecResourceToModel($cnc_hash, $model) {
     // Map hash attributes to Organization
-    if(!is_null($company_hash['name'])) { $model->name = $company_hash['name']; }
+    if(!is_null($cnc_hash['name'])) { $model->name = $cnc_hash['name']; }
 
     // Address
-    if(!is_null($company_hash['address']) && !is_null($company_hash['address']['billing'])) {
-      if(!is_null($company_hash['address']['billing']['line1'])) { $model->street1 = $company_hash['address']['billing']['line1']; }
-      if(!is_null($company_hash['address']['billing']['line2'])) { $model->street2 = $company_hash['address']['billing']['line2']; }
-      if(!is_null($company_hash['address']['billing']['city'])) { $model->city = $company_hash['address']['billing']['city']; }
-      if(!is_null($company_hash['address']['billing']['postal_code'])) { $model->zipCode = $company_hash['address']['billing']['postal_code']; }
-      if(!is_null($company_hash['address']['billing']['country'])) { $model->country = $company_hash['address']['billing']['country']; }
-      if(!is_null($company_hash['address']['billing']['region'])) { $model->state = $company_hash['address']['billing']['region']; }
+    if(!is_null($cnc_hash['address']) && !is_null($cnc_hash['address']['billing'])) {
+      if(!is_null($cnc_hash['address']['billing']['line1'])) { $model->street1 = $cnc_hash['address']['billing']['line1']; }
+      if(!is_null($cnc_hash['address']['billing']['line2'])) { $model->street2 = $cnc_hash['address']['billing']['line2']; }
+      if(!is_null($cnc_hash['address']['billing']['city'])) { $model->city = $cnc_hash['address']['billing']['city']; }
+      if(!is_null($cnc_hash['address']['billing']['postal_code'])) { $model->zipCode = $cnc_hash['address']['billing']['postal_code']; }
+      if(!is_null($cnc_hash['address']['billing']['country'])) { $model->country = $cnc_hash['address']['billing']['country']; }
+      if(!is_null($cnc_hash['address']['billing']['region'])) { $model->state = $cnc_hash['address']['billing']['region']; }
     }
 
     // Phone
-    if(!is_null($company_hash['phone'])) {
-      if(!is_null($company_hash['phone']['landline'])) { $model->phone = $company_hash['phone']['landline']; }
-      if(!is_null($company_hash['phone']['fax'])) { $model->fax = $company_hash['phone']['fax']; }
-      if(!is_null($company_hash['phone']['mobile'])) { $model->mobile = $company_hash['phone']['mobile']; }
+    if(!is_null($cnc_hash['phone'])) {
+      if(!is_null($cnc_hash['phone']['landline'])) { $model->phone = $cnc_hash['phone']['landline']; }
+      if(!is_null($cnc_hash['phone']['fax'])) { $model->fax = $cnc_hash['phone']['fax']; }
+      if(!is_null($cnc_hash['phone']['mobile'])) { $model->mobile = $cnc_hash['phone']['mobile']; }
     }
 
     // Email
-    if(!is_null($company_hash['email'])) {
-      if(!is_null($company_hash['email']['address'])) { $model->email = $company_hash['email']['address']; }
+    if(!is_null($cnc_hash['email'])) {
+      if(!is_null($cnc_hash['email']['address'])) { $model->email = $cnc_hash['email']['address']; }
     }
 
     // Website
-    if(!is_null($company_hash['website'])) {
-      if(!is_null($company_hash['website']['url'])) { $model->website = $company_hash['website']['url']; }
+    if(!is_null($cnc_hash['website'])) {
+      if(!is_null($cnc_hash['website']['url'])) { $model->website = $cnc_hash['website']['url']; }
     }
 
     // Logo
-    if(!is_null($company_hash['logo'])) {
-      if(!is_null($company_hash['logo']['logo'])) { $model->logo = $company_hash['logo']['logo']; }
+    if(!is_null($cnc_hash['logo'])) {
+      if(!is_null($cnc_hash['logo']['logo'])) { $model->logo = $cnc_hash['logo']['logo']; }
     }
   }
 
   // Persist the SimpleInvoices Company
-  protected function persistLocalModel($model, $resource_hash) {
+  protected function persistLocalModel($model, $cnc_hash) {
     $this->saveLogo($model);
     $this->upsertBiller($model);
   }
