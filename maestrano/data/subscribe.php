@@ -1,8 +1,15 @@
 <?php
 
+// Load library
 if (!defined('MAESTRANO_ROOT')) { define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . "/..")); }
 require_once MAESTRANO_ROOT . '/init.php';
 require_once MAESTRANO_ROOT . '/connec/init.php';
+
+// Default  user domain
+global $auth_session;
+if(!isset($auth_session) || !isset($auth_session->domain_id)) {
+	$auth_session->domain_id = 1;
+}
 
 try {
   if(!Maestrano::param('connec.enabled')) { return false; }
