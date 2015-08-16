@@ -1,7 +1,8 @@
 <?php
 
-require_once '../init.php';
-require_once '../connec/init.php';
+if (!defined('MAESTRANO_ROOT')) { define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . "/..")); }
+require_once MAESTRANO_ROOT . '/init.php';
+require_once MAESTRANO_ROOT . '/connec/init.php';
 
 try {
   if(!Maestrano::param('connec.enabled')) { return false; }

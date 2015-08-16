@@ -1,11 +1,12 @@
 <?php
 
-require_once '../init.php';
-require_once '../connec/init.php';
+if (!defined('MAESTRANO_ROOT')) { define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . "/..")); }
+require_once MAESTRANO_ROOT . '/init.php';
+require_once MAESTRANO_ROOT . '/connec/init.php';
 
 if(!Maestrano::param('connec.enabled')) { return false; }
 
-$filepath = '../var/_data_sequence';
+$filepath = MAESTRANO_ROOT . '/var/_data_sequence';
 $status = false;
 
 if (file_exists($filepath)) {

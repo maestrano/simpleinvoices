@@ -214,8 +214,8 @@ require_once './vendor/autoload.php';
 Maestrano::configure('./maestrano.json');
 
 // Load custom Maestrano configuration
-// require_once './maestrano/init.php';
-// require_once './maestrano/connec/init.php';
+if (!defined('MAESTRANO_ROOT')) { define("MAESTRANO_ROOT", realpath(dirname(__FILE__) . "/../maestrano")); }
+require_once MAESTRANO_ROOT '/connec/init.php';
 
 // Hook: Maestrano
 // Check auth
