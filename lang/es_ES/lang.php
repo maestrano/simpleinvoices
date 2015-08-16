@@ -330,6 +330,7 @@ $LANG['product_id'] = "ID de Producto";//1
 $LANG['product_sales'] = "Ventas de Producto";//1
 $LANG['product_to_add'] = "Producto a a&ntilde;adir";//1
 $LANG['product_unit_price'] = "Precio de Unidad de Producto";//1
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Productos";//1
 $LANG['products_by_customer'] = "Productos por Cliente";//1
 $LANG['products_sold_customer_total'] = "Productos Vendidos por Cliente - Totales";//1

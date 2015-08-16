@@ -40,15 +40,12 @@ class ItemMapper extends BaseMapper {
     // Map hash attributes to Customer
     if(!is_null($cnc_hash['name'])) { $model->description = $cnc_hash['name']; }
 
-    // Sale Price
-    if(!is_null($cnc_hash['sale_price'])) {
-      $model->unit_price = $cnc_hash['sale_price']['net_amount'];
-    }
+    // Sale & Purchase Price
+    if(!is_null($cnc_hash['sale_price'])) { $model->unit_price = $cnc_hash['sale_price']['net_amount']; }
+    if(!is_null($cnc_hash['purchase_price'])) { $model->cost = $cnc_hash['purchase_price']['net_amount']; }
 
-    // Purchase Price
-    if(!is_null($cnc_hash['purchase_price'])) {
-      $model->cost = $cnc_hash['purchase_price']['net_amount'];
-    }
+    // Item type
+    if(!is_null($cnc_hash['type'])) { $model->type = $cnc_hash['type']; }
 
     // Tax Code
     if(!is_null($cnc_hash['sale_tax_code_id'])) {
@@ -73,6 +70,13 @@ class ItemMapper extends BaseMapper {
     if(!is_null($model->unit_price)) { $cnc_hash['sale_price']['net_amount'] = $model->unit_price; }
     if(!is_null($model->cost)) { $cnc_hash['purchase_price']['net_amount'] = $model->cost; }
 
+    // Item type
+    if(!is_null($model->type)) {
+      $cnc_hash['type'] = strtoupper($model->type);
+    } else {
+      $cnc_hash['type'] = "PRODUCT";
+    }
+
     // Tax Code
     if(!is_null($model->default_tax_id)) {
       $mapper = new TaxCodeMapper();
@@ -81,9 +85,6 @@ class ItemMapper extends BaseMapper {
         $cnc_hash['sale_tax_code_id'] = $tax_id_map['mno_entity_guid'];
       }
     }
-
-    // Default type
-    $cnc_hash['type'] = "MANUFACTURED";
 
     return $cnc_hash;
   }

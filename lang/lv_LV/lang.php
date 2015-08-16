@@ -329,6 +329,7 @@ $LANG['product_id'] = "Preces ID";//1
 $LANG['product_sales'] = "Product Sales";//0
 $LANG['product_to_add'] = "Pievienot preci";//1
 $LANG['product_unit_price'] = "Product Unit Price";//0
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Preces";//1
 $LANG['products_by_customer'] = "Products by Customer";//0
 $LANG['products_sold_customer_total'] = "Products sold - Customer - Total";//0

@@ -329,6 +329,7 @@ $LANG['product_id'] = "Κωδικός Είδους";//1
 $LANG['product_sales'] = "Πωλήσεις Προϊόντων";//1
 $LANG['product_to_add'] = "Προσθήκη Προϊόντος";//1
 $LANG['product_unit_price'] = "Τιμή Μονάδας";//1
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Προϊόντα";//1
 $LANG['products_by_customer'] = "Προϊόντα ανά Πελάτη";//1
 $LANG['products_sold_customer_total'] = "Συνολικά Πωληθέντα Προϊόντα ανά Πελάτη";//1

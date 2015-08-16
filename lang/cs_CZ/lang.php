@@ -329,6 +329,7 @@ $LANG['product_id'] = "ID položky";//1
 $LANG['product_sales'] = "Prodej položky";//1
 $LANG['product_to_add'] = "Položka k p?idání";//1
 $LANG['product_unit_price'] = "Cena za jednotku";//1
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Položky";//1
 $LANG['products_by_customer'] = "Položky podle odb?ratele";//1
 $LANG['products_sold_customer_total'] = "Prodané položky - odb?ratel - celkem";//1

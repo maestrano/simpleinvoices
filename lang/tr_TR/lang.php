@@ -329,6 +329,7 @@ $LANG['product_id'] = "Ürün ID";//1
 $LANG['product_sales'] = "Ürün Satýþý";//1
 $LANG['product_to_add'] = "Eklenecek Ürün";//1
 $LANG['product_unit_price'] = "Ürün Birim Fiyatý";//1
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Ürünler";//1
 $LANG['products_by_customer'] = "Müþeriye Göre Ürünler";//1
 $LANG['products_sold_customer_total'] = "Satýlan Ürün - Müþteri - Toplam";//1

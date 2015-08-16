@@ -329,6 +329,7 @@ $LANG['product_id'] = "Referenza tal-Prodott";//1
 $LANG['product_sales'] = "Bejgħ tal-Prodott";//1
 $LANG['product_to_add'] = "Prodott biex jiżdied";//1
 $LANG['product_unit_price'] = "Prezz kull Prodott";//1
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Prodotti";//1
 $LANG['products_by_customer'] = "Prodotti kull Klijent";//1
 $LANG['products_sold_customer_total'] = "Prodotts Mibjugħa - Klijent - Total";//1

@@ -329,6 +329,7 @@ $LANG['product_id'] = "Oznaka izdelka";//1
 $LANG['product_sales'] = "Prodaja izdelka";//1
 $LANG['product_to_add'] = "Dodajanje izdelka";//1
 $LANG['product_unit_price'] = "Cena izdelka na enoto";//1
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Izdelki";//1
 $LANG['products_by_customer'] = "Izdelki po stranki";//1
 $LANG['products_sold_customer_total'] = "Prodani izdelki - Stranka - Skupaj";//1

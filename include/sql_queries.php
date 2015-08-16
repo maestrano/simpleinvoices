@@ -713,12 +713,13 @@ function insertProductByObject(&$obj,$enabled=1,$visible=1,$push_to_maestrano=tr
             reorder_level,
             custom_field1,
             custom_field2,
-			custom_field3,
+						custom_field3,
             custom_field4,
             notes,
             default_tax_id,
             enabled,
-            visible
+            visible,
+						type
 		)
 	VALUES
 		(
@@ -734,7 +735,8 @@ function insertProductByObject(&$obj,$enabled=1,$visible=1,$push_to_maestrano=tr
 			:notes,
 			:default_tax_id,
 			:enabled,
-			:visible
+			:visible,
+			:type
 		)";
 
   if(!isset($auth_session) || !isset($auth_session->domain_id)) {
@@ -754,7 +756,8 @@ function insertProductByObject(&$obj,$enabled=1,$visible=1,$push_to_maestrano=tr
 		':notes', "".$obj['notes'],
 		':default_tax_id', $obj['default_tax_id'],
 		':enabled', $enabled,
-		':visible', $visible
+		':visible', $visible,
+		':type', $obj['type']
 		);
 
   $last_insert_id = lastInsertId();
@@ -794,7 +797,8 @@ function updateProductByObject(&$obj,$push_to_maestrano=true) {
 				custom_field4 = :custom_field4,
 				unit_price = :unit_price,
 				cost = :cost,
-				reorder_level = :reorder_level
+				reorder_level = :reorder_level,
+				type = :type
 			WHERE
 				id = :id";
 
@@ -810,7 +814,8 @@ function updateProductByObject(&$obj,$push_to_maestrano=true) {
 		':unit_price', $obj['unit_price'],
 		':cost', $obj['cost'],
 		':reorder_level', $obj['reorder_level'],
-		':id', $obj['id']
+		':id', $obj['id'],
+		':type', $obj['type']
 		);
 
   // Hook: Maestrano

@@ -329,6 +329,7 @@ $LANG['product_id'] = "ID Artikull";//1
 $LANG['product_sales'] = "Shitjet e artikullit";//1
 $LANG['product_to_add'] = "Artikull per tu shtuar";//1
 $LANG['product_unit_price'] = "Cmimi per njesi";//1
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Artikujt";//1
 $LANG['products_by_customer'] = "Artikujt sipas klientit";//1
 $LANG['products_sold_customer_total'] = "Artikuj Shitur - Klienti - Totali";//1

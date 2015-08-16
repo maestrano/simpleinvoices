@@ -328,6 +328,7 @@ $LANG['product_id'] = "Product ID";//1
 $LANG['product_sales'] = "Product verkoopcijfers";//1
 $LANG['product_to_add'] = "Product toevoegen";//1
 $LANG['product_unit_price'] = "Product eenheidsprijs";//1
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Producten";//1
 $LANG['products_by_customer'] = "Producten per klant";//1
 $LANG['products_sold_customer_total'] = "Producten verkocht - Klant - Totaal";//1

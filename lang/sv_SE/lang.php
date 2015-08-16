@@ -365,6 +365,7 @@ $LANG['product_id'] = "Produkt ID";//1
 $LANG['product_sales'] = "Produkt Försäljning";//1
 $LANG['product_to_add'] = "Produkt som skall läggas till";//1
 $LANG['product_unit_price'] = "Produkt Enhetspris";//1
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Produkter";//1
 $LANG['products_by_customer'] = "Produkter efter Kund";//1
 $LANG['products_sold_customer_total'] = "Produkter Sålda - Kund - Summa";//1

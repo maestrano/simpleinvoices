@@ -330,6 +330,7 @@ $LANG['product_id'] = "Tuotenumero";//1
 $LANG['product_sales'] = "Tuotteen myyntiluvut";//1
 $LANG['product_to_add'] = "Lisättävä tuote";//1
 $LANG['product_unit_price'] = "Tuotteen yksikköhinta";//1
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Tuotteet";//1
 $LANG['products_by_customer'] = "Tuotteet asiakkaittain";//1
 $LANG['products_sold_customer_total'] = "Myydyt tuotteet - Asiakas - Yhteensä";//1
