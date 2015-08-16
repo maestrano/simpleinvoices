@@ -26,7 +26,7 @@ if(!isset( $_POST['type']) && !isset($_POST['action'])) {
 $saved = false;
 $type = $_POST['type'];
 
-$mno_invoice = new MnoSoaInvoice($db, new MnoSoaBaseLogger());
+//$mno_invoice = new MnoSoaInvoice($db, new MnoSoaBaseLogger());
 
 if ($_POST['action'] == "insert" ) {
 	if(insertInvoice($type)) {
@@ -109,7 +109,7 @@ if ($_POST['action'] == "insert" ) {
 			delete('invoice_items','id',$_POST["line_item$i"]);
 
       // Maestrano hook - delete invoice line
-      $mno_invoice->markInvoiceLineForDeletion($_POST["line_item$i"]);
+      //$mno_invoice->markInvoiceLineForDeletion($_POST["line_item$i"]);
 		}
 		if($_POST["delete$i"] !== "yes")
 		{

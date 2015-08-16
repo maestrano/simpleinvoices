@@ -7,10 +7,10 @@ require_once 'MnoIdMap.php';
 * You need to extend this class an implement the following methods:
 * - getId($model) Returns the SimpleInvoices entity local id
 * - loadModelById($local_id) Loads the SimpleInvoices entity by its id
-* - mapConnecResourceToModel($resource_hash, $model) Maps the Connec resource to the OrangeHRM entity
+* - mapConnecResourceToModel($cnc_hash, $model) Maps the Connec resource to the OrangeHRM entity
 * - mapModelToConnecResource($model) Maps the SimpleInvoices entity into a Connec resource
 * - persistLocalModel($model) Saves the SimpleInvoices entity
-* - matchLocalModel($resource_hash) (Optional) Returns an SimpleInvoices entity matched by attributes
+* - matchLocalModel($cnc_hash) (Optional) Returns an SimpleInvoices entity matched by attributes
 * - initializeNewModel() (Optional) Return a new instance of the SimpleInvoices entity
 */
 abstract class BaseMapper {
@@ -40,6 +40,10 @@ abstract class BaseMapper {
     return $date->format("Y-m-d");
   }
 
+  protected function is_set($variable) {
+    return (!is_null($variable) && isset($variable) && !empty($variable) && !(is_string($variable) && trim($variable)===''));
+  }
+
   // Overwrite me!
   // Return the Model local id
   abstract protected function getId($model);
@@ -50,7 +54,7 @@ abstract class BaseMapper {
 
   // Overwrite me!
   // Map the Connec resource attributes onto the OrangeHRM model
-  abstract protected function mapConnecResourceToModel($resource_hash, $model);
+  abstract protected function mapConnecResourceToModel($cnc_hash, $model);
 
   // Overwrite me!
   // Map the OrangeHRM model to a Connec resource hash
@@ -58,18 +62,25 @@ abstract class BaseMapper {
 
   // Overwrite me!
   // Persist the OrangeHRM model
-  abstract protected function persistLocalModel($modell, $resource_hash);
+  abstract protected function persistLocalModel($modell, $cnc_hash);
 
   // Overwrite me!
   // Optional: Match a local Model from hash attributes
-  protected function matchLocalModel($resource_hash) {
+  protected function matchLocalModel($cnc_hash) {
     return null;
   }
 
   // Overwrite me!
   // Optional: Check the hash is valid for mapping
-  protected function validate($resource_hash) {
+  protected function validate($cnc_hash) {
     return true;
+  }
+
+  // Overwrite me!
+  // Optional: Returns the Connec! Resource ID. When dealing with embedded documents, ID is unique only within the embedded collection.
+  // In this case it is advised to prefix the Embedded Document ID with the Parent Document ID (eg: PARENT_ID#EMBEDDED_DOCUMENT_ID)
+  protected function getConnecResourceId($cnc_hash) {
+    return $cnc_hash['id'];
   }
 
   // Overwrite me!
@@ -117,25 +128,25 @@ abstract class BaseMapper {
 
   // Persist a list of Connec Resources as OrangeHRM Models
   public function persistAll($resources_hash) {
-    foreach($resources_hash as $resource_hash) {
+    foreach($resources_hash as $cnc_hash) {
       try {
-        $this->saveConnecResource($resource_hash);
+        $this->saveConnecResource($cnc_hash);
       } catch (Exception $e) {
-        error_log("Error when processing entity=".$this->connec_entity_name.", id=".$resource_hash['id'].", message=" . $e->getMessage());
+        error_log("Error when processing entity=".$this->connec_entity_name.", id=".$cnc_hash['id'].", message=" . $e->getMessage());
       }
     }
   }
 
   // Map a Connec Resource to an OrangeHRM Model
-  public function saveConnecResource($resource_hash, $persist=true, $model=null, $retry=true) {
-    error_log("saveConnecResource entity=$this->connec_entity_name, hash=" . json_encode($resource_hash));
+  public function saveConnecResource($cnc_hash, $persist=true, $model=null, $retry=true) {
+    error_log("saveConnecResource entity=$this->connec_entity_name, hash=" . json_encode($cnc_hash));
 
-    if(!$this->validate($resource_hash)) { return null; }
+    if(!$this->validate($cnc_hash)) { return null; }
 
     // Load existing Model or create a new instance
     try {
       if(is_null($model)) {
-        $model = $this->findOrInitializeModel($resource_hash);
+        $model = $this->findOrInitializeModel($cnc_hash);
         if(is_null($model)) {
           error_log("model cannot be initialized and will not be saved");
           return null;
@@ -144,12 +155,12 @@ abstract class BaseMapper {
 
       // Update the model attributes
       error_log("mapConnecResourceToModel entity=$this->connec_entity_name");
-      $this->mapConnecResourceToModel($resource_hash, $model);
+      $this->mapConnecResourceToModel($cnc_hash, $model);
 
       // Save and map the Model id to the Connec resource id
       if($persist) {
-        $this->persistLocalModel($model, $resource_hash);
-        $this->findOrCreateIdMap($resource_hash, $model);
+        $this->persistLocalModel($model, $cnc_hash);
+        $this->findOrCreateIdMap($cnc_hash, $model);
       }
 
       return $model;
@@ -158,23 +169,24 @@ abstract class BaseMapper {
       if($retry) {
         // Can fail due to concurrent persists using the same PK, so give it another chance
         error_log("retrying saveConnecResource entity=$this->connec_entity_name");
-        return $this->saveConnecResource($resource_hash, $persist, $model, false);
+        return $this->saveConnecResource($cnc_hash, $persist, $model, false);
       }
     }
     return null;
   }
 
   // Map a Connec Resource to an OrangeHRM Model
-  public function findOrCreateIdMap($resource_hash, $model) {
+  public function findOrCreateIdMap($cnc_hash, $model) {
     $local_id = $this->getId($model);
-    error_log("findOrCreateIdMap entity=$this->connec_entity_name, local_id=$local_id, entity_id=".$resource_hash['id']);
+    $mno_id = $this->getConnecResourceId($cnc_hash);
+    error_log("findOrCreateIdMap entity=$this->connec_entity_name, local_id=$local_id, entity_id=" .$mno_id);
 
-    if($local_id == 0 || is_null($resource_hash['id'])) { return null; }
+    if($local_id == 0 || is_null($mno_id)) { return null; }
 
     $mno_id_map = MnoIdMap::findMnoIdMapByLocalIdAndEntityName($local_id, $this->local_entity_name);
     if(!$mno_id_map) {
-      error_log("map connec resource entity=$this->connec_entity_name, id=" . $resource_hash['id'] . ", local_id=$local_id");
-      return MnoIdMap::addMnoIdMap($local_id, $this->local_entity_name, $resource_hash['id'], $this->connec_entity_name);
+      error_log("map connec resource entity=$this->connec_entity_name, id=" . $mno_id . ", local_id=$local_id");
+      return MnoIdMap::addMnoIdMap($local_id, $this->local_entity_name, $mno_id, $this->connec_entity_name);
     }
 
     return $mno_id_map;
@@ -212,11 +224,11 @@ abstract class BaseMapper {
   }
 
   // Find an OrangeHRM entity matching the Connec resource or initialize a new one
-  protected function findOrInitializeModel($resource_hash) {
+  protected function findOrInitializeModel($cnc_hash) {
     $model = null;
 
     // Find local Model if exists
-    $mno_id = $resource_hash['id'];
+    $mno_id = $this->getConnecResourceId($cnc_hash);
     $mno_id_map = MnoIdMap::findMnoIdMapByMnoIdAndEntityName($mno_id, $this->connec_entity_name);
 
     error_log("find or initialize entity=$this->connec_entity_name, mno_id=$mno_id, mno_id_map=" . json_encode($mno_id_map));
@@ -233,7 +245,7 @@ abstract class BaseMapper {
     }
 
     // Match a local Model from hash attributes
-    if($model == null) { $model = $this->matchLocalModel($resource_hash); }
+    if($model == null) { $model = $this->matchLocalModel($cnc_hash); }
 
     // Create a new Model if none found
     if($model == null) { $model = $this->initializeNewModel(); }
@@ -244,8 +256,8 @@ abstract class BaseMapper {
   // Transform an OrangeHRM Model into a Connec Resource and push it to Connec
   protected function pushToConnec($model) {
     // Transform the Model into a Connec hash
-    $resource_hash = $this->mapModelToConnecResource($model);
-    $hash = array($this->connec_resource_name => $resource_hash);
+    $cnc_hash = $this->mapModelToConnecResource($model);
+    $hash = array($this->connec_resource_name => $cnc_hash);
     // Find Connec resource id
     $local_id = $this->getId($model);
     $mno_id_map = MnoIdMap::findMnoIdMapByLocalIdAndEntityName($local_id, $this->local_entity_name);
