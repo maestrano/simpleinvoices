@@ -36,11 +36,11 @@ class CompanyMapper extends BaseMapper {
     return (object) array();
   }
 
-  // Return the default Company
-  // protected function matchLocalModel($company_hash) {
-  //   return null;
-  //   //return $this->_organizationService->getOrganizationGeneralInformation();
-  // }
+  // Map the OrangeHRM model to a Connec resource hash
+  protected function mapModelToConnecResource($model) {
+    // do nothing
+    return null;
+  }
 
   // Map the Connec resource attributes onto the OrangeHRM Organization
   protected function mapConnecResourceToModel($company_hash, $model) {
@@ -113,10 +113,11 @@ class CompanyMapper extends BaseMapper {
     $_POST['enabled'] = 1;
 
     if ($model->id) {
-      $_GET[id] = $local_id->_id;
+      $_GET[id] = $model->id;
       updateBiller();
     } else {
       insertBiller();
+      $model->id = lastInsertId();
     }
   }
 
