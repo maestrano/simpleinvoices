@@ -1555,6 +1555,7 @@ function updateCustomerByObject($id, &$obj, $push_to_maestrano=true) {
         if ($result && $push_to_maestrano) {
             // Hook:Maestrano
 						// Choose between OrganizationMapper and PersonMapper based on type
+						$obj = getCustomer($id);
 						$mapper = ucfirst($obj['type']) . 'Mapper';
 						if(class_exists($mapper)) {
 							$customerMapper = new $mapper();
@@ -1910,22 +1911,27 @@ function insertTaxRate($push_to_maestrano=true) {
 		':domain_id', $auth_session->domain_id,
 		':description', $_POST['tax_description'],
 		':percent', $_POST['tax_percentage'],
-		':type', $_POST['type'],
+		':type', '%',
 		':enabled', $_POST['tax_enabled']))) {
 		$display_block = $LANG['save_tax_rate_failure'];
 	}
 
+	// Hook: Maestrano
   // Send Tax to Maestrano
-  // $maestrano = MaestranoService::getInstance();
-  // if ($push_to_maestrano and $maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-  //   $last_insert_id = lastInsertId();
-  //   $obj['taxid'] = $last_insert_id;
-  //   $obj['tax_description'] = $_POST['tax_description'];
-  //   $obj['tax_percentage'] = $_POST['tax_percentage'];
-	//
-  //   $mno_tax = new MnoSoaTax($db, new MnoSoaBaseLogger());
-  //   $mno_tax->send($obj, $push_to_maestrano);
-  // }
+  if ($push_to_maestrano) {
+    // Build model
+		$model = array();
+    $model['tax_id'] = lastInsertId();
+    $model['tax_description'] = $_POST['tax_description'];
+    $model['tax_percentage'] = $_POST['tax_percentage'];
+
+		// Choose between OrganizationMapper and PersonMapper based on type
+		$mapper = 'TaxCodeMapper';
+		if(class_exists($mapper)) {
+			$customerMapper = new $mapper();
+			$customerMapper->processLocalUpdate((object) $model);
+		}
+  }
 
 	return $display_block;
 }
@@ -1954,22 +1960,28 @@ function updateTaxRate($push_to_maestrano=true) {
 	  	':enabled', $_POST['tax_enabled'],
 	  	':id', $_GET['id'],
 	  	':domain_id', $auth_session->domain_id,
-	  	':type', $_POST['type']
+	  	':type', '%'
 
 		))) {
 		$display_block = $LANG['save_tax_rate_failure'];
 	}
 
+	// Hook:Maestrano
   // Send Tax to Maestrano
-  // $maestrano = MaestranoService::getInstance();
-  // if ($push_to_maestrano and $maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-  //   $obj['taxid'] = $_GET['id'];
-  //   $obj['tax_description'] = $_POST['tax_description'];
-  //   $obj['tax_percentage'] = $_POST['tax_percentage'];
-	//
-  //   $mno_tax = new MnoSoaTax($db, new MnoSoaBaseLogger());
-  //   $mno_tax->send($obj, $push_to_maestrano);
-  // }
+  if ($push_to_maestrano) {
+		// Build model
+		$model = array();
+    $model['tax_id'] = $_GET['id'];
+    $model['tax_description'] = $_POST['tax_description'];
+    $model['tax_percentage'] = $_POST['tax_percentage'];
+
+		// Push tax to Connec!
+		$mapper = 'TaxCodeMapper';
+		if(class_exists($mapper)) {
+			$customerMapper = new $mapper();
+			$customerMapper->processLocalUpdate((object) $model);
+		}
+  }
 
 	return $display_block;
 }
