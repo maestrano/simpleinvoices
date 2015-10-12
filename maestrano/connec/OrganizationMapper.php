@@ -34,7 +34,7 @@ class OrganizationMapper extends BaseMapper {
     return (object) array();
   }
 
-  // Map the Connec resource attributes onto the OrangeHRM Customer
+  // Map the Connec resource attributes onto the Customer model
   protected function mapConnecResourceToModel($cnc_hash, $model) {
     // Map hash attributes to Customer
     if(!is_null($cnc_hash['name'])) { $model->name = $cnc_hash['name']; }
@@ -67,7 +67,7 @@ class OrganizationMapper extends BaseMapper {
     }
   }
 
-  // Map the OrangeHRM Customer to a Connec resource hash
+  // Map the Customer model to a Connec resource hash
   protected function mapModelToConnecResource($model) {
     $cnc_hash = array();
 
@@ -99,7 +99,7 @@ class OrganizationMapper extends BaseMapper {
     return $cnc_hash;
   }
 
-  // Persist the OrangeHRM Customer
+  // Persist the SimpleInvoices Customer
   protected function persistLocalModel($model, $cnc_hash) {
     $hash = json_decode(json_encode($model), true);
     if ($this->getId($model)) {

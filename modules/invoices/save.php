@@ -26,8 +26,6 @@ if(!isset( $_POST['type']) && !isset($_POST['action'])) {
 $saved = false;
 $type = $_POST['type'];
 
-//$mno_invoice = new MnoSoaInvoice($db, new MnoSoaBaseLogger());
-
 if ($_POST['action'] == "insert" ) {
 	if(insertInvoice($type)) {
 		$id = lastInsertId();
@@ -109,7 +107,7 @@ if ($_POST['action'] == "insert" ) {
 			delete('invoice_items','id',$_POST["line_item$i"]);
 
       // Maestrano hook - delete invoice line
-      //$mno_invoice->markInvoiceLineForDeletion($_POST["line_item$i"]);
+			MnoIdMap::deleteMnoIdMap($_POST["line_item$i"],'INVOICE_LINE')
 		}
 		if($_POST["delete$i"] !== "yes")
 		{
@@ -148,10 +146,14 @@ if ($_POST['action'] == "insert" ) {
 $smarty->assign('saved', $saved);
 $smarty->assign('id', $id);
 
-// Maestrano hook - push invocie
-// $maestrano = MaestranoService::getInstance();
-// if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {
-//   $mno_invoice->send($_POST, true);
-// }
+// Hook: Maestrano
+if ($saved) {
+		// Push item to Connec!
+		$mapper = 'InvoiceMapper';
+		if(class_exists($mapper)) {
+			$mapperInstance = new $mapper();
+			$mapperInstance->processLocalUpdate((object) $_POST);
+		}
+}
 
 ?>
