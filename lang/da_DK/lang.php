@@ -80,6 +80,7 @@ $LANG['consulting_style'] = "Konsulent stil";//1
 $LANG['country'] = "Land";//1
 $LANG['create_invoice'] ="Opret Ny Faktura";//1
 $LANG['credits'] = "Credits";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Valuta Tegn";//1
 $LANG['custom_field'] = "Egendefineret felt";//1
 $LANG['custom_fields'] = "Egendefinerede felter";//1

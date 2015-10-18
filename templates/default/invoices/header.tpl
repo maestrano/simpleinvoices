@@ -15,9 +15,9 @@
 
     <span class="welcome">
       <a href="index.php?module=invoices&amp;view=itemised"><img class="action" src="./images/common/edit.png"/>&nbsp;{$LANG.itemised_style}</a>
-			 &nbsp;&nbsp; 
+			 &nbsp;&nbsp;
        <a href="index.php?module=invoices&amp;view=total"><img class="action" src="./images/common/page_white_edit.png"/>&nbsp;{$LANG.total_style}</a>
-			 &nbsp;&nbsp; 
+			 &nbsp;&nbsp;
 	   <a class="cluetip" href="#" rel="index.php?module=documentation&amp;view=view&amp;page=help_invoice_types" title="{$LANG.invoice_type}">
 			<img class="action" src="./images/common/help-small.png" alt="" />
 	   </a>
@@ -67,20 +67,29 @@
                 <tr wrap="nowrap">
                         <td class="details_screen">{$LANG.date_formatted}</td>
                         <td wrap="nowrap">
-                            <input 
-				type="text" 
-				class="validate[required,custom[date],length[0,10]] date-picker" 
-				size="10" 
-				name="date" 
-				id="date1" 
+                            <input
+				type="text"
+				class="validate[required,custom[date],length[0,10]] date-picker"
+				size="10"
+				name="date"
+				id="date1"
 				{if $smarty.get.date}
 				    value="{$smarty.get.date}"
 				{else}
-                                    value='{$smarty.now|date_format:"%Y-%m-%d"}' 
+                                    value='{$smarty.now|date_format:"%Y-%m-%d"}'
                                 {/if}
-			    />   
+			    />
                         </td>
                 </tr>
+								<tr>
+									<td class="details_screen">{$LANG.currency}</td><td>
+										<select name="currency">
+										{foreach from=$currencies item=currency}
+											<option {if $currency == $defaultCurrency} selected {/if} value="{$currency|htmlsafe}">{$currency|htmlsafe}</option>
+										{/foreach}
+										</select>
+									</td>
+								</tr>
        </table>
         </td></tr>
        <tr><td>

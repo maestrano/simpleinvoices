@@ -74,6 +74,7 @@ $LANG['consulting_style'] = "Svetovalna oblika";//1
 $LANG['country'] = "Država";//1
 $LANG['create_invoice'] ="Pripravi ponudbo";//1
 $LANG['credits'] = "Prispevki";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Oznaka valute";//1
 $LANG['custom_field'] = "Prosta polja";//1
 $LANG['Custom_Fields'] = "Custom Fields";//0

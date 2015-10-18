@@ -74,6 +74,7 @@ $LANG['consulting_style'] = "Stil għal-Konsulenza";//1
 $LANG['country'] = "Pajjiż";//1
 $LANG['create_invoice'] ="Oħloq invoice";//1
 $LANG['credits'] = "Kreditu";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Munita";//1
 $LANG['custom_field'] = "Personalizzazjoni";//1
 $LANG['Custom_Fields'] = "Custom Fields";//0

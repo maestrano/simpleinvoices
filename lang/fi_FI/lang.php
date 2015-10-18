@@ -74,6 +74,7 @@ $LANG['consulting_style'] = "konsultointia";//1
 $LANG['country'] = "Maa";//1
 $LANG['create_invoice'] ="Uusi lasku";//1
 $LANG['credits'] = "Ansiot";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Valuutan tunnus";//1
 $LANG['custom_field'] = "Muokattava kenttä";//1
 $LANG['Custom_Fields'] = "Muokattavat Kentät";//1

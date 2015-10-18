@@ -71,6 +71,7 @@ $LANG['consulting_style'] = "Informatieve stijl";//1
 $LANG['country'] = "Land";//1
 $LANG['create_invoice'] ="Maak een factuur";//1
 $LANG['credits'] = "Medewerkers";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Valuta teken";//1
 $LANG['custom_field'] = "Gebruikersveld";//1
 $LANG['Custom_Fields'] = "Gebruikersvelden";//1

@@ -87,6 +87,7 @@ $LANG['credit_card_number_new'] = "New credit card number";//1
 $LANG['credit_card_expiry_month'] = "Credit card expiry month";//1
 $LANG['credit_card_expiry_year'] = "Credit card expiry year";//1
 $LANG['credits'] = "Credits";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_code'] = "Currency code";//1
 $LANG['currency_sign'] = "Currency sign";//1
 $LANG['currency_sign_non_dollar'] = "Euro, Pound, non-$ sign please read this";//1

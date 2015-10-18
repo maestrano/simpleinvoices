@@ -28,11 +28,6 @@ class InvoiceLineMapper extends BaseMapper {
     return $model->id;
   }
 
-  // Prefix the Invoice Line ID with the Invoice ID to ensure unicity
-  protected function getConnecResourceId($model_hash) {
-    return $this->invoice_hash['id'] . "#" . $model_hash['id'];
-  }
-
   // Retrieve an invoice line by id
   public function loadModelById($local_id) {
     $invoice_lines = invoice::getInvoiceItems($this->invoice->id);
@@ -71,6 +66,7 @@ class InvoiceLineMapper extends BaseMapper {
     $model->gross_total = $cnc_hash['total_price']['net_amount'] ? $cnc_hash['total_price']['net_amount'] : 0;
     $model->tax_amount = $cnc_hash['total_price']['tax_amount'] ? $cnc_hash['total_price']['tax_amount'] : 0;
     $model->total_ttc = $cnc_hash['total_price']['total_amount'] ? $cnc_hash['total_price']['total_amount'] : 0;
+    $model->currency = $cnc_hash['total_price']['currency'] ? $cnc_hash['total_price']['currency'] : 'USD';
 
     // Map Tax Code
     if($this->is_set($cnc_hash['tax_code_id'])) {
@@ -89,27 +85,24 @@ class InvoiceLineMapper extends BaseMapper {
   protected function mapModelToConnecResource($model) {
     $cnc_hash = array();
 
-    // Get or fetch currency_code
-    if(is_null($model->currency_code)) {
-      $invoiceMapper = new InvoiceMapper();
-      $model->currency_code = $invoiceMapper->getCurrencyCodeById($model->invoice_id);
+    // Ensure the model is mapped
+    $mno_id_map = MnoIdMap::findMnoIdMapByLocalIdAndEntityName($model->id,$this->local_entity_name);
+    $mno_id = $mno_id_map['mno_entity_guid'];
+    if(!$this->is_set($mno_id)) {
+      $mno_id = uniqid();
+      MnoIdMap::addMnoIdMap($model->id,$this->local_entity_name, $mno_id, $this->connec_entity_name);
     }
 
     // Line attributes
+    $cnc_hash['id'] = $mno_id;
     if(!is_null($model->description)) { $cnc_hash['description'] = $model->description; }
 
     // Product - line values
     if(!is_null($model->quantity)) { $cnc_hash['quantity'] = $model->quantity; }
     if(!is_null($model->unit_price)) {
-      $cnc_hash['unit_price']['net_amount'] = $model->quantity;
-      $cnc_hash['unit_price']['currency'] = $model->currency_code;
+      $cnc_hash['unit_price']['net_amount'] = $model->unit_price;
+      $cnc_hash['unit_price']['currency'] = $model->currency;
     }
-
-    // Totals
-    $cnc_hash['total_price']['net_amount'] = $model->gross_total ? $model->gross_total : 0;
-    $cnc_hash['total_price']['tax_amount'] =  $model->tax_amount ? $model->tax_amount : 0;
-    $cnc_hash['total_price']['total_amount'] = $model->total_ttc ? $model->total_ttc : 0;
-    $cnc_hash['total_price']['currency'] = $model->currency_code;
 
     // Map Tax Code
     $taxCodeMnoId = $this->findMnoTaxCodeIdByInvoiceItemId($model->id);
@@ -117,7 +110,7 @@ class InvoiceLineMapper extends BaseMapper {
 
     // Map Product
     $productId = $this->findMnoItemIdByProductId($model->product_id);
-    if(!is_null($itemId)) { $cnc_hash['item_id'] = $productId; }
+    if(!is_null($productId)) { $cnc_hash['item_id'] = $productId; }
 
     return $cnc_hash;
   }
@@ -125,7 +118,7 @@ class InvoiceLineMapper extends BaseMapper {
   // Persist the SimpleInvoices Item
   protected function persistLocalModel($model, $cnc_hash) {
     if ($this->getId($model)) {
-      updateInvoiceItem($this->getId($model), $model->quantity, $model->product_id, 0, $model->tax_code_id, $model->description, $model->unit_price, false);
+      updateInvoiceItem($this->getId($model), $model->quantity, $model->product_id, 0, array($model->tax_code_id), $model->description, $model->unit_price, false);
     } else {
       $local_id = insertInvoiceItem($model->invoice_id, $model->quantity, $model->product_id, 0, $model->tax_code_id, $model->description, $model->unit_price, false);
       $model->id = $local_id;

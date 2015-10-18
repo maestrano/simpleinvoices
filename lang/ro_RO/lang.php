@@ -75,6 +75,7 @@ $LANG['consulting_style'] = "Stil consultanta";//1
 $LANG['country'] = "Tara";//1
 $LANG['create_invoice'] ="Creeaza o factura";//1
 $LANG['credits'] = "Multumiri";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Simbol moneda";//1
 $LANG['custom_field'] = "Camp personalizat";//1
 $LANG['Custom_Fields'] = "Campuri personalizate";//1

@@ -74,6 +74,7 @@ $LANG['consulting_style'] = "Konsultācijas veidne";//1
 $LANG['country'] = "Valsts";//1
 $LANG['create_invoice'] ="Izveidot pavadzīmi";//1
 $LANG['credits'] = "Kredīts";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Valūtas zīme";//1
 $LANG['custom_field'] = "Custom field";//0
 $LANG['Custom_Fields'] = "Custom Fields";//0

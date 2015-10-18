@@ -74,6 +74,7 @@ $LANG['consulting_style'] = "Detaylý Fatura";//1
 $LANG['country'] = "Ülke";//1
 $LANG['create_invoice'] ="Yeni Fatura Yarat";//1
 $LANG['credits'] = "Credits";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Parabirimi Sembolü";//1
 $LANG['custom_field'] = "Size Özel";//1
 $LANG['Custom_Fields'] = "Custom Fields";//0

@@ -29,17 +29,6 @@ class InvoiceMapper extends BaseMapper {
     return $model;
   }
 
-  // Take a local invoice id as argument and returns
-  // the related currency code
-  public function getCurrencyCodeById($local_id) {
-    // Fetch local id of the related tax code
-    $query = 'SELECT '.TB_PREFIX.'si_preferences.currency_code FROM '.TB_PREFIX.'si_invoices,'.TB_PREFIX.'si_preferences ';
-    $query .= 'WHERE '.TB_PREFIX.'si_invoices.preference_id = '.TB_PREFIX.'si_preferences.pref_id AND '.TB_PREFIX.'si_invoices.id = :id LIMIT 1';
-    $result = dbQuery($query, ':id', $id);
-    $row = $result->fetch();
-    return $row['currency_code'];
-  }
-
   // Overwrite me!
   // Optional: define how to initialize a new model in SimpleInvoices
   protected function initializeNewModel() {
@@ -49,12 +38,14 @@ class InvoiceMapper extends BaseMapper {
   // Map the Connec resource attributes onto the SimpleInvoice Item
   protected function mapConnecResourceToModel($cnc_hash, $model) {
     // Map regular attributes
-    $model->date = date('Y-m-d', $cnc_hash['transaction_date']);
+    $model->date = $cnc_hash['transaction_date'];
     $model->note = $cnc_hash['note'];
-    // TODO: we should check the invoice currency and try to associate (or create)
-    // a preference template with the same currency
-    $model->preference_id = 1;
-    $model->biller_id = 1;
+    if (!$this->is_set($model->preference_id)) { $model->preference_id = 1; }
+    if (!$this->is_set($model->biller_id)) { $model->biller_id = 1; }
+
+    // Map currency / it is assumed that all invoice lines are
+    // in the same currency
+    $model->currency = $cnc_hash['lines'][0]['total_price']['currency'] ? $cnc_hash['lines'][0]['total_price']['currency'] : 'USD';
 
     // Map Customer (Organization or Person)
     if($this->is_set($cnc_hash['organization_id'])) {
@@ -80,13 +71,20 @@ class InvoiceMapper extends BaseMapper {
     $cnc_hash['status'] = 'ACTIVE';
     $cnc_hash['type'] = 'CUSTOMER';
     if(!is_null($model->note)) { $cnc_hash['public_note'] = $model->note; }
+    if(!is_null($model->date)) { $cnc_hash['transaction_date'] = date('c',strtotime($model->date)); }
 
     // Map Customer id based on type
     $customer = (object) getCustomer($model->customer_id);
     if($customer->type == 'organization') {
-      $cnc_hash['organization_id'] = $model->customer_id;
+      $org_mapper = new OrganizationMapper();
+      $org = $org_mapper->loadModelById($model->customer_id);
+      $mno_id_map = $org_mapper->findIdMapOrPersist($org);
+      $cnc_hash['organization_id'] = $mno_id_map['mno_entity_guid'];
     } else {
-      $cnc_hash['person_id'] = $model->customer_id;
+      $pers_mapper = new PersonMapper();
+      $person = $pers_mapper->loadModelById($model->customer_id);
+      $mno_id_map = $pers_mapper->findIdMapOrPersist($org);
+      $cnc_hash['person_id'] = $mno_id_map['mno_entity_guid'];
     }
 
     // Map Customer address
@@ -132,7 +130,7 @@ class InvoiceMapper extends BaseMapper {
       foreach($cnc_hash['lines'] as $line_hash) {
         $invoice_line_mapper = new InvoiceLineMapper($model);
         $invoice_line = $invoice_line_mapper->saveConnecResource($line_hash);
-        array_push($processed_lines_local_ids, $invoice_line->rowid);
+        array_push($processed_lines_local_ids, $invoice_line->id);
       }
 
       // Delete local invoice lines that are not present in Connec!

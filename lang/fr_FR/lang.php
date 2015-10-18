@@ -76,6 +76,7 @@ $LANG['consulting_style'] = "texte";//1
 $LANG['country'] = "Pays";//1
 $LANG['create_invoice'] ="Cr&eacute;er une facture";//1
 $LANG['credits'] = "Cr&eacute;dits";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Symbole de la monnaie";//1
 $LANG['custom_field'] = "Projet";//1
 $LANG['Custom_Fields'] = "Champs facultatifs";//1

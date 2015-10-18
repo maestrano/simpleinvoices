@@ -107,7 +107,7 @@ if ($_POST['action'] == "insert" ) {
 			delete('invoice_items','id',$_POST["line_item$i"]);
 
       // Maestrano hook - delete invoice line
-			MnoIdMap::deleteMnoIdMap($_POST["line_item$i"],'INVOICE_LINE')
+			MnoIdMap::deleteMnoIdMap($_POST["line_item$i"],'INVOICE_LINE');
 		}
 		if($_POST["delete$i"] !== "yes")
 		{

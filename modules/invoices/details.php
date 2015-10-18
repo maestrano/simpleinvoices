@@ -22,6 +22,7 @@ $invoiceItems = invoice::getInvoiceItems($master_invoice_id);
 //var_dump($invoiceItems);
 $customers = getActiveCustomers();
 $preference = getPreference($invoice['preference_id']);
+if(is_null($invoice->currency)) { $invoice['currency'] = $preference['currency_code'] ? $preference['currency_code'] : 'USD'; }
 $billers = getActiveBillers();
 //$taxes = getActiveTaxes(); <--- look into this
 $defaults = getSystemDefaults();
@@ -35,6 +36,7 @@ for($i=1;$i<=4;$i++) {
 }
 
 $smarty -> assign("invoice",$invoice);
+$smarty -> assign("currencies",getCurrencies());
 $smarty -> assign("defaults",$defaults);
 $smarty -> assign("invoiceItems",$invoiceItems);
 $smarty -> assign("customers",$customers);

@@ -320,6 +320,11 @@ function getPreferences() {
 	return $preferences;
 }
 
+function getCurrencies() {
+	return array("AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL", "BSD", "BTC", "BTN", "BWP", "BYR", "BZD", "CAD", "CDF", "CHF", "CLF", "CLP", "CNY", "COP", "CRC", "CUC", "CUP", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EEK", "EGP", "ERN", "ETB", "EUR", "FJD", "FKP", "GBP", "GEL", "GHS", "GHS", "GIP", "GMD", "GNF", "GTQ", "GYD", "HKD", "HNL", "HRK", "HTG", "HUF", "IDR", "ILS", "INR", "IQD", "IRR", "ISK", "JEP", "JMD", "JOD", "JPY", "JPY", "KES", "KGS", "KHR", "KMF", "KPW", "KRW", "KWD", "KYD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LTL", "LVL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRO", "MTL", "MUR", "MVR", "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SKK", "SLL", "SOS", "SRD", "SSP", "STD", "SVC", "SYP", "SZL", "THB", "TJS", "TMM", "TMT", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VEF", "VND", "VUV", "WST", "XAF", "XAG", "XAU", "XCD", "XDR", "XOF", "XPF", "YER", "ZAR", "ZMK", "ZMW", "ZWD", "ZWL", "ZWN", "ZWR");
+}
+
+
 function getActiveTaxes() {
 	global $LANG;
 	global $dbh;
@@ -2027,7 +2032,8 @@ function insertInvoiceByObject(&$obj, $type, $push_to_maestrano=true) {
 			custom_field1,
 			custom_field2,
 			custom_field3,
-			custom_field4
+			custom_field4,
+			currency
 		)
 		VALUES
 		(
@@ -2043,7 +2049,8 @@ function insertInvoiceByObject(&$obj, $type, $push_to_maestrano=true) {
 			:customField1,
 			:customField2,
 			:customField3,
-			:customField4
+			:customField4,
+			:currency
 			)";
 
 	if ($db_server == 'pgsql') {
@@ -2059,7 +2066,8 @@ function insertInvoiceByObject(&$obj, $type, $push_to_maestrano=true) {
 				custom_field1,
 				custom_field2,
 				custom_field3,
-				custom_field4
+				custom_field4,
+				currency
 			)
 			VALUES
 			(
@@ -2074,7 +2082,8 @@ function insertInvoiceByObject(&$obj, $type, $push_to_maestrano=true) {
 				:customField1,
 				:customField2,
 				:customField3,
-				:customField4
+				:customField4,
+				:currency
 				)";
 	}
 
@@ -2097,7 +2106,8 @@ function insertInvoiceByObject(&$obj, $type, $push_to_maestrano=true) {
 		':customField1', $obj['customField1'],
 		':customField2', $obj['customField2'],
 		':customField3', $obj['customField3'],
-		':customField4', $obj['customField4']
+		':customField4', $obj['customField4'],
+		':currency', $obj['currency']
 		);
 
   $last_insert_id = lastInsertId();
@@ -2150,7 +2160,8 @@ function updateInvoiceByObject(&$obj, $invoice_id) {
 			custom_field1 = :customField1,
 			custom_field2 = :customField2,
 			custom_field3 = :customField3,
-			custom_field4 = :customField4
+			custom_field4 = :customField4,
+			currency = :currency
 		WHERE
 			id = :invoice_id";
 
@@ -2165,10 +2176,31 @@ function updateInvoiceByObject(&$obj, $invoice_id) {
 		':customField2', $obj['customField2'],
 		':customField3', $obj['customField3'],
 		':customField4', $obj['customField4'],
+		':currency', $obj['currency'],
 		':invoice_id', $invoice_id
 		);
 
   return $result;
+}
+
+function getInvoiceCurrency($invoice_id) {
+	global $db;
+	$sql = "SELECT currency FROM ".TB_PREFIX."invoices WHERE id = :invoice_id LIMIT 1";
+	$result = dbQuery($sql,':invoice_id', $invoice_id)->fetch();
+	$curr = $result['currency'] ? $result['currency'] : 'USD';
+	return $curr;
+}
+
+function getInvoiceCurrencyByInvoiceLineId($invoice_line_id) {
+	global $db;
+	$sql = "SELECT i.currency FROM ".TB_PREFIX."invoices i, ".TB_PREFIX."invoice_items l WHERE
+		l.id = :invoice_line_id
+		AND l.invoice_id = i.id
+		LIMIT 1";
+
+	$result = dbQuery($sql,':invoice_line_id', $invoice_line_id)->fetch();
+	$curr = $result['currency'] ? $result['currency'] : 'USD';
+	return $curr;
 }
 
 function insertInvoiceItem($invoice_id,$quantity,$product_id,$line_number,$line_item_tax_id,$description="", $unit_price="") {
@@ -2185,6 +2217,9 @@ function insertInvoiceItem($invoice_id,$quantity,$product_id,$line_number,$line_
 	$logger->log('Invoice: '.$invoice_id.' Tax '.$line_item_tax_id.' for line item '.$line_number.': '.$tax_total, Zend_Log::INFO);
 	$logger->log('Description: '.$description, Zend_Log::INFO);
 	$logger->log(' ', Zend_Log::INFO);
+
+	// Get invoice currency
+	$currency = getInvoiceCurrency($invoice_id);
 
 	//line item gross total
 	$gross_total = $unit_price  * $quantity;
@@ -2212,7 +2247,8 @@ function insertInvoiceItem($invoice_id,$quantity,$product_id,$line_number,$line_
 				tax_amount,
 				gross_total,
 				description,
-				total
+				total,
+				currency
 			)
 			VALUES
 			(
@@ -2223,7 +2259,8 @@ function insertInvoiceItem($invoice_id,$quantity,$product_id,$line_number,$line_
 				:tax_amount,
 				:gross_total,
 				:description,
-				:total
+				:total,
+				:currency
 			)";
 
 	//echo $sql;
@@ -2237,7 +2274,8 @@ function insertInvoiceItem($invoice_id,$quantity,$product_id,$line_number,$line_
 		':tax_amount', $tax_total,
 		':gross_total', $gross_total,
 		':description', $description,
-		':total', $total
+		':total', $total,
+		':currency', $currency
 		);
 
   $last_insert_id = lastInsertId();
@@ -2366,6 +2404,8 @@ function updateInvoiceItem($id,$quantity,$product_id,$line_number,$line_item_tax
   global $db;
   global $dbh;
 
+	$currency = getInvoiceCurrencyByInvoiceLineId($id);
+
 	//$product = getProduct($product_id);
 	//$tax = getTaxRate($tax_id);
 	$tax_total = getTaxesPerLineItem($line_item_tax_id,$quantity, $unit_price);
@@ -2399,7 +2439,8 @@ function updateInvoiceItem($id,$quantity,$product_id,$line_number,$line_item_tax
 	tax_amount = :tax_amount,
 	gross_total = :gross_total,
 	description = :description,
-	total = :total
+	total = :total,
+	currency = :currency
 	WHERE id = :id";
 
 	//echo $sql;
@@ -2411,6 +2452,7 @@ function updateInvoiceItem($id,$quantity,$product_id,$line_number,$line_item_tax
 		':gross_total', $gross_total,
 		':description', $description,
 		':total', $total,
+		':currency', $currency,
 		':id', $id
 		);
 

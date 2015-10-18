@@ -74,6 +74,7 @@ $LANG['consulting_style'] = "Štýl: Poradenstvo";//1
 $LANG['country'] = "Štát";//1
 $LANG['create_invoice'] ="Vytvoriť faktúru";//1
 $LANG['credits'] = "Tvorcovia";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Symbol meny";//1
 $LANG['custom_field'] = "Voliteľné pole";//1
 $LANG['Custom_Fields'] = "Custom Fields";//0

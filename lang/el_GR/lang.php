@@ -74,6 +74,7 @@ $LANG['consulting_style'] = "Παροχής Υπηρεσιών";//1
 $LANG['country'] = "Χώρα";//1
 $LANG['create_invoice'] ="Δημιουργία Τιμολογίου";//1
 $LANG['credits'] = "Ευχαριστούμε τους...";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Σύμβολο Νομίσματος";//1
 $LANG['custom_field'] = "Ελεύθερο Πεδίο";//1
 $LANG['Custom_Fields'] = "Custom Fields";//0

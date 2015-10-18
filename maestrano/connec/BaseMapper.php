@@ -137,7 +137,7 @@ abstract class BaseMapper {
     }
   }
 
-  // Map a Connec Resource to an OrangeHRM Model
+  // Map a Connec Resource to a Model
   public function saveConnecResource($cnc_hash, $persist=true, $model=null, $retry=true) {
     error_log("saveConnecResource entity=$this->connec_entity_name, hash=" . json_encode($cnc_hash));
 
@@ -175,7 +175,7 @@ abstract class BaseMapper {
     return null;
   }
 
-  // Map a Connec Resource to an OrangeHRM Model
+  // Map a Connec Resource to a Model
   public function findOrCreateIdMap($cnc_hash, $model) {
     $local_id = $this->getId($model);
     $mno_id = $this->getConnecResourceId($cnc_hash);
@@ -223,7 +223,7 @@ abstract class BaseMapper {
     }
   }
 
-  // Find an OrangeHRM entity matching the Connec resource or initialize a new one
+  // Find a model matching the Connec resource or initialize a new one
   protected function findOrInitializeModel($cnc_hash) {
     $model = null;
 
@@ -253,7 +253,7 @@ abstract class BaseMapper {
     return $model;
   }
 
-  // Transform an OrangeHRM Model into a Connec Resource and push it to Connec
+  // Transform a Model into a Connec Resource and push it to Connec
   protected function pushToConnec($model) {
     // Transform the Model into a Connec hash
     $cnc_hash = $this->mapModelToConnecResource($model);

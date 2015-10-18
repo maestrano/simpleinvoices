@@ -111,6 +111,7 @@
     - 2_add_mno_id_map.sql
     - 3_add_customer_type.sql
     - 4_add_product_type.sql
+    - 5_add_currency.sql
 
 - name: SimpleInvoices | Set file permissions
   file:

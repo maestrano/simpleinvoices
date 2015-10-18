@@ -65,6 +65,7 @@ $LANG['consulting_style'] = "Stile preventivo";//1
 $LANG['country'] = "Nazione";//1
 $LANG['create_invoice'] ="Crea una fattura";//1
 $LANG['credits'] = "Crediti";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Simbolo valuta";//1
 $LANG['custom_field'] = "Campo libero";//1
 $LANG['Custom_Fields'] = "Custom Fields";//0

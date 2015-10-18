@@ -74,6 +74,7 @@ $LANG['consulting_style'] = "Konsulence";//1
 $LANG['country'] = "Qyteti";//1
 $LANG['create_invoice'] ="Krijo fature";//1
 $LANG['credits'] = "Kredi";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Kartmonedha";//1
 $LANG['custom_field'] = "Fushe e vecante";//1
 $LANG['Custom_Fields'] = "Custom Fields";//0
