@@ -62,8 +62,12 @@ class PaymentTransactionMapper extends BaseMapper {
     $model->ac_amount = $cnc_line_hash['amount']['total_amount'] ? $cnc_line_hash['amount']['total_amount'] : 0;
     $model->currency = $cnc_line_hash['amount']['currency'] ? $cnc_line_hash['amount']['currency'] : 'USD';
 
-    // TODO: Sync payment type
-    $model->ac_payment_type = 1;
+    // Map Payment Method
+    if($this->is_set($cnc_payment_hash['payment_method'])) {
+      $pymt_type_mapper = new PaymentMethodMapper();
+      $pymt_type = $pymt_type_mapper->loadModelByConnecId($cnc_payment_hash['payment_method']['id']);
+      $model->ac_payment_type = $pymt_type->id;
+    }
 
     // Map payment note
     if($this->is_set($cnc_payment_hash['private_note'])) {

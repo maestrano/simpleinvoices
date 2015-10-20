@@ -108,6 +108,14 @@ class PaymentMapper extends BaseMapper {
     json_encode($model);
     $cnc_hash['currency'] = $model->currency;
 
+    // Map Payment Method
+    if($this->is_set($model->ac_payment_type)) {
+      $pymt_type_mapper = new PaymentMethodMapper();
+      $pymt_type = $pymt_type_mapper->loadModelById($model->ac_payment_type);
+      $mno_id_map = $pymt_type_mapper->findIdMapOrPersist($pymt_type);
+      $cnc_hash['payment_method'] = array('id' => $mno_id_map['mno_entity_guid']);
+    }
+
     // Map payment lines
     $payment_line_mapper = new PaymentLineMapper();
     $cnc_hash['payment_lines'] = array(
