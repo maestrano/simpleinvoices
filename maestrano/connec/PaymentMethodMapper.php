@@ -55,17 +55,11 @@ class PaymentMethodMapper extends BaseMapper {
     $pymt_type = $this->findPaymentTypeByLabel($model->pt_description);
     if(!is_null($pymt_type) && $this->is_set($pymt_type['pt_id'])) { $model->pt_id = $pymt_type['pt_id']; }
 
-    error_log("PERSISTING PAYMENT METHOD");
-    error_log("MODEL: " . json_encode($model));
-    error_log("ID: " . $model->pt_id);
-
     if ($this->getId($model)) {
       $this->updatePaymentMethod($model->pt_id, $model->pt_description);
     } else {
       $res = $this->insertPaymentMethod($model->pt_description);
-      error_log(json_encode($res));
       $model->pt_id = lastInsertId();
-      error_log("LAST INSERT ID: " . $model->pt_id);
     }
   }
 
