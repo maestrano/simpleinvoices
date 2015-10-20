@@ -20,6 +20,39 @@ function checkLogin() {
 	}
 }
 
+function uploadLogo($form_file) {
+	$target_dir = "./templates/invoices/logos";
+	$target_file = $target_dir . '/' . basename($form_file["name"]);
+	$uploadOk = 1;
+	$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
+
+	// Check if image file is a actual image or fake image
+	$check = getimagesize($form_file["tmp_name"]);
+	if($check === false) {
+		error_log("Uploaded logo size can't be detected");
+		return null;
+	}
+
+	// Allow certain file formats
+	if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+	&& $imageFileType != "gif" ) {
+		error_log("Uploaded logo is not an image ('jpg', 'png', 'jpeg', 'gif')");
+		return null;
+	}
+
+	// Check file size
+	if ($form_file["size"] > 5000000) {
+		error_log("Uploaded logo exceeds authorized size of 5M");
+    return null;
+	}
+
+	// Move the file
+	move_uploaded_file($form_file["tmp_name"], $target_file);
+
+	// Return the filename
+	return $form_file["name"];
+}
+
 function getLogoList() {
 	$dirname="./templates/invoices/logos";
 	$ext = array("jpg", "png", "jpeg", "gif");
@@ -33,7 +66,7 @@ function getLogoList() {
 	}
 
 	sort($files);
-	
+
 	return $files;
 }
 
@@ -51,7 +84,7 @@ function getLogo($biller) {
 
 /**
 * Function: get_custom_field_label
-* 
+*
 * Prints the name of the custom field based on the input. If the custom field has not been defined by the user than use the default in the lang files
 *
 * Arguments:
@@ -60,36 +93,36 @@ function getLogo($biller) {
 function get_custom_field_label($field)         {
 	global $LANG;
 	global $dbh;
-	
+
     $sql =  "SELECT cf_custom_label FROM ".TB_PREFIX."custom_fields WHERE cf_custom_field = :field";
     $sth = dbQuery($sql, ':field', $field) or die(end($dbh->errorInfo()));
 
     $cf = $sth->fetch();
 
     //grab the last character of the field variable
-    $get_cf_number = $field[strlen($field)-1];    
+    $get_cf_number = $field[strlen($field)-1];
 
     //if custom field is blank in db use the one from the LANG files
     if ($cf['cf_custom_label'] == null) {
        	$cf['cf_custom_label'] = $LANG['custom_field'] . $get_cf_number;
     }
-        
+
     return $cf['cf_custom_label'];
 }
 
-/* 
+/*
  * Function: getCustomFieldLabels
- * 
+ *
  * Used to get the names of the custom fields. If custom fields is blank in db then print 'Custom Field' and the ID
  * Arguments:
  * Type 	- is the module your getting the labels of the custom fields for, ie. biller
  *
 function getCustomFieldLabels($type) {
 	global $LANG;
-		
+
 	$sql = "SELECT cf_custom_label FROM ".TB_PREFIX."custom_fields WHERE cf_custom_field LIKE '".$type."_cf_'";
 	$result = mysqlQuery($sql) or die(mysql_error());
-	
+
 	for($i=1;$row = mysql_fetch_row($result);$i++) {
 		$cf[$i]=$row[0];
 		if($cf[$i] == null) {
@@ -104,7 +137,7 @@ function getCustomFieldLabels($type) {
 
 /**
 * Function: get_custom_field_name
-* 
+*
 * Used by manage_custom_fields to get the name of the custom field and which section it relates to (ie, biller/product/customer)
 *
 * Arguments:
@@ -119,7 +152,7 @@ function get_custom_field_name($field) {
         $get_cf_letter = $field[0];
         //grab the last character of the field variable
        	$get_cf_number = $field[strlen($field)-1];
-	
+
 /*
 	if ($get_cf_letter == "b") {
 		$custom_field_name = $LANG['biller'];
@@ -169,16 +202,16 @@ function calc_invoice_paid($inv_idField) {
 function calc_customer_total($customer_id) {
 	global $LANG;
 	global $dbh;
-	
+
     $sql ="SELECT
-		coalesce(sum(ii.total),  0) AS total 
+		coalesce(sum(ii.total),  0) AS total
 	FROM
 		".TB_PREFIX."invoice_items ii INNER JOIN
 		".TB_PREFIX."invoices iv ON (iv.id = ii.invoice_id)
-	WHERE  
+	WHERE
 		iv.customer_id  = :customer
 	";
-	
+
     $sth = dbQuery($sql, ':customer', $customer_id) or die(end($dbh->errorInfo()));
 	$invoice = $sth->fetch();
 
@@ -188,15 +221,15 @@ function calc_customer_total($customer_id) {
 
 function calc_customer_paid($customer_id) {
 	global $LANG;
-		
+
 #amount paid calc - start
 	$sql = "
-	SELECT coalesce(sum(ap.ac_amount), 0) AS amount 
+	SELECT coalesce(sum(ap.ac_amount), 0) AS amount
 	FROM
 		".TB_PREFIX."payment ap INNER JOIN
 		".TB_PREFIX."invoices iv ON (iv.id = ap.ac_inv_id)
 	WHERE iv.customer_id = :customer";
-	
+
 	$sth = dbQuery($sql, ':customer', $customer_id);
 	$invoice = $sth->fetch();
 
@@ -207,7 +240,7 @@ function calc_customer_paid($customer_id) {
 
 /**
 * Function: calc_invoice_tax
-* 
+*
 * Calculates the total tax for a given invoices
 *
 * Arguments:
@@ -215,7 +248,7 @@ function calc_customer_paid($customer_id) {
 **/
 function calc_invoice_tax($invoice_id) {
 	global $LANG;
-		
+
 	#invoice total tax
 	$sql ="SELECT SUM(tax_amount) AS total_tax FROM ".TB_PREFIX."invoice_items WHERE invoice_id = :invoice_id";
 	$sth = dbQuery($sql, ':invoice_id', $invoice_id);
@@ -244,7 +277,7 @@ function dropDown($choiceArray, $defVal) {
 
 /**
 * Function: show_custom_field
-* 
+*
 * If a custom field has been defined then show it in the add,edit, or view invoice screen. This is used for the Invoice Custom Fields - may be used for the others as wll based on the situation
 *
 * Parameters:
@@ -281,7 +314,7 @@ function show_custom_field($custom_field,$custom_field_value,$permission,$css_cl
 	}
 	/*if permision is write then coming from a new invoice screen show show only the custom field and have a label
 	* if custom_field_value !null coming from existing invoice so show only the cf that they actually have
-	*/	
+	*/
 	if ( (($has_custom_label_value != null) AND ( $permission == "write")) OR ($custom_field_value != null)) {
 
 		$custom_label_value = htmlsafe(get_custom_field_label($custom_field));
@@ -305,7 +338,7 @@ EOD;
 			<tr>
 				<td class="$css_class1">$custom_label_value
 				<a class="cluetip" href="#"	rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields" title="Custom Fields"><img src="./images/common/help-small.png" alt="" /></a>
- 
+
 				</td>
 				<td>
 					<input type="text" name="customField$custom_field_number" value="$custom_field_value" size="25" />
@@ -317,7 +350,7 @@ EOD;
 	return $display_block;
 }
 
-function simpleInvoicesError($type,$info1 = "", $info2 = "") 
+function simpleInvoicesError($type,$info1 = "", $info2 = "")
 {
 
     switch ($type)
@@ -332,9 +365,9 @@ function simpleInvoicesError($type,$info1 = "", $info2 = "")
             ===========================================<br />
             The ".$info1." <b>".$info2."</b> has to be writeable");
         break;
-        
+
         case "dbConnection":
-        
+
             $error = exit("
             <br />
             ===========================================<br />
@@ -346,11 +379,11 @@ function simpleInvoicesError($type,$info1 = "", $info2 = "")
             If this is an Access denied error please enter the correct database connection details config/config.ini
             <br />
             <br />
-            <b>Note:</b> If you are installing Simple Invoices please follow the below steps: 
+            <b>Note:</b> If you are installing Simple Invoices please follow the below steps:
             <br />1. Create a blank MySQL database
             <br />2. Enter the correct database connection details in the config/config.ini file
             <br />3. Refresh this page
-        
+
             <br />
             <br />
             ===========================================<br />
@@ -358,14 +391,14 @@ function simpleInvoicesError($type,$info1 = "", $info2 = "")
         break;
 
         case "PDO":
-        
+
             $error = exit("
             <br />
             ===========================================<br />
             Simple Invoices - PDO problem<br />
             ===========================================<br />
             <br />
-            PDO is not configured in your PHP installation.<br />  
+            PDO is not configured in your PHP installation.<br />
             This means that Simple Invoices can't be used.<br /><br />
 
             To fix this please installed the pdo_mysql php extension.<br />
@@ -376,14 +409,14 @@ function simpleInvoicesError($type,$info1 = "", $info2 = "")
         break;
 
         case "sql":
-        
+
             $error = exit("
             <br />
             ===========================================<br />
             Simple Invoices - SQL problem<br />
             ===========================================<br />
             <br />
-            The following sql statement:<br />  
+            The following sql statement:<br />
             ".$info2."<br /><br />
 
             had the following error code: ".$info1['1']."<br />
@@ -393,7 +426,7 @@ function simpleInvoicesError($type,$info1 = "", $info2 = "")
             ");
         break;
         case "PDO_mysql_attr":
-        
+
             $error = exit("
             <br />
             ===========================================<br />
@@ -401,7 +434,7 @@ function simpleInvoicesError($type,$info1 = "", $info2 = "")
             ===========================================<br />
             <br />
             Your Simple Invoices installation can't use the<br />
-            database settings 'database.utf8'.<br /><br />  
+            database settings 'database.utf8'.<br /><br />
 
             To fix this please edit config/config.ini and<br />
             set 'database.utf8' to 'false'<br />
@@ -418,7 +451,7 @@ function simpleInvoicesError($type,$info1 = "", $info2 = "")
 
 function checkConnection() {
 	global $dbh;
-	
+
 	if(!$dbh) {
 		simpleInvoiceError("dbConnection",$db_server,$dbh->errorInfo());
 /*
@@ -428,7 +461,7 @@ function checkConnection() {
 		===========================================<br />
 		Could not connect to the Simple Invoices database<br /><br />
 		Please refer to the following database ('.$db_server.') error for for to fix this: <b>ERROR :' . end($dbh->errorInfo()) . '</b><br /><br />
-		If this is an Access denied error please make sure that the db_host, db_name, db_user, and db_password in config/config.php are correct 
+		If this is an Access denied error please make sure that the db_host, db_name, db_user, and db_password in config/config.php are correct
 		<br />
 		===========================================<br />
 		');
@@ -484,7 +517,7 @@ function sql2xml($sth, $count) {
 		{
 			$xml .= ("<actions><a href='index.php'>TEST</a>
 </actions>");
-		}	
+		}
 */
 		//for($i=0; $i < $fcount; $i++)
 		foreach($row as $key => $value)
@@ -502,12 +535,12 @@ function sql2xml($sth, $count) {
 
 /**
 * Function: si_truncate
-* 
+*
 * Trucate a given string
-* 
+*
 * Parameters:
 * string	- the string to truncate
-* max		- the max lenght in characters to truncate the string to 
+* max		- the max lenght in characters to truncate the string to
 * rep		- characters to be added at end of truncated string
 
 *
@@ -565,16 +598,16 @@ function siNonce($action = false, $userid = false, $tickTock = false)
 {
     global $config;
     global $auth_session;
-    
+
     $tickTock = ($tickTock) ? $tickTock : floor(time()/$config->nonce->timelimit);
-    
+
     if(!$userid)
     {
-        $userid = $auth_session->id; 
+        $userid = $auth_session->id;
     }
-    
+
     $hash = md5($tickTock.':'.$config->nonce->key.':'.$userid.':'.$action);
-    
+
     return $hash;
 }
 
@@ -582,13 +615,13 @@ function siNonce($action = false, $userid = false, $tickTock = false)
 function verifySiNonce($hash, $action, $userid = false)
 {
     global $config;
-    
+
     $tickTock = floor(time()/$config->nonce->timelimit);
     if(!isempty($hash) AND ($hash === siNonce($action, $userid) OR $hash === siNonce($action, $userid, $tickTock-1)))
     {
         return true;
     }
-    
+
     //else
     return false;
 }
@@ -596,7 +629,7 @@ function verifySiNonce($hash, $action, $userid = false)
 //Put this before an action is commited make sure to put a unique $action
 function requireCSRFProtection($action = 'all', $userid = false)
 {
-    verifySiNonce($_REQUEST['csrfprotectionbysr'], $action, $userid) or die('CSRF Attack Detected');      
+    verifySiNonce($_REQUEST['csrfprotectionbysr'], $action, $userid) or die('CSRF Attack Detected');
 }
 
 function antiCSRFHiddenInput($action = 'all', $userid = false)
@@ -610,7 +643,7 @@ function antiCSRFHiddenInput($action = 'all', $userid = false)
     {
         return $matches[0];
     }
-    
+
     $token = siNonce('all');
     $action = $matches[1];
     //We need to work out if it is offsite.
@@ -625,7 +658,7 @@ function antiCSRFHiddenInput($action = 'all', $userid = false)
     {
         $isOnSite = true;
     }
-    
+
     return $matches[0].(($isOnSite) ? '<input type="hidden" name="csrfprotectionbysr" value="'.htmlsafe($token).'" />' : '');
 }
 
@@ -638,12 +671,12 @@ function addCSRFProtection($buffer)
         $header = explode(':', $header, 2);
         $headers[strtolower($header[0])] = $header[1];
     }
-    
+
     // if not html then leave alone
     if($headers['content-type'] AND strpos($headers['content-type'], 'html') === false)
     {
         return $buffer;
     }
-     
+
     return preg_replace_callback('/<form.+?action=[\'"]?([^\'"\s]+)[\'"\s].*?>/i', 'addCSRFToken', $buffer);
 }*/
