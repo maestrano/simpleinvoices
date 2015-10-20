@@ -1,0 +1,164 @@
+# Include simpleinvoices specific configuration
+- include_vars: "{{ item }}"
+  with_items:
+    - simpleinvoices.yml
+    - version.yml
+  tags:
+    - configuration
+    - update
+
+- name: General | Install Application packages
+  apt: "name={{ item }} state=present"
+  with_items:
+    - git
+    - curl
+
+- name: SimpleInvoices | Ensure MySQL is running
+  command: service mysql start
+  ignore_errors: yes
+  tags:
+    - configuration
+
+- name: SimpleInvoices | Create SimpleInvoices database
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    db: "{{ simpleinvoices_db_name }}"
+    state: present
+
+- name: SimpleInvoices | Create SimpleInvoices database user
+  mysql_user:
+    name: "{{ simpleinvoices_db_user }}"
+    password: "{{ simpleinvoices_db_password }}"
+    priv: "{{ simpleinvoices_db_name }}.*:ALL,GRANT"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: SimpleInvoices | Download application from Github
+  sudo: false
+  git:
+    repo: "https://github.com/{{ application_repository }}/simpleinvoices.git"
+    dest: "{{ simpleinvoices_root_path }}"
+    version: "{{ application_version }}"
+    accept_hostkey: yes
+    ssh_opts: "-o StrictHostKeyChecking=no"
+    update: yes
+    force: yes
+  tags:
+    - update
+
+- name: SimpleInvoices | Current commit hash
+  shell: 'git log -n 1 --pretty=format:"%H" > {{ simpleinvoices_root_path }}/.git-version'
+  args:
+    chdir: "{{ simpleinvoices_root_path }}"
+  tags:
+    - update
+
+- name: Git | Ignore files permissions changes
+  command: "git config core.filemode false chdir={{ simpleinvoices_root_path }}"
+  tags:
+    - update
+
+- name: Ansible | Update scripts
+  copy:
+    src: "{{ simpleinvoices_root_path }}/deploy/ansible"
+    dest: /etc/
+  tags:
+    - update
+
+# - name: SimpleInvoices | Create /var/log/simpleinvoices directory
+#   file:
+#     path: "/var/log/simpleinvoices"
+#     state: directory
+#     owner: www-data
+#     group: www-data
+#     mode: 0755
+#   tags:
+#     - configuration
+
+- name: SimpleInvoices | Configure Apache virtual host
+  template:
+    src: etc-apache24-confd-simpleinvoices-conf
+    dest: /etc/apache2/sites-available/simpleinvoices.conf
+    owner: www-data
+    group: www-data
+    mode: 0755
+
+- name: SimpleInvoices | Enable Apache virtual host
+  file: src=/etc/apache2/sites-available/simpleinvoices.conf dest=/etc/apache2/sites-enabled/simpleinvoices.conf state=link
+
+- name: Apache | Restart the Apache service
+  service:
+    name: apache2
+    state: restarted
+
+- name: SimpleInvoices | Base schema base_schema.sql
+  template:
+    src: simpleinvoices-base-schema.sql
+    dest: "{{ simpleinvoices_root_path }}/maestrano/app/db/base_schema.sql"
+    owner: www-data
+    group: www-data
+    mode: 0755
+
+- name: SimpleInvoices | Apply Maestrano patch
+  shell: "mysql {{ simpleinvoices_db_name }} -u{{simpleinvoices_db_user}} -p{{simpleinvoices_db_password}} < maestrano/app/db/{{ item }}"
+  args:
+    chdir: "{{ simpleinvoices_root_path }}"
+  with_items:
+    - base_schema.sql
+    - 1_add_mno_uid_field.sql
+    - 2_add_mno_id_map.sql
+    - 3_add_customer_type.sql
+    - 4_add_product_type.sql
+    - 5_add_currency.sql
+
+- name: SimpleInvoices | Set file permissions
+  file:
+    path: "{{ simpleinvoices_root_path }}"
+    mode: 0755
+    owner: www-data
+    group: www-data
+    state: directory
+    recurse: yes
+  tags:
+    - configuration
+
+- name: SimpleInvoices | Configuration file config.ini
+  template:
+    src: simpleinvoices-config.ini
+    dest: "{{ simpleinvoices_root_path }}/config/config.ini"
+    owner: www-data
+    group: www-data
+    mode: 0500
+  tags:
+    - configuration
+
+- name: SimpleInvoices | Configuration file maestrano.json
+  template:
+    src: simpleinvoices-maestrano.json
+    dest: "{{ simpleinvoices_root_path }}/maestrano.json"
+    owner: www-data
+    group: www-data
+    mode: 0755
+  tags:
+    - configuration
+
+- name: SimpleInvoices | Set log files permissions
+  file:
+    path: /var/log/apache2
+    mode: 0755
+    owner: www-data
+    group: www-data
+    state: directory
+    recurse: yes
+  tags:
+    - configuration
+
+- name: SimpleInvoices | Import Connec! data
+  shell: "(nohup php initialize.php 1>/var/log/apache2/simpleinvoices_initialize.log 2>&1) &"
+  args:
+    chdir: "{{ simpleinvoices_root_path }}/maestrano/scripts"
+  sudo_user: www-data
+  tags:
+    - configuration

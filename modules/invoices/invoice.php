@@ -37,10 +37,11 @@ $defaults['customer'] = (isset($_GET['customer'])) ? $_GET['customer'] : $defaul
 $defaults['preference'] = (isset($_GET['preference'])) ? $_GET['preference'] : $defaults['preference'];
 $defaultTax = getDefaultTax();
 $defaultPreference = getDefaultPreference();
+$defaultCurrency = $defaultPreference['currency_code'] ? $defaultPreference['currency_code'] : 'USD';
 
 if (!empty( $_GET['line_items'] )) {
 	$dynamic_line_items = $_GET['line_items'];
-} 
+}
 else {
 	$dynamic_line_items = $defaults['line_items'] ;
 }
@@ -56,8 +57,9 @@ $smarty -> assign("products",$products);
 $smarty -> assign("preferences",$preferences);
 $smarty -> assign("dynamic_line_items",$dynamic_line_items);
 $smarty -> assign("show_custom_field",$show_custom_field);
-
 $smarty -> assign("defaultCustomerID",$defaultCustomerID['id']);
+$smarty -> assign("currencies",getCurrencies());
+$smarty -> assign("defaultCurrency",$defaultCurrency);
 $smarty -> assign("defaults",$defaults);
 
 $smarty -> assign('active_tab', '#money');

@@ -12,7 +12,7 @@
 *
 * License:
 *	 GPL v2 or above
-*	 
+*
 * Website:
 * 	http://www.simpleinvoices.or
  */
@@ -30,6 +30,7 @@ $invoice_type =  getInvoiceType($invoice['type_id']);
 $customer = getCustomer($invoice['customer_id']);
 $biller = getBiller($invoice['biller_id']);
 $preference = getPreference($invoice['preference_id']);
+if(is_null($invoice->currency)) { $invoice['currency'] = $preference['currency_code'] ? $preference['currency_code'] : 'USD'; }
 $defaults = getSystemDefaults();
 $invoiceItems = invoice::getInvoiceItems($invoice_id);
 
@@ -47,7 +48,7 @@ else {
 }
 
 	$url_for_pdf = "./index.php?module=export&view=pdf&id=" . $invoice['id'];
-        
+
 	$invoice['url_for_pdf'] = $url_for_pdf;
 
 $customFieldLabels = getCustomFieldLabels();

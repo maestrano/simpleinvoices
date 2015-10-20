@@ -1,11 +1,11 @@
 
 {* if bill is updated or saved.*}
 
-{if $smarty.post.description != "" && $smarty.post.id != null } 
+{if $smarty.post.description != "" && $smarty.post.id != null }
 	{include file="../templates/default/products/save.tpl"}
 {else}
-{* if  name was inserted *} 
-	{if $smarty.post.id !=null} 
+{* if  name was inserted *}
+	{if $smarty.post.id !=null}
 		<div class="validation_alert"><img src="./images/common/important.png" alt="" />
 		You must enter a description for the product</div>
 		<hr />
@@ -15,7 +15,7 @@
 
 <table align="center">
 	<tr>
-		<td class="details_screen">{$LANG.description} 
+		<td class="details_screen">{$LANG.description}
 		<a class="cluetip" href="#"	rel="index.php?module=documentation&amp;view=view&amp;page=help_required_field" title="{$LANG.Required_Field}"><img src="./images/common/required-small.png" alt="" /></a>
 		</td>
 		<td><input type="text" name="description" value="{$smarty.post.description|htmlsafe}" size="50" id="description"  class="validate[required]" /></td>
@@ -43,6 +43,20 @@
         </tr>
     {/if}
 	<tr>
+		<td class="details_screen">{$LANG.product_type}
+		</td>
+		<td>
+			<select name="type">
+					<option value='PRODUCT'>Product</option>
+			    <option value='PURCHASED'>Purchased</option>
+					<option value='MANUFACTURED'>Manufactured</option>
+					<option value='SERVICE'>Service</option>
+					<option value='ACTIVITY'>Activity</option>
+					<option value='ASSET'>Asset</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
 		<td class="details_screen">{$LANG.default_tax}</td>
 		<td>
 		<select name="default_tax_id">
@@ -54,25 +68,25 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="details_screen">{$customFieldLabel.product_cf1|htmlsafe} 
+		<td class="details_screen">{$customFieldLabel.product_cf1|htmlsafe}
 		<a class="cluetip" href="#"	rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields" title="{$LANG.custom_fields}"><img src="./images/common/help-small.png" alt="" /></a>
 		</td>
 		<td><input type="text" class="edit" name="custom_field1" value="{$smarty.post.custom_field1|htmlsafe}"  size="50" /></td>
 	</tr>
 	<tr>
-		<td class="details_screen">{$customFieldLabel.product_cf2|htmlsafe} 
+		<td class="details_screen">{$customFieldLabel.product_cf2|htmlsafe}
 		<a class="cluetip" href="#"	rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields" title="{$LANG.custom_fields}"><img src="./images/common/help-small.png" alt="" /></a>
 		</td>
 		<td><input type="text" class="edit" name="custom_field2" value="{$smarty.post.custom_field2|htmlsafe}" size="50" /></td>
 	</tr>
 	<tr>
-		<td class="details_screen">{$customFieldLabel.product_cf3|htmlsafe} 
+		<td class="details_screen">{$customFieldLabel.product_cf3|htmlsafe}
 		<a class="cluetip" href="#"	rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields" title="{$LANG.custom_fields}"><img src="./images/common/help-small.png" alt="" /></a>
 		</td>
 		<td><input type="text" class="edit" name="custom_field3" value="{$smarty.post.custom_field3|htmlsafe}" size="50" /></td>
 	</tr>
 	<tr>
-		<td class="details_screen">{$customFieldLabel.product_cf4|htmlsafe} 
+		<td class="details_screen">{$customFieldLabel.product_cf4|htmlsafe}
 		<a class="cluetip" href="#"	rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields" title="{$LANG.custom_fields}"><img src="./images/common/help-small.png" alt="" /></a>
 		</td>
 		<td><input type="text" class="edit" name="custom_field4" value="{$smarty.post.custom_field4|htmlsafe}" size="50" /></td>
@@ -94,17 +108,17 @@
 	<tr>
 		<td>
 			<button type="submit" class="positive" name="id" value="{$LANG.save}">
-			    <img class="button_img" src="./images/common/tick.png" alt="" /> 
+			    <img class="button_img" src="./images/common/tick.png" alt="" />
 				{$LANG.save}
 			</button>
 
 			<input type="hidden" name="op" value="insert_product" />
-		
+
 			<a href="./index.php?module=products&view=manage" class="negative">
 		        <img src="./images/common/cross.png" alt="" />
 	        	{$LANG.cancel}
     		</a>
-	
+
 		</td>
 	</tr>
 </table>

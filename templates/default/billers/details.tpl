@@ -8,7 +8,7 @@ n Script: details.tpl
 * License:
 *	 GPL v3 or above
 *}
-<form name="frmpost" action="index.php?module=billers&amp;view=save&amp;id={$smarty.get.id}" method="post" id="frmpost" onsubmit="return checkForm(this);">
+<form name="frmpost" action="index.php?module=billers&amp;view=save&amp;id={$smarty.get.id}" method="post" id="frmpost" onsubmit="return checkForm(this);" enctype="multipart/form-data">
 
 
 {if $smarty.get.action== 'view' }
@@ -101,7 +101,7 @@ n Script: details.tpl
 		<td>{$biller.custom_field1}</td>
 	</tr>
 	<tr>
-		<td class="details_screen">{$customFieldLabel.biller_cf2} 
+		<td class="details_screen">{$customFieldLabel.biller_cf2}
 		<a
 			class="cluetip"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
@@ -114,7 +114,7 @@ n Script: details.tpl
 		<td>{$biller.custom_field2}</td>
 	</tr>
 	<tr>
-		<td class="details_screen">{$customFieldLabel.biller_cf3} 
+		<td class="details_screen">{$customFieldLabel.biller_cf3}
 		<a
 			class="cluetip"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
@@ -140,7 +140,7 @@ n Script: details.tpl
 		<td>{$biller.custom_field4}</td>
 	</tr>
 	<tr>
-		<td class="details_screen">{$LANG.logo_file} 
+		<td class="details_screen">{$LANG.logo_file}
 		<a
 			class="cluetip"
 			href="#"
@@ -191,8 +191,8 @@ n Script: details.tpl
 <br />
 <table align="center">
 	<tr>
-		<td class="details_screen">{$LANG.biller_name} 
-		<a 
+		<td class="details_screen">{$LANG.biller_name}
+		<a
 			class="cluetip"
 			href="#"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_required_field"
@@ -214,7 +214,7 @@ n Script: details.tpl
 			href="#"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_street2"
 			title="{$LANG.street2}"
-		> 
+		>
 		<img src="./images/common/help-small.png" alt="" />
 		</a>
 		</td>
@@ -275,7 +275,7 @@ n Script: details.tpl
 			href="#"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 			title="{$LANG.Custom_Fields}"
-		> 
+		>
 		<img src="./images/common/help-small.png" alt="" />
 		</a>
 		</td>
@@ -288,7 +288,7 @@ n Script: details.tpl
 			href="#"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 			title="{$LANG.Custom_Fields}"
-		> 
+		>
 		<img src="./images/common/help-small.png" alt="" />
 		</a>
 		</td>
@@ -301,7 +301,7 @@ n Script: details.tpl
 			href="#"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 			title="{$LANG.Custom_Fields|htmlsafe}"
-		> 
+		>
 		<img src="./images/common/help-small.png" alt="" />
 		</a>
 		</td>
@@ -314,7 +314,7 @@ n Script: details.tpl
 			href="#"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 			title="{$LANG.Custom_Fields}"
-		> 
+		>
 		<img src="./images/common/help-small.png" alt="" />
 		</a>
 		</td>
@@ -334,6 +334,8 @@ n Script: details.tpl
 		</td>
 		<td>
 			{html_options name=logo output=$files values=$files selected=$biller.logo }
+			<input type="hidden" name="MAX_FILE_SIZE" value="5000000" />
+			<input type="file" name="fileToUpload" id="fileToUpload">
 		</td>
 	</tr>
 	<tr>
@@ -355,14 +357,14 @@ n Script: details.tpl
 	*}
 
 </table>
-{/if} 
+{/if}
 {if $smarty.get.action== 'edit' }
 <br />
 	<table class="buttons" align="center">
     <tr>
         <td>
             <button type="submit" class="positive" name="save_biller" value="{$LANG.save_biller}">
-                <img class="button_img" src="./images/common/tick.png" alt="" /> 
+                <img class="button_img" src="./images/common/tick.png" alt="" />
                 {$LANG.save}
             </button>
 
@@ -373,7 +375,7 @@ n Script: details.tpl
                 <img src="./images/common/cross.png" alt="" />
                 {$LANG.cancel}
             </a>
-    
+
         </td>
     </tr>
 	</table>
