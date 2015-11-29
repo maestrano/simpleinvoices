@@ -1,17 +1,17 @@
 [
     {
         "name": "maestrano/maestrano-php",
-        "version": "0.9.2",
-        "version_normalized": "0.9.2.0",
+        "version": "0.11.2",
+        "version_normalized": "0.11.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/maestrano/maestrano-php.git",
-            "reference": "70888f22156e0cdf1175e84f610184d61e4dceaa"
+            "reference": "a8d6eb5e1805677d7e1a8c1f34390c3f28736977"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/maestrano/maestrano-php/zipball/70888f22156e0cdf1175e84f610184d61e4dceaa",
-            "reference": "70888f22156e0cdf1175e84f610184d61e4dceaa",
+            "url": "https://api.github.com/repos/maestrano/maestrano-php/zipball/a8d6eb5e1805677d7e1a8c1f34390c3f28736977",
+            "reference": "a8d6eb5e1805677d7e1a8c1f34390c3f28736977",
             "shasum": ""
         },
         "require": {
@@ -23,7 +23,7 @@
         "require-dev": {
             "phpunit/phpunit": "4.3.*"
         },
-        "time": "2015-08-11 00:59:36",
+        "time": "2015-10-05 20:43:47",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

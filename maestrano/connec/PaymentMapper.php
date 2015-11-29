@@ -44,6 +44,12 @@ class PaymentMapper extends BaseMapper {
     $this->connec_resource_endpoint = 'payments';
   }
 
+  // Process only new Payments, payment update is not supported
+  protected function validate($cnc_hash) {
+    $mno_id_map = MnoIdMap::findMnoIdMapByMnoIdAndEntityName($cnc_hash['id'], $this->connec_entity_name);
+    return !$mno_id_map;
+  }
+
   // Return the Customer local id
   protected function getId($model) {
     return $model->id;
@@ -81,18 +87,18 @@ class PaymentMapper extends BaseMapper {
   // in SimpleInvoices. Model mapping is delegated to the lowest level which is
   // PaymentTransactionMapper.
   protected function initializeNewModel() {
-    return array();
+    return (object) array();
   }
 
   // Map the Connec resource attributes onto the SimpleInvoice Item
   protected function mapConnecResourceToModel($cnc_hash, $model) {
-    if(!$this->is_set($model->payment_lines)){ $model->payment_lines = array(); }
+    if(is_null($model->payment_lines)) { $model->payment_lines = array(); }
 
     // Map payment lines
-    foreach($cnc_line_hash['payment_lines'] as $cnc_line_hash) {
+    foreach($cnc_hash['payment_lines'] as $cnc_line_hash) {
       $payment_line_mapper = new PaymentLineMapper();
       $payment_line = $payment_line_mapper->initializeNewModel();
-      $payment_line_mapper->mapConnecResourceToModel($cnc_payment_hash,$payment_line,$cnc_line_hash);
+      $payment_line_mapper->mapConnecResourceToModel($cnc_hash,$payment_line,$cnc_line_hash);
       $model->payment_lines[] = $payment_line;
     }
   }
@@ -105,7 +111,6 @@ class PaymentMapper extends BaseMapper {
     if($this->is_set($model->ac_date)) { $cnc_hash['transaction_date'] = date('c',strtotime($model->ac_date)); }
     $cnc_hash['total_amount'] = floatval($model->ac_amount);
     $cnc_hash['public_note'] = $model->ac_notes;
-    json_encode($model);
     $cnc_hash['currency'] = $model->currency;
 
     // Map Payment Method

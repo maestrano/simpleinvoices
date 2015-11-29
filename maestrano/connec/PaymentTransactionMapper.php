@@ -54,27 +54,35 @@ class PaymentTransactionMapper extends BaseMapper {
   // This method has one additional argument - $cnc_line_hash, $cnc_transaction_hash - compared to
   // usual implementations, which is used to map the right id, invoice and
   // amount
-  protected function mapConnecResourceToModel($cnc_payment_hash, $model, $cnc_line_hash = null, $cnc_transaction_hash= null) {
+  protected function mapConnecResourceToModel($cnc_payment_hash, $model, $cnc_line_hash=null, $cnc_transaction_hash=null) {
     // Map payment attributes
+    $model->online_payment_id = null;
+
     if($this->is_set($cnc_payment_hash['transaction_date'])) {
       $model->ac_date = $cnc_payment_hash['transaction_date'];
     }
+
     $model->ac_amount = $cnc_line_hash['amount']['total_amount'] ? $cnc_line_hash['amount']['total_amount'] : 0;
     $model->currency = $cnc_line_hash['amount']['currency'] ? $cnc_line_hash['amount']['currency'] : 'USD';
 
     // Map Payment Method
-    if($this->is_set($cnc_payment_hash['payment_method'])) {
+    if(array_key_exists('payment_method', $cnc_payment_hash) && $this->is_set($cnc_payment_hash['payment_method'])) {
       $pymt_type_mapper = new PaymentMethodMapper();
       $pymt_type = $pymt_type_mapper->loadModelByConnecId($cnc_payment_hash['payment_method']['id']);
       $model->ac_payment_type = $pymt_type->id;
     }
 
+    if(is_null($model->ac_payment_type)) {
+      $pymt_type = getDefaultPaymentType();
+      $model->ac_payment_type = $pymt_type['pt_id'];
+    }
+
     // Map payment note
-    if($this->is_set($cnc_payment_hash['private_note'])) {
+    if(array_key_exists('private_note', $cnc_payment_hash) && $this->is_set($cnc_payment_hash['private_note'])) {
       $model->ac_notes = $cnc_payment_hash['private_note'];
-    } else if($this->is_set($cnc_payment_hash['public_note'])) {
+    } else if(array_key_exists('public_note', $cnc_payment_hash) && $this->is_set($cnc_payment_hash['public_note'])) {
       $model->ac_notes = $cnc_payment_hash['public_note'];
-    } else if($this->is_set($cnc_payment_hash['payment_reference'])) {
+    } else if(array_key_exists('payment_reference', $cnc_payment_hash) && $this->is_set($cnc_payment_hash['payment_reference'])) {
       $model->ac_notes = $cnc_payment_hash['payment_reference'];
     } else {
       $model->ac_notes = '';
@@ -110,7 +118,7 @@ class PaymentTransactionMapper extends BaseMapper {
     } else {
       // Insert model
       $query = $model->insert();
-      $model->id = $query['id'];
+      $model->id = lastInsertId();
     }
   }
 }

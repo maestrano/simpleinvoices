@@ -8,7 +8,7 @@
 class Maestrano extends Maestrano_Util_PresetObject
 {
   // Maestrano PHP API Version
-  const VERSION = '0.9.2';
+  const VERSION = '0.11.2';
 
   /* Internal Config Map */
   protected static $config = array();
@@ -93,6 +93,10 @@ class Maestrano extends Maestrano_Util_PresetObject
       self::$config[$preset]['api.group_id'] = $settings['api']['group_id'];
     }
 
+    if (array_key_exists('api', $settings) && array_key_exists('host', $settings['api'])) {
+      self::$config[$preset]['api.host'] = $settings['api']['host'];
+    }
+
     // Get lang/platform version
     self::$config[$preset]['api.version'] = Maestrano::VERSION;
     self::$config[$preset]['api.lang'] = 'php';
@@ -140,6 +144,14 @@ class Maestrano extends Maestrano_Util_PresetObject
       self::$config[$preset]['sso.creation_mode'] = $settings['sso']['creation_mode'];
     } else {
       self::$config[$preset]['sso.creation_mode'] = 'real';
+    }
+
+    if (array_key_exists('sso', $settings) && array_key_exists('x509_fingerprint', $settings['sso'])) {
+      self::$config[$preset]['sso.x509_fingerprint'] = $settings['sso']['x509_fingerprint'];
+    }
+
+    if (array_key_exists('sso', $settings) && array_key_exists('x509_certificate', $settings['sso'])) {
+      self::$config[$preset]['sso.x509_certificate'] = $settings['sso']['x509_certificate'];
     }
 
     //-------------------------------
@@ -289,9 +301,10 @@ class Maestrano extends Maestrano_Util_PresetObject
         'api.base'               => '/api/v1/',
         'connec.enabled'         => true,
         'connec.host'            => 'http://connec.maestrano.io',
-        'connec.base_path'       => '/connec/api',
+        'connec.base_path'       => '/api',
         'connec.v2_path'         => '/v2',
         'connec.reports_path'    => '/reports',
+        'connec.timeout'         => 60,
         'sso.idp'                => 'http://application.maestrano.io',
         'sso.name_id_format'     => Maestrano_Saml_Settings::NAMEID_PERSISTENT,
         'sso.x509_fingerprint'   => '01:06:15:89:25:7d:78:12:28:a6:69:c7:de:63:ed:74:21:f9:f5:36',
@@ -305,6 +318,7 @@ class Maestrano extends Maestrano_Util_PresetObject
         'connec.base_path'       => '/connec/api',
         'connec.v2_path'         => '/v2',
         'connec.reports_path'    => '/reports',
+        'connec.timeout'         => 60,
         'sso.idp'                => 'http://api-sandbox.maestrano.io',
         'sso.name_id_format'     => Maestrano_Saml_Settings::NAMEID_PERSISTENT,
         'sso.x509_fingerprint'   => '01:06:15:89:25:7d:78:12:28:a6:69:c7:de:63:ed:74:21:f9:f5:36',
@@ -318,6 +332,7 @@ class Maestrano extends Maestrano_Util_PresetObject
         'connec.base_path'       => '/api',
         'connec.v2_path'         => '/v2',
         'connec.reports_path'    => '/reports',
+        'connec.timeout'         => 180,
         'sso.idp'                => 'https://uat.maestrano.io',
         'sso.name_id_format'     => Maestrano_Saml_Settings::NAMEID_PERSISTENT,
         'sso.x509_fingerprint'   => '8a:1e:2e:76:c4:67:80:68:6c:81:18:f7:d3:29:5d:77:f8:79:54:2f',
@@ -331,6 +346,7 @@ class Maestrano extends Maestrano_Util_PresetObject
         'connec.base_path'       => '/api',
         'connec.v2_path'         => '/v2',
         'connec.reports_path'    => '/reports',
+        'connec.timeout'         => 180,
         'sso.idp'                => 'https://maestrano.com',
         'sso.name_id_format'     => Maestrano_Saml_Settings::NAMEID_PERSISTENT,
         'sso.x509_fingerprint'   => '2f:57:71:e4:40:19:57:37:a6:2c:f0:c5:82:52:2f:2e:41:b7:9d:7e',
