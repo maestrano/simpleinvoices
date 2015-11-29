@@ -4,7 +4,7 @@
 * License: GPL v2 or above
 **************************** */
 
-/*    // 1 means that the variable has been translated and //0 means it hasnt been translated 
+/*    // 1 means that the variable has been translated and //0 means it hasnt been translated
 - this is used by a script to calculate how much of each file has been done
 regex :%s/;/ /1/;// 1\/\/1/g - remove the spaces
  */
@@ -65,6 +65,7 @@ $LANG['consulting_style'] = "Stile preventivo";//1
 $LANG['country'] = "Nazione";//1
 $LANG['create_invoice'] ="Crea una fattura";//1
 $LANG['credits'] = "Crediti";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Simbolo valuta";//1
 $LANG['custom_field'] = "Campo libero";//1
 $LANG['Custom_Fields'] = "Custom Fields";//0
@@ -85,6 +86,7 @@ $LANG['customer_edit'] = "Modifica Cliente";//1
 $LANG['customer_id'] = "ID Cliente";//1
 $LANG['customer_name'] = "Nome Cliente";//1
 $LANG['customer_short'] = "Cust";//0
+$LANG['customer_type'] = "Type";//1
 $LANG['customers'] = "Clienti";//1
 $LANG['dashboard'] = "Dashboard";//0$LANG['database_log'] = "Database Log";//0
 $LANG['database_upgrade_manager'] = "Aggiornamento Database";//1
@@ -153,7 +155,7 @@ $LANG['help_email_bcc'] = "This field is not mandatory and gets the default valu
 $LANG['help_email_cc'] = "This field is not mandatory.  Here you can specify any email address you want to CC but cannot add more than 1 email address in this field<br /><br /><i>Note: You can add multiple email addresses here - just use eith , or ; to split the addresses</i>";//0
 $LANG['help_email_from'] = "This field is a mandatory field and gets the default value from the Billers email address.  You can change this email address as you require but cannot add more than 1 email address in this field<br /><br /><i>Note: There can be only 1 email address in this field</i>";//0
 $LANG['help_email_to'] = "This field is a mandatory field and gets the default value from the Customers email address.  You can change this email address as you require<br /><br /><i>Note: You can add multiple email addresses here - just use either , or ; to split the addresses</i>";//0
-$LANG['help_insert_biller_text'] = "To select no logo please select '_default_blank_logo.png' from the list.<br /><br />To add additional logos into Simple Invoices, copy the logo file into the logo directory in the Simple Invoices folder.";//0
+$LANG['help_insert_biller_text'] = "To select no logo please select '_default_blank_logo.png' from the list.<br /><br />To add additional logos into Simple Invoices, select 'Choose File' then click save.";//0
 $LANG['help_inv_pref_currency_sign'] = "This is the curreny symbol that will be used through-out the invoice.";//0
 $LANG['help_inv_pref_description'] = "This is the name of the set of preference - its not used on the invoice itself, just in the creation of the invoice when you select from the drop down list which Invoice Preference you wish to use.";//0
 $LANG['help_inv_pref_invoice_detail_heading'] = "This is what will appear as the heading of the footer/details section of the invoice.";//0
@@ -319,6 +321,7 @@ $LANG['product_id'] = "ID Prodotto";//1
 $LANG['product_sales'] = "Prodotto in vendita";//1
 $LANG['product_to_add'] = "Aggiungi Prodotto";//1
 $LANG['product_unit_price'] = "Prezzo unitario del Prodotto";//1
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Prodotti";//1
 $LANG['products_by_customer'] = "Prodotti per Cliente";//1
 $LANG['products_sold_customer_total'] = "Prodotti venduti - Cliente - Totale";//1

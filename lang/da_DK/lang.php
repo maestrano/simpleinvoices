@@ -12,12 +12,12 @@
 *
 * License:
 *	 GPL v2 or above
-*æ;=&#230;
-*Æ=&#198;
-*ø=&#248;
-*Ø=&#216;
-*å=&#229;
-*Å=&#197;
+*ï¿½;=&#230;
+*ï¿½=&#198;
+*ï¿½=&#248;
+*ï¿½=&#216;
+*ï¿½=&#229;
+*ï¿½=&#197;
 */
 
 /*// 1 means that the variable has been translated and // zero means it hasnt been translated - this is used by a script to calculate how much of each file has been done
@@ -55,7 +55,7 @@ $LANG['age'] = "Alder";//1
 $LANG['aging'] = "Betalingsfrist";//1
 $LANG['all_reports'] = "Alle rapporter";//1
 $LANG['amount'] = "Bel&#248;b";//1
-$LANG['as_template'] = "som template";//1 
+$LANG['as_template'] = "som template";//1
 $LANG['attention_short'] = "Bmrk.";//1
 $LANG['attribute'] = "Attribute";//1
 $LANG['attribute_short'] = "Attr";//1
@@ -80,6 +80,7 @@ $LANG['consulting_style'] = "Konsulent stil";//1
 $LANG['country'] = "Land";//1
 $LANG['create_invoice'] ="Opret Ny Faktura";//1
 $LANG['credits'] = "Credits";//1
+$LANG['currency'] = "Currency";//1
 $LANG['currency_sign'] = "Valuta Tegn";//1
 $LANG['custom_field'] = "Egendefineret felt";//1
 $LANG['custom_fields'] = "Egendefinerede felter";//1
@@ -100,6 +101,7 @@ $LANG['customer_edit'] = "Rediger Kunde";//1
 $LANG['customer_id'] = "Kunde ID";//1
 $LANG['customer_name'] = "Kundens navn";//1
 $LANG['customer_short'] = "Kund";//1
+$LANG['customer_type'] = "Type";//1
 $LANG['customers'] = "Kunder";//1
 $LANG['dashboard'] = "Dashboard";//0
 $LANG['database_log'] = "Database Log";//0
@@ -120,7 +122,7 @@ $LANG['default_number_items'] = "Standard antal af linie punkter:";//1
 $LANG['default_payment_type'] = "Standard betalingsform";//1
 $LANG['default_tax'] = "Standard Moms";//1
 $LANG['delete'] = "Slet";//1
-$LANG['denied_page'] = "Du må ikke se denne side";//1
+$LANG['denied_page'] = "Du mï¿½ ikke se denne side";//1
 $LANG['description'] = "Beskrivelse";//1
 $LANG['description_short'] = "Besk";//1
 $LANG['details'] = "Detaljer";//1
@@ -169,7 +171,7 @@ $LANG['help_email_bcc'] = "This field is not mandatory and gets the default valu
 $LANG['help_email_cc'] = "This field is not mandatory.  Here you can specify any email address you want to CC but cannot add more than 1 email address in this field<br /><br /><i>Note: You can add multiple email addresses here - just use eith , or ; to split the addresses</i>";//0
 $LANG['help_email_from'] = "This field is a mandatory field and gets the default value from the Billers email address.  You can change this email address as you require but cannot add more than 1 email address in this field<br /><br /><i>Note: There can be only 1 email address in this field</i>";//0
 $LANG['help_email_to'] = "This field is a mandatory field and gets the default value from the Customers email address.  You can change this email address as you require<br /><br /><i>Note: You can add multiple email addresses here - just use either , or ; to split the addresses</i>";//0
-$LANG['help_insert_biller_text'] = "To select no logo please select '_default_blank_logo.png' from the list.<br /><br />To add additional logos into Simple Invoices, copy the logo file into the logo directory in the Simple Invoices folder.";//0
+$LANG['help_insert_biller_text'] = "To select no logo please select '_default_blank_logo.png' from the list.<br /><br />To add additional logos into Simple Invoices, select 'Choose File' then click save.";//0
 $LANG['help_inv_pref_currency_sign'] = "This is the curreny symbol that will be used through-out the invoice.";//0
 $LANG['help_inv_pref_description'] = "This is the name of the set of preference - its not used on the invoice itself, just in the creation of the invoice when you select from the drop down list which Invoice Preference you wish to use.";//0
 $LANG['help_inv_pref_invoice_detail_heading'] = "This is what will appear as the heading of the footer/details section of the invoice.";//0
@@ -197,7 +199,7 @@ $LANG['help_reports_xsl'] = "<b>Report errors</b><br />If you received a 'OOOOPS
 $LANG['help_required_field'] = "This is a mandatory field.  You have to enter a value in this field before you can save the form<br /><br />";//0
 $LANG['help_simple_invoices'] = "Simple Invoices is a basic invoicing system designed with simplicity and functionality in mind. Catering for the neds of small organisations and home users.<br /><br />For more information please refer to the Simple Invoices website:<a href='http://www.simpleinvoices.org' target='_blank'> <b>http://www.simpleinvoices.org</b></a>";//0
 $LANG['help_street2'] = "The field 'Street Address 2' is used when the street address for the biller or customer is either to long to fit one one line or contains multiple parts.<br /><br />ie. the street address 'Level 234, 325 South Malvern Road' can be seperated into <br /><br />Street: Level 234<br />Street Address 2: 325 South Malvern Road";//0
-$LANG['help_tax_rate_sign'] = "A tax can be either a percentage based (ie. Sales Tax 10%) or a flat money values (ie. $10 or £20).<br /><br />The $ in the drop down only indicates that this will be a flat money rate and it doesnt indicate the currency symbol. The 'invoice preference' that you use dictates what the currency symbol will be in your invoices.";//0
+$LANG['help_tax_rate_sign'] = "A tax can be either a percentage based (ie. Sales Tax 10%) or a flat money values (ie. $10 or ï¿½20).<br /><br />The $ in the drop down only indicates that this will be a flat money rate and it doesnt indicate the currency symbol. The 'invoice preference' that you use dictates what the currency symbol will be in your invoices.";//0
 $LANG['help_text'] = "<b>Warning</b><br /><br />Please backup your Simple Invoices database before running the database update, just incase anything bad happens.<br /><br />To backup the database, select 'Backup Database' from the Options menu, or use phpMyAdmin(if you have this installed) to back up the database.";//0
 $LANG['help_user_role'] = "There are 3 roles available <br /><br />Administrator:<br />which has access to all of Simple Invoices<br /><br />User:<br />which has read/write acess to all of Simple Invoices but with no access to the Settings menu <br /><br />Viewer:<br />which has read-only version of User.";//0
 $LANG['help_what_are_custom_fields'] = "Custom Fields are special fields in billers, products, customers, and invoices that you can label as whatever you want.<br /><br />Whish there was a Tax ID field in biller, just go to the Custom Fields page and define one of the blank Biller Custom Fields as Tax ID.<br /><br />Now when you go to edit a Biller there'll be a new field there called Tax ID or whatever you specified it as.";//0
@@ -267,7 +269,7 @@ $LANG['mandatory_fields'] = "Alle felter er obligatoriske";//1
 $LANG['message'] = "Besked";//0
 $LANG['mobile_phone'] = "Mobil Telefon";//1
 $LANG['mobile_short'] = "Mob.";//1
-$LANG['monthly_sales_per_year'] = "Månedligt salg og betalinger pr. år";//1
+$LANG['monthly_sales_per_year'] = "Mï¿½nedligt salg og betalinger pr. ï¿½r";//1
 $LANG['money'] = "Penge";//1
 $LANG['name'] = "Navn";//0
 $LANG['new_invoice'] = "Ny Faktura";//1
@@ -335,6 +337,7 @@ $LANG['product_id'] = "Produkt ID";//1
 $LANG['product_sales'] = "Produkt salg";//1
 $LANG['product_to_add'] = "Produkt som skal tilf&#248;jes";//1
 $LANG['product_unit_price'] = "Produkt enhedspris";//1
+$LANG['product_type'] = "Type";//1
 $LANG['products'] = "Produkter";//1
 $LANG['products_by_customer'] = "Produkter sorteret efter kunde";//1
 $LANG['products_sold_customer_total'] = "Produkter solgt - Kunde - Sum";//1

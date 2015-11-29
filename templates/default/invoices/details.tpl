@@ -30,7 +30,7 @@
 	</tr>
 	<tr>
 	        <td class="details_screen">{$LANG.date_formatted}</td>
-	{if $invoice.id == null} 
+	{if $invoice.id == null}
         	<td><input type="text" size="10" class="date-picker" name="date" id="date1" value="{$smarty.now|date_format:"%Y-%m-%d"}" /></td>
 	{else}
         	<td><input type="text" size="10" class="date-picker" name="date" id="date1" value="{$invoice.calc_date|htmlsafe}" /></td>
@@ -38,7 +38,7 @@
 	</tr>
 	<tr>
 		<td class="details_screen">{$LANG.biller}</td><td>
-			
+
 		{if $billers == null }
 			<p><em>{$LANG.no_billers}</em></p>
 		{else}
@@ -48,36 +48,45 @@
 			{/foreach}
 			</select>
 		{/if}
-					
+
 		</td>
 	</tr>
 	<tr>
 		<td class="details_screen">{$LANG.customer}</td><td>
-		
+
 			{if $customers == null}
 	        <p><em>{$LANG.no_customers}</em></p>
-		
+
 			{else}
-			
+
 			<select name="customer_id">
 			{foreach from=$customers item=customer}
 				<option {if $customer.id == $invoice.customer_id} selected {/if} value="{$customer.id|htmlsafe}">{$customer.name|htmlsafe}</option>
 			{/foreach}
 			</select>
-		
+
 			{/if}
-		
+
+		</td>
+	</tr>
+  <tr>
+		<td class="details_screen">{$LANG.currency}</td><td>
+			<select name="currency">
+			{foreach from=$currencies item=currency}
+				<option {if $currency == $invoice.currency} selected {/if} value="{$currency|htmlsafe}">{$currency|htmlsafe}</option>
+			{/foreach}
+			</select>
 		</td>
 	</tr>
 	{*
-	TODO: implement status 
+	TODO: implement status
 	<tr>
 		<td class="details_screen">Invoice Status</td>
 		<td>
 			<select name="status_id">
 				<option value="0">New</option>
 				<option {if $invoice.status_id == 1} selected{/if} value="1">Sent</option>
-				<option {if $invoice.status_id == 2} selected{/if} value="1">Paid</option>
+				<option {if $invoice.status_id == 2} selected{/if} value="2">Paid</option>
 			</select>
 		</td>
 	</tr>
@@ -100,26 +109,26 @@
 	 	{showCustomFields categorieId="4" itemId=$smarty.get.invoice}
 	 *}
 
-	
-		        <tr>       	         
+
+		        <tr>
 			<td class="details_screen">{$LANG.gross_total}</td>
 			<td>
 			<input type="text" name="unit_price0" value="{$invoiceItems.0.unit_price|siLocal_number_formatted}" size="10" />
 			<input type="hidden" name="quantity0" value="1" />
 			<input type="hidden" name="id0" value="{$invoiceItems.0.id|htmlsafe}" />
 			<input type="hidden" name="products0" value="{$invoiceItems.0.product_id|htmlsafe}" />
-			
+
 			</td>
-			
+
 		</tr>
         <tr>
 			<td class="details_screen">{$LANG.tax}</td>
                 <td>
-                    <table>     
+                    <table>
                         <tr>
 						{section name=tax start=0 loop=$defaults.tax_per_line_item step=1}
-							<td>				                				                
-								<select 
+							<td>
+								<select
 									id="tax_id[0][{$smarty.section.tax.index|htmlsafe}]"
 									name="tax_id[0][{$smarty.section.tax.index|htmlsafe}]"
 								>
@@ -143,7 +152,7 @@
 
 		<tr>
 		<td colspan="6">
-		
+
 		<table id="itemtable">
 			<tr>
 				<td class="details_screen"></td>
@@ -154,9 +163,9 @@
 				{/section}
 	        	<td class='details_screen'>{$LANG.unit_price}</td>
 	        	<td>
-					<a 
-						href='#' 
-						class="show-note" 
+					<a
+						href='#'
+						class="show-note"
 						onclick="javascript: $('.note').show();$('.show-note').hide();"
 					>
 						<img src="./images/common/page_white_add.png" title="{$LANG.show_details}" alt="" />
@@ -166,17 +175,17 @@
 					</a>
 				</td>
 		    </tr>
-	
+
 			{foreach key=line from=$invoiceItems item=invoiceItem name=line_item_number}
 				<tbody class="line_item" id="row{$line|htmlsafe}">
 			        <tr>
 						<td>
 						{if $line != "0"}
-							<a 
+							<a
 								id="trash_link_edit{$line|htmlsafe}"
 								class="trash_link_edit"
-								title="{$LANG.delete_line_item}" 
-								href="#" 
+								title="{$LANG.delete_line_item}"
+								href="#"
 								style="display: inline;"
 								rel="{$line|htmlsafe}"
 							>
@@ -184,7 +193,7 @@
 							</a>
 						{/if}
 						{if $line == "0"}
-							<a 
+							<a
 								id="trash_link_edit{$line|htmlsafe}"
 								class="trash_link_edit"
 								title="{$LANG.delete_line_item}"
@@ -198,22 +207,22 @@
 						</td>
 						<td>
 							<input type="hidden" id="delete{$line|htmlsafe}" name="delete{$line|htmlsafe}" size="3" />
-							<input 
-								type="text" 
-								name='quantity{$line|htmlsafe}' 
-								id='quantity{$line|htmlsafe}' 
-								value='{$invoiceItem.quantity|siLocal_number_formatted}' 
+							<input
+								type="text"
+								name='quantity{$line|htmlsafe}'
+								id='quantity{$line|htmlsafe}'
+								value='{$invoiceItem.quantity|siLocal_number_formatted}'
 								size="10"
 							/>
-							<input type="hidden" name='line_item{$line|htmlsafe}' id='line_item{$line|htmlsafe}' value='{$invoiceItem.id|htmlsafe}' /> 
+							<input type="hidden" name='line_item{$line|htmlsafe}' id='line_item{$line|htmlsafe}' value='{$invoiceItem.id|htmlsafe}' />
 						</td>
 						<td>
-					                
+
 					        {if $products == null }
 								<p><em>{$LANG.no_products}</em></p>
 							{else}
 								{*	onchange="invoice_product_change_price($(this).val(), {$line|htmlsafe}, jQuery('#quantity{$line|htmlsafe}').val() );" *}
-								<select 
+								<select
 									name="products{$line|htmlsafe}"
 									id="products{$line|htmlsafe}"
 									rel="{$line|htmlsafe}"
@@ -226,8 +235,8 @@
 							{/if}
 						</td>
 						{section name=tax start=0 loop=$defaults.tax_per_line_item step=1}
-							<td>				                				                
-								<select 
+							<td>
+								<select
 									id="tax_id[{$line|htmlsafe}][{$smarty.section.tax.index|htmlsafe}]"
 									name="tax_id[{$line|htmlsafe}][{$smarty.section.tax.index|htmlsafe}]"
 								>
@@ -248,7 +257,7 @@
 								</td>
 								<td colspan="4">
 									<textarea input type="text" class="note-edit" name="description{$line|htmlsafe}" id="description{$line|htmlsafe}" rows="3" cols="3" wrap="nowrap">{$invoiceItem.description|outhtml}</textarea>
-									
+
 									</td>
 						</tr>
 					</tbody>
@@ -262,17 +271,17 @@
 					<tr>
 						<td>
 							{* onclick="add_line_item();" *}
-							<a 
-								href="#" 
+							<a
+								href="#"
 								class="add_line_item"
 							>
-								<img 
+								<img
 									src="./images/common/add.png"
 									alt=""
 								/>
 								{$LANG.add_new_row}
 							</a>
-					
+
 						</td>
 					</tr>
 				 </table>
@@ -301,7 +310,7 @@
 			<tr>
 	             <td colspan="6" ><textarea input type="text" class="editor" name="note" rows="10" cols="70" wrap="nowrap">{$invoice.note|outhtml}</textarea></td>
 			</tr>
-			
+
 {/if}
 
 	<tr>
@@ -317,11 +326,11 @@
 			{/foreach}
 			</select>
 		{/if}
-	                         
+
 	    </td>
 	</tr>
 
-	
+
 
 
     </table>
@@ -333,10 +342,10 @@
 	<tr>
 		<td>
 			<button type="submit" class="invoice_save positive" name="submit" value="{$LANG.save}">
-				<img class="button_img" src="./images/common/tick.png" alt="" /> 
+				<img class="button_img" src="./images/common/tick.png" alt="" />
 				{$LANG.save}
 			</button>
-			{if $invoice.id == null} 
+			{if $invoice.id == null}
 				<input type="hidden" name="action" value="insert" />
 			{else}
 				<input type="hidden" name="id" value="{$invoice.id|htmlsafe}" />
@@ -356,5 +365,5 @@
 		</td>
 	</tr>
 </table>
- 	
+
 </form>

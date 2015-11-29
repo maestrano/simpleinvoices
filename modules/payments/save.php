@@ -14,10 +14,12 @@ global $auth_session;
 if ( isset($_POST['process_payment']) ) {
   $payment = new payment();
   $payment->ac_inv_id = $_POST['invoice_id'];
+  $payment->invoice_id = $_POST['invoice_id'];
   $payment->ac_amount = $_POST['ac_amount'];
   $payment->ac_notes = $_POST['ac_notes'];
   $payment->ac_date = $_POST['ac_date'];
   $payment->ac_payment_type = $_POST['ac_payment_type'];
+  $payment->currency = getInvoiceCurrency($_POST['invoice_id']);
   $result = $payment->insert();
 
   $saved = !empty($result) ? "true" : "false";
@@ -27,14 +29,7 @@ if ( isset($_POST['process_payment']) ) {
 
     $id = lastInsertId();
     $_POST['id'] = $id;
-
-    // Maestrano hook - push invocie
-    $maestrano = MaestranoService::getInstance();
-    if ($maestrano->isSoaEnabled() and $maestrano->getSoaUrl()) {   
-      $mno_payment = new MnoSoaPayment($db, new MnoSoaBaseLogger());
-      $mno_payment->send($_POST, true);
-    }
-
+    $payment->id = $id;
   } else {
     $display_block =  $LANG['save_payment_failure']."<br />".$sql;
   }

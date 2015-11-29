@@ -13,12 +13,12 @@
     <br />
     <br />
     <br />
-    
+
         <table class="buttons" align="center">
     {if $billers == null}
         <tr>
                 <td>
-                     {$LANG.setup_as_biller}&nbsp;  
+                     {$LANG.setup_as_biller}&nbsp;
                 </td>
                 <td>
                     <a href="./index.php?module=billers&amp;view=add" class="positive">
@@ -31,7 +31,7 @@
     {if $customers == null}
             <tr>
                 <td>
-                     {$LANG.setup_add_customer}&nbsp;  
+                     {$LANG.setup_add_customer}&nbsp;
                 </td>
                 <td>
                     <a href="./index.php?module=customers&amp;view=add" class="positive">
@@ -44,7 +44,7 @@
     {if $products == null}
             <tr>
                 <td>
-                     {$LANG.setup_add_products}&nbsp;  
+                     {$LANG.setup_add_products}&nbsp;
                 </td>
                 <td>
                     <a href="./index.php?module=products&amp;view=add" class="positive">
@@ -58,7 +58,7 @@
     {if $taxes == null}
             <tr>
                 <td>
-                     {$LANG.setup_add_taxrate}&nbsp;  
+                     {$LANG.setup_add_taxrate}&nbsp;
                 </td>
                 <td>
                     <a href="index.php?module=tax_rates&amp;view=add" class="positive">
@@ -72,7 +72,7 @@
     {if $preferences == null}
             <tr>
                 <td>
-                     {$LANG.setup_add_inv_pref}&nbsp;  
+                     {$LANG.setup_add_inv_pref}&nbsp;
                 </td>
                 <td>
                     </a>
@@ -90,12 +90,12 @@
 
             <tr>
                 <td colspan="2">
-                    <br />        
+                    <br />
                 </td>
             </tr>
             <tr>
                 <td>
-                     {$LANG.setup_create_invoices}&nbsp;  
+                     {$LANG.setup_create_invoices}&nbsp;
                 </td>
                 <td>
                     <a href="./index.php?module=invoices&amp;view=itemised" class="positive">
@@ -184,17 +184,17 @@
     </div>
 
     <!-- Reports menu - start -->
-    <div class="align_left">
+    <!-- <div class="align_left">
         <h2>{$LANG.your_reports}</h2>
         --fancy graph here-- --some links on the right--
         <br />
-    </div>
+    </div> -->
     <!-- Reports menu - end -->
     <br />
     <br />
-    <span class="welcome">
+    <!-- <span class="welcome">
        Note: this page is a work-in-progress
-    </span>
+    </span> -->
     <br />
     <br />
 {/if}

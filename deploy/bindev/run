@@ -1,0 +1,15 @@
+#!/bin/bash
+# Run an ephemeral container
+docker run -p 32770:80 --rm -it \
+  -e "MNO_SSO_ENABLED=true" \
+  -e "MNO_CONNEC_ENABLED=true" \
+  -e "MNO_MAESTRANO_ENVIRONMENT=test" \
+  -e "MNO_SERVER_HOSTNAME=simpleinvoices.app.dev.maestrano.io" \
+  -e "MNO_API_KEY=b27fb5729bec72a368c269e9bbd1fe926b1093bd51c55eba8765e28a9d15810e" \
+  -e "MNO_API_SECRET=a8716e4d-9add-49ca-9177-61cae348ba04" \
+  -e "MNO_APPLICATION_VERSION=mno-develop" \
+  -e "MNO_POWER_UNITS=4" \
+  --add-host application.maestrano.io:172.17.42.1 \
+  --add-host connec.maestrano.io:172.17.42.1 \
+  -v /Users/arnaudlachaume/Sites/docker-apps/workdir:/var/lib/simpleinvoices/webapp \
+  maestrano/simpleinvoices:dev

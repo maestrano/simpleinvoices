@@ -23,6 +23,11 @@
 		<td colspan="2" align="center" class="align_center"><i>{$LANG.summary_of_accounts}</i></td>
 	</tr>
 	<tr>
+		<td class="details_screen">{$LANG.customer_type}</td>
+		<td colspan="2">{if $customer.type eq 'organization'}Business{else}Person{/if}</td>
+		<td colspan="2"></td>
+	</tr>
+	<tr>
 		<td class="details_screen">{$LANG.customer_name}</td>
 		<td colspan="2">{$customer.name}</td>
 		<td colspan="2"></td>
@@ -38,7 +43,7 @@
 			title="{$LANG.customer_contact}"
 		>
 		<img src="./images/common/help-small.png" alt="" /></a>
-		
+
 		</td>
 		<td colspan="2">{$customer.attention|htmlsafe}</td>
 		<td colspan="2"></td>
@@ -110,7 +115,7 @@
 							href="#"
 							rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 							title="{$LANG.Custom_Fields}"
-						> 
+						>
 						<img src="./images/common/help-small.png" alt="" /></a>
 					</td>
 					<td>{$customer.custom_field1|htmlsafe}</td>
@@ -122,7 +127,7 @@
 							href="#"
 							rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 							title="{$LANG.Custom_Fields}"
-						> 
+						>
 						<img src="./images/common/help-small.png" alt="" /></a>
 					</td>
 					<td>{$customer.custom_field2|htmlsafe}</td>
@@ -134,7 +139,7 @@
 							href="#"
 							rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 							title="{$LANG.Custom_Fields}"
-						> 
+						>
 						<img src="./images/common/help-small.png" alt="" /></a>
 					</td>
 					<td>{$customer.custom_field3|htmlsafe}</td>
@@ -146,7 +151,7 @@
 							href="#"
 							rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 							title="{$LANG.Custom_Fields}"
-						> 
+						>
 						<img src="./images/common/help-small.png" alt="" /></a>
  					</td>
 					<td>{$customer.custom_field4|htmlsafe}</td>
@@ -202,9 +207,9 @@
 				<th class="sortable_rt">{$LANG.date_created}</th>
 
 			</tr>
-		
+
 			{foreach from=$invoices item=invoice}
-	
+
 			<tr class="index_table">
 				<td class="details_screen"><a href="index.php?module=invoices&amp;view=quick_view&id={$invoice.id|urlencode}">{$invoice.id|htmlsafe}</a></td>
 				<td style="text-align:right" class="details_screen">{$invoice.total|number_format:2}</td>
@@ -214,7 +219,7 @@
 			</tr>
 
 			{/foreach}
-		</table>	
+		</table>
 		</p>
 	</div>
 	<div id="section-4" class="fragment">
@@ -236,7 +241,7 @@
                 <img src="./images/common/tick.png" alt="" />
                 {$LANG.edit}
             </a>
-    
+
         </td>
     </tr>
 </table>
@@ -248,8 +253,12 @@
 <br />
 <table align="center">
 	<tr>
+		<td class="details_screen">{$LANG.customer_type}</td>
+		<td>{if $customer.type eq 'organization'}Business{else}Person{/if}</td>
+	</tr>
+	<tr>
 		<td class="details_screen">{$LANG.customer_name}
-		<a 
+		<a
 				class="cluetip"
 				href="#"
 				rel="index.php?module=documentation&amp;view=view&amp;page=help_required_field"
@@ -282,7 +291,7 @@
 				href="#"
 				rel="index.php?module=documentation&amp;view=view&amp;page=help_street2"
 				title="{$LANG.street2}"
-			> 
+			>
 				<img src="./images/common/help-small.png" alt="" />
 			</a>
 		</td>
@@ -370,7 +379,7 @@
 				href="#"
 				rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 				title="{$LANG.Custom_Fields}"
-			> 
+			>
 		 <img src="./images/common/help-small.png" alt="" /></a>
 		</td>
 		<td>
@@ -383,20 +392,20 @@
 				href="#"
 				rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 				title="{$LANG.Custom_Fields}"
-			> 
+			>
 		 <img src="./images/common/help-small.png" alt="" /></a>
 		</td>
 		<td>
 			<input type="text" name="custom_field2" value="{$customer.custom_field2|htmlsafe}" size="50" /></td
 	></tr>
 	<tr>
-		<td class="details_screen">{$customFieldLabel.customer_cf3|htmlsafe} 
+		<td class="details_screen">{$customFieldLabel.customer_cf3|htmlsafe}
  			<a
 				class="cluetip"
 				href="#"
 				rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 				title="{$LANG.Custom_Fields}"
-			> 
+			>
 		<img src="./images/common/help-small.png" alt="" /></a>
 		</td>
 		<td>
@@ -409,7 +418,7 @@
 				href="#"
 				rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 				title="{$LANG.Custom_Fields}"
-			> 
+			>
 		 <img src="./images/common/help-small.png" alt="" /></a>
 		</td>
 		<td>
@@ -437,17 +446,17 @@
     <tr>
         <td>
             <button type="submit" class="positive" name="save_customer" value="{$LANG.save_customer}">
-                <img class="button_img" src="./images/common/tick.png" alt="" /> 
+                <img class="button_img" src="./images/common/tick.png" alt="" />
                 {$LANG.save}
             </button>
 
             <input type="hidden" name="op" value="edit_customer">
-        
+
             <a href="./index.php?module=customers&amp;view=manage" class="negative">
                 <img src="./images/common/cross.png" alt="" />
                 {$LANG.cancel}
             </a>
-    
+
         </td>
     </tr>
 </table>

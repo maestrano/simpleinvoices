@@ -9,26 +9,44 @@
 *	 GPL v3 or above
 *}
 
-{* if customer is updated or saved.*} 
+{* if customer is updated or saved.*}
 
-{if $smarty.post.name != "" && $smarty.post.name != null } 
+{if $smarty.post.name != "" && $smarty.post.name != null }
 	{include file="../templates/default/customers/save.tpl"}
 
 {else}
-{* if  name was inserted *} 
-{if $smarty.post.id !=null} 
+{* if  name was inserted *}
+{if $smarty.post.id !=null}
 {*
 		<div class="validation_alert"><img src="./images/common/important.png" alt="" />
 		You must enter a description for the Customer</div>
 		<hr />
 *}
-	{/if}	
+	{/if}
 <form name="frmpost" action="index.php?module=customers&amp;view=add" method="post" id="frmpost" onsubmit="return checkForm(this);">
 <br />
 <table align="center">
 	<tr>
+		<td class="details_screen">{$LANG.customer_type}
+		<a
+			class="cluetip"
+			href="#"
+			rel="index.php?module=documentation&amp;view=view&amp;page=help_required_field"
+			title="{$LANG.Required_Field}"
+		>
+		<img src="./images/common/required-small.png" alt="" />
+		</a>
+		</td>
+		<td>
+			<select name="type">
+			    <option value='organization'>Business</option>
+					<option value='person'>Individual</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
 		<td class="details_screen">{$LANG.customer_name}
-		<a 
+		<a
 			class="cluetip"
 			href="#"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_required_field"
@@ -63,7 +81,7 @@
 			href="#"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_street2"
 			title="{$LANG.street2}"
-		> 
+		>
 		<img src="./images/common/help-small.png" alt="" />
 		</a>
 		</td>
@@ -157,11 +175,11 @@
 			href="#"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 			title="{$LANG.Custom_Fields}"
-		> 
+		>
 		<img src="./images/common/help-small.png" alt="" />
 		</a>
 		</td>
-		<td><input type="text" name="custom_field2" value="{$smarty.post.custom_field2|htmlsafe}" size="25" /></td> 
+		<td><input type="text" name="custom_field2" value="{$smarty.post.custom_field2|htmlsafe}" size="25" /></td>
 	</tr>
 	<tr>
 		<td class="details_screen">{$customFieldLabel.customer_cf3|htmlsafe}
@@ -170,7 +188,7 @@
 			href="#"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 			title="{$LANG.Custom_Fields}"
-		> 
+		>
 		<img src="./images/common/help-small.png" alt="" />
 		</a>
 		</td>
@@ -183,7 +201,7 @@
 			href="#"
 			rel="index.php?module=documentation&amp;view=view&amp;page=help_custom_fields"
 			title="{$LANG.Custom_Fields}"
-		> 
+		>
 		<img src="./images/common/help-small.png" alt="" />
 		</a>
 		</td>
@@ -199,8 +217,8 @@
 			{html_options name=enabled options=$enabled selected=1}
 		</td>
 	</tr>
-	
-	{* 
+
+	{*
 		{showCustomFields categorieId="2"}
 	*}
 
@@ -210,18 +228,18 @@
     <tr>
         <td>
             <button type="submit" class="positive" name="id" value="{$LANG.save}">
-                <img class="button_img" src="./images/common/tick.png" alt="" /> 
+                <img class="button_img" src="./images/common/tick.png" alt="" />
                 {$LANG.save}
             </button>
 		</td>
 		<td>
             <input type="hidden" name="op" value="insert_customer" />
-        
+
             <a href="./index.php?module=customers&amp;view=manage" class="negative">
                 <img src="./images/common/cross.png" alt="" />
                 {$LANG.cancel}
             </a>
-    
+
         </td>
     </tr>
 </table>

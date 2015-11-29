@@ -1,0 +1,67 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "623eef00cf25bacfac9a393457d9669f",
+    "content-hash": "efb41ec2aec7ef3ab16dba89fc45dd6c",
+    "packages": [
+        {
+            "name": "maestrano/maestrano-php",
+            "version": "0.11.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/maestrano/maestrano-php.git",
+                "reference": "a8d6eb5e1805677d7e1a8c1f34390c3f28736977"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/maestrano/maestrano-php/zipball/a8d6eb5e1805677d7e1a8c1f34390c3f28736977",
+                "reference": "a8d6eb5e1805677d7e1a8c1f34390c3f28736977",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "lib/Maestrano/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Arnaud Lachaume"
+                }
+            ],
+            "description": "Maestrano PHP Library",
+            "homepage": "https://maestrano.com",
+            "keywords": [
+                "api",
+                "maestrano",
+                "marketplace",
+                "sme"
+            ],
+            "time": "2015-10-05 20:43:47"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

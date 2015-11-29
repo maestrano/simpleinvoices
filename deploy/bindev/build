@@ -1,0 +1,4 @@
+#!/bin/bash
+# Trigger an application build
+DOCKER_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )
+docker build -t maestrano/simpleinvoices:dev $DOCKER_DIR

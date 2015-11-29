@@ -1,17 +1,17 @@
-{* if tax rate is updated or saved.*} 
+{* if tax rate is updated or saved.*}
 
-{if $smarty.post.tax_description != "" && $smarty.post.submit != null } 
+{if $smarty.post.tax_description != "" && $smarty.post.submit != null }
 {$refresh_total}
 
 <br />
 <br />
-{$display_block} 
+{$display_block}
 <br />
 <br />
 
 {else}
-{* if  name was inserted *} 
-	{if $smarty.post.submit !=null} 
+{* if  name was inserted *}
+	{if $smarty.post.submit !=null}
 		<div class="validation_alert"><img src="./images/common/important.png" alt="" />
 		You must enter a Tax description</div>
 		<hr />
@@ -29,7 +29,7 @@
 	</tr>
 	<tr>
 		<td class="details_screen">{$LANG.rate}
-		<a 
+		<a
 				class="cluetip"
 				href="#"
 				rel="index.php?module=documentation&amp;view=view&amp;page=help_tax_rate_sign"
@@ -40,7 +40,7 @@
 		</td>
 		<td>
 			<input type="text" name="tax_percentage" value="{$smarty.post.tax_percentage|htmlsafe}"  size="25" />
-			{html_options name=type options=$types selected=$tax.type}
+			%
 		</td>
 		<td>{$LANG.ie_10_for_10}</td>
 	</tr>
@@ -53,14 +53,14 @@
 			</select>
 		</td>
 	</tr>
-	
+
 </table>
 <br />
 	<table class="buttons" align="center">
     <tr>
         <td>
             <button type="submit" class="positive" name="submit" value="{$LANG.insert_tax_rate}">
-                <img class="button_img" src="./images/common/tick.png" alt="" /> 
+                <img class="button_img" src="./images/common/tick.png" alt="" />
                 {$LANG.save}
             </button>
 
@@ -70,7 +70,7 @@
                 <img src="./images/common/cross.png" alt="" />
                 {$LANG.cancel}
             </a>
-    
+
         </td>
     </tr>
 	</table>

@@ -20,11 +20,11 @@ class payment
             $where = "and ap.online_payment_id = '$this->online_payment_id'";
         }
 
-        $sql = "SELECT 
+        $sql = "SELECT
                     COUNT(DISTINCT ap.id) AS count
-                FROM 
+                FROM
                     ".TB_PREFIX."payment ap
-                WHERE 
+                WHERE
                     domain_id = :domain_id
         $where";
 
@@ -39,7 +39,7 @@ class payment
 
         global $auth_session;
         $domain_id = domain_id::get($this->domain_id);
-        
+
         if($this->filter == "date")
         {
             $where = "and ap.ac_date between '$this->start_date' and '$this->end_date'";
@@ -50,46 +50,51 @@ class payment
 
         }
 
-        $sql = "SELECT 
-                    ap.*, 
+        $sql = "SELECT
+                    ap.*,
                     iv.index_id as index_id,
                     iv.id as invoice_id,
                     pref.pref_description as preference,
                     pt.pt_description as type,
-                    c.name as cname, 
+                    c.name as cname,
                     b.name as bname
-                from 
-                    ".TB_PREFIX."payment ap, 
-                    ".TB_PREFIX."payment_types pt, 
-                    ".TB_PREFIX."invoices iv, 
-                    ".TB_PREFIX."customers c, 
+                from
+                    ".TB_PREFIX."payment ap,
+                    ".TB_PREFIX."payment_types pt,
+                    ".TB_PREFIX."invoices iv,
+                    ".TB_PREFIX."customers c,
                     ".TB_PREFIX."biller b,
                     ".TB_PREFIX."preferences pref
-                WHERE 
-                    ap.ac_inv_id = iv.id 
-                    AND 
-                    ap.ac_payment_type = pt.pt_id 
-                    AND 
-                    iv.customer_id = c.id 
-                    and 
-                    iv.biller_id = b.id 
-                    and 
+                WHERE
+                    ap.ac_inv_id = iv.id
+                    AND
+                    ap.ac_payment_type = pt.pt_id
+                    AND
+                    iv.customer_id = c.id
+                    and
+                    iv.biller_id = b.id
+                    and
                     iv.preference_id = pref.pref_id
                     and
                     ap.domain_id = :domain_id
                     $where
                 ORDER BY ap.id DESC";
-        
+
         return dbQuery($sql,':domain_id',$domain_id);
     }
 
-    public function insert()
+    public function insert($pushToConnec=true)
     {
         global $db;
         global $auth_session;
 
         $domain_id = domain_id::get($this->domain_id);
-        
+
+        // Get currency
+        if(is_null($this->currency)) {
+          $this->currency = getInvoiceCurrency($this->ac_inv_id);
+        }
+
         $sql = "INSERT INTO ".TB_PREFIX."payment (
             ac_inv_id,
             ac_amount,
@@ -97,7 +102,8 @@ class payment
             ac_date,
             ac_payment_type,
             online_payment_id,
-            domain_id
+            domain_id,
+            currency
         ) VALUES (
             :ac_inv_id,
             :ac_amount,
@@ -105,7 +111,8 @@ class payment
             :ac_date,
             :ac_payment_type,
             :online_payment_id,
-            :domain_id
+            :domain_id,
+            :currency
         )";
         $sth = dbQuery($sql,
             ':ac_inv_id',$this->ac_inv_id,
@@ -114,9 +121,18 @@ class payment
             ':ac_date',$this->ac_date,
             ':ac_payment_type',$this->ac_payment_type,
             ':online_payment_id',$this->online_payment_id,
-            ':domain_id',$domain_id 
+            ':domain_id',$domain_id,
+            ':currency',$this->currency
         ) or die();
-    
+
+      // Hook: Maestrano
+      $mapper = 'PaymentMapper';
+      if($pushToConnec && class_exists($mapper)) {
+        $this->id = lastInsertId();
+        $mapperInstance = new $mapper();
+        $mapperInstance->processLocalUpdate($this);
+      }
+
        return $sth;
     }
 

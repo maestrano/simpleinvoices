@@ -27,8 +27,15 @@ $op = !empty( $_POST['op'] ) ? addslashes( $_POST['op'] ) : NULL;
 
 $saved = false;
 
+// Upload logo if any
+if (!is_null($_FILES["fileToUpload"])) {
+	$filename = uploadLogo($_FILES["fileToUpload"]);
+	if(!is_null($filename)) { $_POST['logo'] = $filename; }
+}
+
+
 if ( $op === 'insert_biller') {
-	
+
 	if($id = insertBiller()) {
  		$saved = true;
  		//saveCustomFieldValues($_POST['categorie'],lastInsertId());
