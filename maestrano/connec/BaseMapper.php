@@ -77,6 +77,13 @@ abstract class BaseMapper {
   }
 
   // Overwrite me!
+  // Optional: Method called after pushing an Entity to Connec
+  // Add any custom logic to map the response back to the model
+  public function processConnecResponse($resource_hash, $model) {
+    return $model;
+  }
+
+  // Overwrite me!
   // Optional: Returns the Connec! Resource ID. When dealing with embedded documents, ID is unique only within the embedded collection.
   // In this case it is advised to prefix the Embedded Document ID with the Parent Document ID (eg: PARENT_ID#EMBEDDED_DOCUMENT_ID)
   protected function getConnecResourceId($cnc_hash) {
@@ -265,7 +272,7 @@ abstract class BaseMapper {
   }
 
   // Transform a Model into a Connec Resource and push it to Connec
-  protected function pushToConnec($model) {
+  protected function pushToConnec($model, $saveResult=false) {
     // Transform the Model into a Connec hash
     $cnc_hash = $this->mapModelToConnecResource($model);
     $hash = array($this->connec_resource_name => $cnc_hash);
@@ -293,9 +300,21 @@ abstract class BaseMapper {
       return false;
     } else {
       error_log("Processing Connec! response code=$code, body=$body");
-      $result = json_decode($response['body'], true);
-      error_log("processing entity_name=$this->local_entity_name entity=". json_encode($result));
-      return $this->saveConnecResource($result[$this->connec_resource_name], true, $model);
+      $result = json_decode($body, true);
+      if($saveResult) {
+        // Save the complete response
+        error_log("saving back entity_name=$this->local_entity_name");
+        return $this->saveConnecResource($result[$this->connec_resource_name], true, $model);
+      } else {
+        // Map the Connec! ID with the local one
+        error_log("mapping back entity_name=$this->local_entity_name");
+        $this->findOrCreateIdMap($result[$this->connec_resource_name], $model);
+
+        // Custom response processing
+        error_log("processing back entity_name=$this->local_entity_name");
+        $this->processConnecResponse($result[$this->connec_resource_name], $model);
+        return $model;
+      }
     }
   }
 

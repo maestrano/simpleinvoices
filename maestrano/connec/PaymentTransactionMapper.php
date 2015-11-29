@@ -117,7 +117,7 @@ class PaymentTransactionMapper extends BaseMapper {
       // do nothing - we don't want to update payments
     } else {
       // Insert model
-      $query = $model->insert();
+      $query = $model->insert(false);
       $model->id = lastInsertId();
     }
   }

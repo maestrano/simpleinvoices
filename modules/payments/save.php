@@ -30,15 +30,6 @@ if ( isset($_POST['process_payment']) ) {
     $id = lastInsertId();
     $_POST['id'] = $id;
     $payment->id = $id;
-
-
-    // Hook: Maestrano
-		$mapper = 'PaymentMapper';
-		if(class_exists($mapper)) {
-			$mapperInstance = new $mapper();
-			$mapperInstance->processLocalUpdate((object) $payment);
-		}
-
   } else {
     $display_block =  $LANG['save_payment_failure']."<br />".$sql;
   }
