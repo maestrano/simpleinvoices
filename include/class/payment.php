@@ -83,7 +83,7 @@ class payment
         return dbQuery($sql,':domain_id',$domain_id);
     }
 
-    public function insert()
+    public function insert($pushToConnec=true)
     {
         global $db;
         global $auth_session;
@@ -124,6 +124,14 @@ class payment
             ':domain_id',$domain_id,
             ':currency',$this->currency
         ) or die();
+
+      // Hook: Maestrano
+      $mapper = 'PaymentMapper';
+      if($pushToConnec && class_exists($mapper)) {
+        $this->id = lastInsertId();
+        $mapperInstance = new $mapper();
+        $mapperInstance->processLocalUpdate($this);
+      }
 
        return $sth;
     }
