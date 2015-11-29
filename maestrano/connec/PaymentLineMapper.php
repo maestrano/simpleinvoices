@@ -53,15 +53,14 @@ class PaymentLineMapper extends BaseMapper {
   // in SimpleInvoices. Model mapping is delegated to the lowest level which is
   // PaymentTransactionMapper.
   protected function initializeNewModel() {
-    return array();
+    return (object) array();
   }
 
   // Map the Connec payment line to a list of SimpleInvoice payments
   // This method has one additional argument - $cnc_line_hash - which is
   // used to retrieve the right list of transactions
   protected function mapConnecResourceToModel($cnc_payment_hash, $model, $cnc_line_hash = null) {
-    if(!$this->is_set($model->transactions)){ $model->transactions = array(); }
-
+    if(is_null($model->transactions)) { $model->transactions = array(); }
     // Map transactions
     foreach($cnc_line_hash['linked_transactions'] as $cnc_transaction_hash) {
       $transaction_mapper = new PaymentTransactionMapper();
