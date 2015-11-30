@@ -5,6 +5,12 @@ require_once '../init.php';
 require_once MAESTRANO_ROOT . '/connec/init.php';
 define('DATA_SEQUENCE_FILE', realpath(MAESTRANO_ROOT . '/var/_data_sequence'));
 
+// Default  user domain
+global $auth_session;
+if(!isset($auth_session) || !isset($auth_session->domain_id)) {
+  $auth_session->domain_id = 1;
+}
+
 // Open or create a file and returns its content
 function openAndReadFile($file_path) {
   if(!file_exists($file_path)) {
