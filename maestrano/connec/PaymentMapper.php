@@ -109,7 +109,7 @@ class PaymentMapper extends BaseMapper {
 
     // Map payment attributes
     if($this->is_set($model->ac_date)) { $cnc_hash['transaction_date'] = date('c',strtotime($model->ac_date)); }
-    $cnc_hash['total_amount'] = floatval($model->ac_amount);
+    $cnc_hash['amount'] = array('total_amount' => floatval($model->ac_amount));
     $cnc_hash['public_note'] = $model->ac_notes;
     $cnc_hash['currency'] = $model->currency;
 
