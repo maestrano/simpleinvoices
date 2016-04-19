@@ -15,3 +15,8 @@ RewriteRule ^/?([a-zA-Z0-9_]+)-([a-zA-Z0-9_]+)-([a-zA-Z0-9_]+)?$ index.php?modul
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^/?([a-zA-Z0-9_]+)-([a-zA-Z0-9_]+)$ index.php?module=$1&view=$2 [L]
+
+<Files "maestrano.json">
+  Order Allow,Deny
+  Deny from all
+</Files>
