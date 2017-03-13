@@ -8,7 +8,7 @@
 class Maestrano extends Maestrano_Util_PresetObject
 {
   // Maestrano PHP API Version
-  const VERSION = '0.11.2';
+  const VERSION = '0.11.6';
 
   /* Internal Config Map */
   protected static $config = array();
@@ -20,7 +20,7 @@ class Maestrano extends Maestrano_Util_PresetObject
    */
   public static function authenticateWithPreset($preset,$api_id, $api_key) {
     return !is_null($api_id) && !is_null($api_key) &&
-      self::param('api.id',$preset) == $api_id && self::param('api.key',$preset) == $api_key;
+      Maestrano::with($preset)->param('api.id') == $api_id && Maestrano::with($preset)->param('api.key') == $api_key;
   }
 
   /**
@@ -44,7 +44,7 @@ class Maestrano extends Maestrano_Util_PresetObject
    * @return Maestrano_Sso_Service singleton
    */
   public static function ssoWithPreset($preset) {
-    return Maestrano_Sso_Service::instance();
+    return Maestrano_Sso_Service::instanceWithPreset($preset);
   }
 
   /**
@@ -52,10 +52,10 @@ class Maestrano extends Maestrano_Util_PresetObject
   *
   * @return true
   */
-  public static function configureWithPreset($preset,$settings) {
+  public static function configureWithPreset($preset, $settings) {
     // Load from JSON file if string provided
     if (is_string($settings)) {
-      return self::configure(json_decode(file_get_contents($settings),true),$preset);
+      return self::configureWithPreset($preset, json_decode(file_get_contents($settings), true));
     }
 
     // Ensure preset is initialized
