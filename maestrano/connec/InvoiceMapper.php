@@ -83,7 +83,7 @@ class InvoiceMapper extends BaseMapper {
     } else {
       $pers_mapper = new PersonMapper();
       $person = $pers_mapper->loadModelById($model->customer_id);
-      $mno_id_map = $pers_mapper->findIdMapOrPersist($org);
+      $mno_id_map = $pers_mapper->findIdMapOrPersist($person);
       $cnc_hash['person_id'] = $mno_id_map['mno_entity_guid'];
     }
 
